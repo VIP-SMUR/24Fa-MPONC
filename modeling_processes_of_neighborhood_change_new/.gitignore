@@ -1,0 +1,6 @@
+
+*.pkl
+/figures
+/data
+/cache
+*.code-workspace
