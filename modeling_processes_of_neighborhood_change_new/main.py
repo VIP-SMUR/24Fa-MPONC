@@ -1,12 +1,12 @@
 # main.py
 
-from .config import DATA_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
-from .download_extract import download_file, extract_file
-from .gdf_handler import load_gdf, create_gdf
-from .graph_handler import load_graph, create_graph, save_graph
-from .amtdens_distances import compute_amts_dens, compute_centroid_distances
-from .simulation import run_simulation
-from .visualization import plot_city
+from config import DATA_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
+from download_extract import download_file, extract_file
+from gdf_handler import load_gdf, create_gdf
+from graph_handler import load_graph, create_graph, save_graph
+from amtdens_distances import compute_amts_dens, compute_centroid_distances
+from simulation import run_simulation
+from visualization import plot_city
 from tqdm import tqdm
 import pickle
 
@@ -87,7 +87,7 @@ def main():
         gdf_sub = GA_gdf[GA_gdf['GEOID'] == geoid]
         
         # Combined geometry of all geometries in gdf_sub
-        combined_geometry = gdf_sub.geometry.union_all()
+        combined_geometry = gdf_sub.geometry.unary_union
         
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid

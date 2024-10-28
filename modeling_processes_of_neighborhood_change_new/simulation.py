@@ -2,9 +2,9 @@ import numpy as np
 import itertools
 from tqdm import tqdm
 import pickle
-from .config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, SAVE_DATA, CTY_KEY, DATA_DIR)
-from .agent import Agent
-from .city import City
+from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, SAVE_DATA, CTY_KEY, DATA_DIR)
+from Agent import Agent
+from City import City
 
 # ===============================
 # SIMULATION EXECUTION LOGIC

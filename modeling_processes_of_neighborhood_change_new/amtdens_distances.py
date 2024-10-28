@@ -22,8 +22,8 @@ def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
         name = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'Name'].iloc[0]
     
         # Extract polygon of current GEOID
-        polygon = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'geometry'].union_all()
-    
+        polygon = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'geometry'].unary_union
+
         # Collect amenities
         try:
             amenities[index] = len(ox.features_from_polygon(polygon, tags))

@@ -2,7 +2,7 @@ import osmnx as ox
 import networkx as nx
 import pickle
 from tqdm import tqdm
-from .config import GRAPH_FILE
+from config import GRAPH_FILE
 import pandas as pd
 
 # =========================

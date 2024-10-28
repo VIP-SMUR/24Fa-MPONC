@@ -4,7 +4,7 @@ import requests
 import zipfile
 from pathlib import Path
 from tqdm import tqdm
-from .config import ZIP_URL, ZIP_FILENAME, DATA_DIR, EXTRACTED_NAME
+from config import ZIP_URL, ZIP_FILENAME, DATA_DIR, EXTRACTED_NAME
 
 # ========================
 # DOWNLOAD AND EXTRACT ZIP
