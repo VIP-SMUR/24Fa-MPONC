@@ -1,0 +1,20 @@
+---------------------------------------
+Begin Slurm Prolog: Oct-28-2024 08:50:09
+Job ID:    891495
+User ID:   mlim70
+Account:   coc
+Job name:  ipynb_job
+Partition: pace-cpu
+---------------------------------------
+---------------------------------------
+Begin Slurm Epilog: Oct-28-2024 08:50:09
+Job ID:        891495
+Array Job ID:  _4294967294
+User ID:       mlim70
+Account:       coc
+Job name:      allocation
+Resources:     cpu=10,mem=2G,node=1
+Rsrc Used:     cput=00:00:00,vmem=0,walltime=00:00:00,mem=564K,energy_used=0
+Partition:     pace-cpu
+Nodes:         atl1-1-02-003-19-1
+---------------------------------------

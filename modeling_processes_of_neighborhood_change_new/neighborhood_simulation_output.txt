@@ -1,0 +1,20 @@
+---------------------------------------
+Begin Slurm Prolog: Oct-28-2024 10:29:50
+Job ID:    891639
+User ID:   mlim70
+Account:   coc
+Job name:  neighborhood_simulation
+Partition: pace-cpu
+---------------------------------------
+---------------------------------------
+Begin Slurm Epilog: Oct-28-2024 10:29:53
+Job ID:        891639
+Array Job ID:  _4294967294
+User ID:       mlim70
+Account:       coc
+Job name:      neighborhood_simulation
+Resources:     cpu=10,mem=16G,node=1
+Rsrc Used:     cput=00:00:30,vmem=0,walltime=00:00:03,mem=524K,energy_used=0
+Partition:     pace-cpu
+Nodes:         atl1-1-02-003-19-2
+---------------------------------------
