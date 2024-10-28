@@ -1,104 +1,124 @@
-import geopandas as gpd
-import matplotlib.pyplot as plt
-import networkx as nx
-import numpy as np
-import osmnx as ox
-import pandas as pd
+# main.py
+
+from .config import DATA_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
+from .download_extract import download_file, extract_file
+from .gdf_handler import load_gdf, create_gdf
+from .graph_handler import load_graph, create_graph, save_graph
+from .amtdens_distances import compute_amts_dens, compute_centroid_distances
+from .simulation import run_simulation
+from .visualization import plot_city
+from tqdm import tqdm
 import pickle
 
-from City import City
-from Centroid import Centroid
-from Agent import Agent
-
-# Initialize list of centroids
-centroids = []
-centroids.append(Centroid(0.0, 0.0, 'RDA/Cascade', True))
-centroids.append(Centroid(0.0, 0.0, 'Pittsburgh/Peoplestown', True))
-centroids.append(Centroid(0.0, 0.0, 'Boulevard Crossing', True))
-centroids.append(Centroid(0.0, 0.0, 'Memorial Drive/Glenwood', True))
-centroids.append(Centroid(0.0, 0.0, 'Freedom Parkway', True))
-centroids.append(Centroid(0.0, 0.0, 'Virginia Highlands/Ansley', True))
-centroids.append(Centroid(0.0, 0.0, 'Peachtree/Collier', True))
-centroids.append(Centroid(0.0, 0.0, 'Upper Westside/Northside', True))
-centroids.append(Centroid(0.0, 0.0, 'Simpson/Hollowell', True))
-centroids.append(Centroid(0.0, 0.0, 'Upper Marietta/Westside Park', True))
-
-# [OLD] Load city map to establish nodes
-# WE NEED GRAPH 'g' WITH CENTROIDS
-'''
-load_g = True
-if not load_g:
-    gdf = gpd.read_file('./data/tl_2022_us_zcta520/tl_2022_us_zcta520.shp')
-    gdf = gdf[gdf['ZCTA5CE20'] == '11206']
-    shape = gdf.iloc[0].geometry
+def main():
+    # ========================
+    # DOWNLOAD AND EXTRACT ZIP
+    # ========================
+    file_path = download_file()
     
-    #g is graph
-    g = ox.graph_from_polygon(shape, network_type='drive', simplify=True)
-    g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()
-    g = nx.convert_node_labels_to_integers(g)
-    with open('./data/williamsburg.pkl', 'wb') as file:
-        pickle.dump(g, file)
-else:
-    with open('./data/williamsburg.pkl', 'rb') as file:
-        g = pickle.load(file)
-               
-amts = [ox.nearest_nodes(g, lon, lat) for lon, lat, _ in centroids] #switched lon, lat order in for loop
-'''
+    # Extract file
+    if file_path:
+        extracted_path = extract_file(file_path)
+    else:
+        print("Data download failed. Exiting.")
+        return
 
-# SIMULATION PRE-DETERMINED PARAMETERS
-
-rho_l = [1, 2, 4, 8] # (for each iteration) rho-house capacity
-alpha_l = [0.25, 0.75] # (for each iteration) lambda-transit access vs. community value
-t_max_l = [5000, 10000, 15000, 20000] # (for each iteration) timesteps
-tau = 0.5 # inequality factor in Lorentz curve
-
-cty_key = 'Atlanta' # [changed 'williamsburg' to 'Atlanta']
-
-# RUN SIMULATION?
-run_experiments = True
-
-# PLOT SIMULATION?
-plot_cities = True
-
-n = g.number_of_nodes() - len(amts) # n = number of housing nodes (total nodes - transit nodes)
-if run_experiments:
-    for rho in rho_l: # iterate through iterations
-        for alpha in alpha_l: # iterate through iterations
-
-            np.random.seed(0)
-
-            city = City(g, rho=rho) 
-            city.set_amts(amts)
-
-            agt_dows = np.diff([1 - (1 - x) ** tau for x in np.linspace(0, 1, n + 1)]) #establish endowment distribution
-            
-            agts = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)] #initialize list of all agents
-
-            city.set_agts(agts)
-            city.update()
-
-            for t in range(max(t_max_l)):
-                print('t: {0}'.format(t))
-                for a in agts:
-                    a.act()
-                city.update()
-                for a in agts:
-                    a.learn()
-
-                if t + 1 in t_max_l:
-
-                    for a in city.agts:
-                        a.avg_probabilities = a.tot_probabilities / (t + 1)
-
-                    with open('./data/{0}_{1}_{2}_{3}.pkl'.format(cty_key, rho, alpha, t + 1), 'wb') as file:
-                        pickle.dump(city, file)
-
-if plot_cities:
-    for rho in rho_l: 
-        for alpha in alpha_l:
-            for t_max in t_max_l:
-                with open('./data/{0}_{1}_{2}_{3}.pkl'.format(cty_key, rho, alpha, t_max), 'rb') as file:
-                    city = pickle.load(file)
-                cmap = 'YlOrRd'
-                figkey = './{0}_{1}_{2}_{3}'.format(cty_key, rho, alpha, t_max)
-                city.plot(cmap=cmap, figkey=figkey)
+    # =======================
+    # GDF FILE INITIALIZATION
+    # =======================
+    
+    # Load or create GeoDataFrame
+    if GA_GDF_CACHE_FILE.exists():
+        print("Using cached GeoDataFrame.")
+        GA_gdf = load_gdf()
+    else:
+        shapefile_path = extracted_path / 'Geographic_boundaries,_ACS_2022.shp'  # Define shapefile path
+        GA_gdf = create_gdf(shapefile_path)
+    
+    # =========================
+    # GRAPH FILE INITIALIZATION
+    # =========================
+    
+    # Load or create Graph
+    if GRAPH_FILE.exists():
+        # Load existing graph and its GEOIDs
+        g, saved_GEOIDS = load_graph()
+        
+        # Populate used_GEOIDS based on current valid GEOIDs in GA_gdf
+        used_GEOIDS = [geoid for geoid, _ in GEOIDS if geoid in set(GA_gdf['GEOID'])]
+        
+        # Compare saved_GEOIDS with current GEOIDs
+        if set(saved_GEOIDS) != set(used_GEOIDS):
+            print("GEOIDs have changed. Recreating the graph...")
+            g, used_GEOIDS = create_graph(GA_gdf, GEOIDS)
+            save_graph(g, used_GEOIDS)
+        else:
+            print("Graph already exists. Using cached graph.")
+    else:
+        # Create new graph
+        print("Creating graph for the first time.")
+        g, used_GEOIDS = create_graph(GA_gdf, GEOIDS)
+        save_graph(g, used_GEOIDS)
+    
+    # =========================
+    # COMPUTE AMENITY DENSITIES
+    # =========================
+    
+    amts_dens = compute_amts_dens(GA_gdf, used_GEOIDS)
+    
+    # ===============================
+    # COMPUTE CENTROID DISTANCES
+    # ===============================
+    
+    # Initialize centroids
+    centroids = []
+    # tuple format: (longitude, latitude, region_name, is_beltline)
+    
+    GEOID_info = {geoid: is_beltline for geoid, is_beltline in GEOIDS}
+    
+    # ===================================
+    # CENTROID INITIALIZATION FROM GEOIDS
+    # ===================================
+    for geoid in tqdm(used_GEOIDS[:-1], desc="\nInitializing Centroids", unit="centroid"):
+        # Default is_beltline to False if it's not in tuple
+        is_beltline = GEOID_info.get(geoid, False)
+        
+        # Fetch GEOID instance from GA_gdf
+        gdf_sub = GA_gdf[GA_gdf['GEOID'] == geoid]
+        
+        # Combined geometry of all geometries in gdf_sub
+        combined_geometry = gdf_sub.geometry.union_all()
+        
+        # Initialize centroid with coordinates
+        centroid = combined_geometry.centroid
+        centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline))
+    
+    # Compute centroid distances
+    centroid_distances = compute_centroid_distances(centroids, g, used_GEOIDS)
+    
+    # ====================
+    # RUN SIMULATION
+    # ====================
+    
+    run_simulation(centroids, g, amts_dens, centroid_distances)
+    
+    # ============================
+    # PLOT SIMULATION RESULTS
+    # ============================
+    
+    if PLOT_CITIES:
+        for rho in RHO_L:
+            for alpha in ALPHA_L:
+                for t_max in T_MAX_L:
+                    pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t_max}.pkl"
+                    pickle_path = DATA_DIR / pickle_filename
+                    if pickle_path.exists():
+                        with open(pickle_path, 'rb') as file:
+                            city = pickle.load(file)
+                        figkey = f"{CTY_KEY}_{rho}_{alpha}_{t_max}"
+                        plot_city(city, g, figkey=figkey)
+                    else:
+                        print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
+                    
+if __name__ == "__main__":
+    main()
