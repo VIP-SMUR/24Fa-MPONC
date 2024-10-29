@@ -4,10 +4,13 @@ import numpy as np
 import pandas as pd
 import osmnx as ox
 import matplotlib.pyplot as plt
-import matplotlib as mpl
-from folium import folium, Circle, Choropleth, CircleMarker
-from folium.raster_layers import ImageOverlay
-from matplotlib.patches import Patch
+import matplotlib.cm as cm
+import time
+import folium
+from branca.colormap import LinearColormap
+from folium import CircleMarker
+from config import FIGURES_DIR
+from pathlib import Path
 
 
 # ==========
@@ -137,6 +140,10 @@ class City:
     # CITY PLOTTING CODE
     # ==================
     def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
+        
+        start_time = time.time()
+        
+        gdf = gdf.to_crs(epsg=32616)
 
 
         #Old mathew code not using folium
@@ -186,18 +193,17 @@ class City:
 
         plt.tight_layout()
         plt.savefig(f'./figures/{figkey}.pdf', format='pdf', bbox_inches='tight')
-        plt.close()'''
-
-
-        gdf = gdf.to_crs(epsg=32616)
+        plt.close()
+        
+        matplotlib_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}.pdf"
+        end_time = time.time()
+        print(f"Plotted and saved {matplotlib_filename} in {end_time - start_time:.2f} seconds.")
+        '''
 
         # Initialize matplotlib plot
         fig, ax = plt.subplots(figsize=(10, 10))
         ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False,
                       close=False)
-
-        # Plot GDF layer (region boundaries) on Matplotlib
-        gdf.plot(column='Avg Endowment', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
 
         # Plot centroids and label inhabitants
         colors = np.where(self.beltline_array, 'palegreen', 'white')
@@ -209,32 +215,62 @@ class City:
             inhabitants = len(self.inh_array[ID])
             ax.text(lon, lat, str(inhabitants), fontsize=9, ha='center', va='center', color='black')
 
-        # ScalarMappable for color bar
-        sm = mpl.cm.ScalarMappable(cmap=cmap,
-                                   norm=plt.Normalize(vmin=gdf['Avg Endowment'].min(), vmax=gdf['Avg Endowment'].max()))
-        cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
-        cbar.set_label('Average Wealth', fontsize=12)
-
+        # Starting coords
         center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
         m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
-
-        # Add the Choropleth layer
-        Choropleth(
-            geo_data=gdf.to_json(),
-            name="Choropleth",
+        
+        bar_colors = [ # Color bar color spectrum
+            '#3b4cc0',  # Vibrant blue
+            '#6a51a3',  # Deep violet
+            '#984ea3',  # Rich purple
+            '#b5179e',  # Magenta
+            '#d73027',  # Strong red
+            '#e41a1c',  # Vivid red
+            '#99000d',  # Dark red
+                ]
+        
+        # Colormap for GDF layer - shade polygons based on Avg Endowment
+        min_value = gdf['Avg Endowment'].min()
+        max_value = gdf['Avg Endowment'].max()
+        colormap = LinearColormap(
+            colors=bar_colors,
+            vmin=min_value,
+            vmax=max_value,
+            caption='Average Wealth'
+            
+        )
+        
+         # Customize GDF layer
+        def style_function(feature):
+            endowment = feature['properties']['Avg Endowment']
+            if endowment is None or pd.isnull(endowment):
+                endowment = 0.0
+            style_dict = {
+                'color': 'black',     # Outline color of polygons
+                'weight': 1,          # Outline weight
+                'opacity': 1          # Outline opacity
+            }
+            if endowment == 0.0:
+                style_dict['fillOpacity'] = 0  # Make polygon transparent
+            else:
+                style_dict['fillColor'] = colormap(endowment)
+                style_dict['fillOpacity'] = 0.4  # Transparency
+            return style_dict
+        
+        # Add the GDF layer (entirety of GA)
+        folium.GeoJson(
             data=gdf,
-            columns=["geometry", "Avg Endowment"],
-            key_on="feature.id",
-            fill_color="YlGnBu",
-            fill_opacity=0.6,
-            line_opacity=0.5,
-            legend_name="Average Wealth"
+            name='GDF Layer',
+            style_function=style_function
         ).add_to(m)
+        
+        # Add colormap
+        colormap.add_to(m)
 
         # Add centroids as CircleMarker with beltline coloring
         for i, (lat, lon) in enumerate(zip(self.lat_array, self.lon_array)):
             beltline_status = self.beltline_array[i]
-            color = 'black' if beltline_status else 'red'
+            color = 'red' if beltline_status else 'black'
 
             CircleMarker(
                 location=[lat, lon],
@@ -258,11 +294,16 @@ class City:
              background-color: white; z-index:9999; font-size:14px;
              border:2px solid grey; padding: 10px;">
              <b>Legend</b><br>
-             <i style="background: black; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Beltline Housing<br>
-             <i style="background: red; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Non-Beltline Housing
+             <i style="background: red; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Beltline Housing<br>
+             <i style="background: black; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Non-Beltline Housing
              </div>
         '''
         m.get_root().html.add_child(folium.Element(legend_html))
 
         # Save Folium map as HTML
         m.save(f"./figures/{figkey}_folium.html")
+        end_time = time.time()
+        
+        FOLIUM_DIR = Path(FIGURES_DIR) / f"{figkey}_folium.html"
+        print(f"Plotted and saved {FOLIUM_DIR.name} in {end_time - start_time:.2f} seconds.")
+        

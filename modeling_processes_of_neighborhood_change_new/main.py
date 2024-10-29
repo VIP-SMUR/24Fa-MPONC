@@ -1,6 +1,6 @@
 from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, FIGURES_DIR
 from download_extract import download_file, extract_file
-from gdf_handler import load_gdf, create_gdf, update_gdf_with_endowment
+from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import compute_amts_dens, compute_centroid_distances
 from simulation import run_simulation
@@ -9,6 +9,9 @@ from tqdm import tqdm
 import pickle
 import numpy as np
 
+# ========================
+# FOUR STEP MODEL FUNCTIONS
+# ========================
 
 def generate_trips(centroids):
     """ Estimate trip generation based on some criteria (e.g., population). """
@@ -76,7 +79,6 @@ def main():
     if GA_GDF_CACHE_FILE.exists():
         print("Using cached GeoDataFrame.")
         GA_gdf = load_gdf()
-        print(GA_gdf.columns)
     else:
         shapefile_path = extracted_path / 'Geographic_boundaries,_ACS_2022.shp'  # Define shapefile path
         GA_gdf = create_gdf(shapefile_path)
@@ -112,9 +114,9 @@ def main():
 
     amts_dens = compute_amts_dens(GA_gdf, used_GEOIDS)
 
-    # ===============================
+    # ==========================
     # COMPUTE CENTROID DISTANCES
-    # ===============================
+    # ==========================
 
     # Initialize centroids
     centroids = []
