@@ -1,6 +1,5 @@
 import geopandas as gpd
-from config import GA_GDF_CACHE_FILE, DATA_DIR
-from tqdm import tqdm
+from config import GA_GDF_CACHE_FILE
 
 # =======================
 # GDF FILE INITIALIZATION
