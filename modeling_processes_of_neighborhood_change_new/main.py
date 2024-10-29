@@ -31,6 +31,7 @@ def main():
     if GA_GDF_CACHE_FILE.exists():
         print("Using cached GeoDataFrame.")
         GA_gdf = load_gdf()
+        print( )
     else:
         shapefile_path = extracted_path / 'Geographic_boundaries,_ACS_2022.shp'  # Define shapefile path
         GA_gdf = create_gdf(shapefile_path)

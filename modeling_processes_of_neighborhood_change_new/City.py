@@ -5,6 +5,8 @@ import pandas as pd
 import osmnx as ox
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from folium import folium, Circle, Choropleth, CircleMarker
+from folium.raster_layers import ImageOverlay
 from matplotlib.patches import Patch
 
 
@@ -135,6 +137,10 @@ class City:
     # CITY PLOTTING CODE
     # ==================
     def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
+
+
+        #Old mathew code not using folium
+        '''def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
         """
         Plot the city visualization including the graph, agents, and centroids.
 
@@ -153,9 +159,9 @@ class City:
         # Plot centroids locations (this comes after the graph to make sure they are visible on top)
         colors = np.where(self.beltline_array, 'palegreen', 'white')
         ax.scatter(self.lon_array, self.lat_array, color=colors, s=120, alpha=0.8, edgecolor='black', linewidth=0.5)
-            
+
         # Display inhabitant populations at each node:
-        for ID in range(self.n):    
+        for ID in range(self.n):
             lon = self.lon_array[ID]
             lat = self.lat_array[ID]
             inhabitants = len(self.inh_array[ID])
@@ -163,10 +169,10 @@ class City:
 
         # ScalarMappable for color bar implementation
         sm = mpl.cm.ScalarMappable(
-            cmap=cmap, 
+            cmap=cmap,
             norm=plt.Normalize(vmin=gdf['Avg Endowment'].min(), vmax=gdf['Avg Endowment'].max())
         )
-        
+
         # Add color bar
         cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
         cbar.set_label('Average Wealth', fontsize=12)
@@ -180,4 +186,83 @@ class City:
 
         plt.tight_layout()
         plt.savefig(f'./figures/{figkey}.pdf', format='pdf', bbox_inches='tight')
-        plt.close()
+        plt.close()'''
+
+
+        gdf = gdf.to_crs(epsg=32616)
+
+        # Initialize matplotlib plot
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False,
+                      close=False)
+
+        # Plot GDF layer (region boundaries) on Matplotlib
+        gdf.plot(column='Avg Endowment', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
+
+        # Plot centroids and label inhabitants
+        colors = np.where(self.beltline_array, 'palegreen', 'white')
+        ax.scatter(self.lon_array, self.lat_array, color=colors, s=120, alpha=0.8, edgecolor='black', linewidth=0.5)
+
+        for ID in range(self.n):
+            lon = self.lon_array[ID]
+            lat = self.lat_array[ID]
+            inhabitants = len(self.inh_array[ID])
+            ax.text(lon, lat, str(inhabitants), fontsize=9, ha='center', va='center', color='black')
+
+        # ScalarMappable for color bar
+        sm = mpl.cm.ScalarMappable(cmap=cmap,
+                                   norm=plt.Normalize(vmin=gdf['Avg Endowment'].min(), vmax=gdf['Avg Endowment'].max()))
+        cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
+        cbar.set_label('Average Wealth', fontsize=12)
+
+        center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
+        m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
+
+        # Add the Choropleth layer
+        Choropleth(
+            geo_data=gdf.to_json(),
+            name="Choropleth",
+            data=gdf,
+            columns=["geometry", "Avg Endowment"],
+            key_on="feature.id",
+            fill_color="YlGnBu",
+            fill_opacity=0.6,
+            line_opacity=0.5,
+            legend_name="Average Wealth"
+        ).add_to(m)
+
+        # Add centroids as CircleMarker with beltline coloring
+        for i, (lat, lon) in enumerate(zip(self.lat_array, self.lon_array)):
+            beltline_status = self.beltline_array[i]
+            color = 'black' if beltline_status else 'red'
+
+            CircleMarker(
+                location=[lat, lon],
+                color=color,
+                fill=True,
+                fill_opacity=0.8,
+                radius=5,
+                popup=f"Inhabitants: {len(self.inh_array[i])}"
+            ).add_to(m)
+
+        # Add title and custom legend using HTML
+        title_html = f'''
+            <h3 align="center" style="font-size:20px"><b>City Visualization: {figkey}</b></h3>
+        '''
+        m.get_root().html.add_child(folium.Element(title_html))
+
+        legend_html = '''
+             <div style="
+             position: fixed; 
+             bottom: 50px; left: 50px; width: 150px; height: 90px; 
+             background-color: white; z-index:9999; font-size:14px;
+             border:2px solid grey; padding: 10px;">
+             <b>Legend</b><br>
+             <i style="background: black; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Beltline Housing<br>
+             <i style="background: red; width: 20px; height: 20px; float: left; margin-right: 5px; opacity: 0.8;"></i>Non-Beltline Housing
+             </div>
+        '''
+        m.get_root().html.add_child(folium.Element(legend_html))
+
+        # Save Folium map as HTML
+        m.save(f"./figures/{figkey}_folium.html")
