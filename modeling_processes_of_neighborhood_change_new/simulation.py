@@ -36,8 +36,6 @@ def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes)
         )
         for rho, alpha, t_max in simulation_params
     )
-
-    print("Completed simulation(s).\n")
         
 # Single simulation run
 def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes):

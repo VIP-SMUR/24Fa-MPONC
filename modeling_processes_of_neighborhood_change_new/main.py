@@ -8,6 +8,8 @@ from visualization import plot_city
 from tqdm import tqdm
 import pickle
 import numpy as np
+import time
+from memory_profiler import profile
 
 # ========================
 # FOUR STEP MODEL FUNCTIONS
@@ -58,10 +60,13 @@ def route_assignment(split_distribution, g):
     return assigned_routes
 
 
+@profile
 def main():
     # ========================
     # DOWNLOAD AND EXTRACT ZIP
     # ========================
+    simulation_start_time = time.time()
+    
     file_path = download_file()
 
     # Extract file
@@ -166,10 +171,16 @@ def main():
 
     run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes)
 
+    simulation_end_time = time.time()
+    print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.")
+
+
     # ============================
     # PLOT SIMULATION RESULTS
     # ============================
 
+    plot_start_time = time.time()
+    
     if PLOT_CITIES:
         for rho in RHO_L:
             for alpha in ALPHA_L:
@@ -183,6 +194,10 @@ def main():
                         plot_city(city, g, GA_gdf, figkey=figkey)
                     else:
                         print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
+    
+    plot_end_time = time.time()
+    
+    print(f"Completed plotting in {plot_end_time - plot_start_time:.2f} seconds.")
 
 
 if __name__ == "__main__":
