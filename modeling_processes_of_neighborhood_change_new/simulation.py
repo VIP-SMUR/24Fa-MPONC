@@ -1,3 +1,5 @@
+# simulation.py
+
 import numpy as np
 import itertools
 from tqdm import tqdm
@@ -11,18 +13,13 @@ from City import City
 # ===============================
 
 def run_simulation(centroids, g, amts_dens, centroid_distances):
-    """
-    Parameters:
-    - centroids (list): List of centroid tuples (longitude, latitude, region_name, is_beltline).
-    - g (Graph): NetworkX graph.
-    - amts_dens (numpy.ndarray): Amenity densities.
-    - centroid_distances (numpy.ndarray): Normalized centroid distance matrix.
-    """
     if not RUN_EXPERIMENTS:
         return
 
     # Number of rho/alpha combinations
     rho_alpha_iterations = len(RHO_L) * len(ALPHA_L) * max(T_MAX_L)
+    
+    # Iterate
     with tqdm(total=rho_alpha_iterations, desc='Simulating:', unit='step') as pbar:
         for rho, alpha in itertools.product(RHO_L, ALPHA_L):
             # Ensure reproducibility 

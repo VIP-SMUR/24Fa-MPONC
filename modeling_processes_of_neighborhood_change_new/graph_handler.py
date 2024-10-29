@@ -1,3 +1,5 @@
+# graph_handler.PythonFinalizationError
+
 import osmnx as ox
 import networkx as nx
 import pickle

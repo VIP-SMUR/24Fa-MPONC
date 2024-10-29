@@ -1,11 +1,13 @@
+# amtsdens_distances.py
+
 import osmnx as ox
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
 
-# ===============================================
+# ================================================
 # AMENITY DENSITY & CENTROID DISTANCE CALCULATIONS
-# ===============================================
+# ================================================
 
 def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
     # [AMENITY FILTER]
@@ -22,7 +24,7 @@ def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
         name = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'Name'].iloc[0]
     
         # Extract polygon of current GEOID
-        polygon = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'geometry'].unary_union
+        polygon = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'geometry'].union_all()
 
         # Collect amenities
         try:

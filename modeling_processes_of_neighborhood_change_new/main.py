@@ -87,7 +87,7 @@ def main():
         gdf_sub = GA_gdf[GA_gdf['GEOID'] == geoid]
         
         # Combined geometry of all geometries in gdf_sub
-        combined_geometry = gdf_sub.geometry.unary_union
+        combined_geometry = gdf_sub.geometry.union_all()
         
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid
