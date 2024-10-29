@@ -10,9 +10,9 @@ import pickle
 import numpy as np
 import time
 
-# ========================
+# =========================
 # FOUR STEP MODEL FUNCTIONS
-# ========================
+# =========================
 
 def generate_trips(centroids):
     """ Estimate trip generation based on some criteria (e.g., population). """
@@ -146,9 +146,9 @@ def main():
     # Compute centroid distances
     centroid_distances = compute_centroid_distances(centroids, g, used_GEOIDS)
 
-    # ====================
+    # ========================
     # RUN TRANSPORTATION MODEL
-    # ====================
+    # ========================
 
     # Step 1: Generate trips
     trip_counts = generate_trips(centroids)
@@ -162,19 +162,19 @@ def main():
     # Step 4: Route Assignment
     assigned_routes = route_assignment(split_distribution, g)
 
-    # ====================
+    # ==============
     # RUN SIMULATION
-    # ====================
+    # ==============
 
-    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes)
+    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, simulation_start_time)
 
     simulation_end_time = time.time()
-    print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.")
+    print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")
 
 
-    # ============================
+    # =======================
     # PLOT SIMULATION RESULTS
-    # ============================
+    # =======================
 
     plot_start_time = time.time()
     

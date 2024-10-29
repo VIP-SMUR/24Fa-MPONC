@@ -33,6 +33,7 @@ GEOIDS = [
     ('HS6331054', False),   # Campbell HS
     ('1310944', False),     # BrookHaven City
     ('HS6440172', False),   # Panthersville
+    
     ('1304000', False)      # Atlanta City - KEEP AS LAST ELEMENT (for graphing purposes)
 ]
 
@@ -40,9 +41,9 @@ GEOIDS = [
 EPSILON = 1e-3
 TAU = 0.5  # Inequality factor in Lorentz curve
 
-# ========================
+# ===================
 # PATH CONFIGURATIONS
-# ========================
+# ===================
 
 # Path to current directory
 BASE_DIR = Path.cwd()
@@ -65,21 +66,21 @@ GA_GDF_CACHE_FILE = DATA_DIR / GA_GDF_CACHE_FILE_NAME
 GRAPH_FILE_NAME = "GA_graph.pkl"
 GRAPH_FILE = DATA_DIR / GRAPH_FILE_NAME
 
-# ========================
+# =====================
 # SIMULATION PARAMETERS
-# ========================
+# =====================
 
 # Pre-determined Parameters
-RHO_L = [1, 2, 4, 8]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25, 0.75]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [200]     # [5000, 10000, 15000, 20000] for each iteration (timesteps)
+RHO_L = [1, 2]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [2000, 4000, 10000]     # Benchmarks
 
-NUM_AGENTS = 150    # Number of agents
+NUM_AGENTS = 200    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 1         # 1 for matplotlib, else for Folium
 
 # City Key (name)
 CTY_KEY = 'Georgia'
