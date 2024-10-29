@@ -54,6 +54,10 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)  # Create 'data' directory if it doe
 FIGURES_DIR = BASE_DIR / "figures"
 FIGURES_DIR.mkdir(parents=True, exist_ok=True)  # Create 'figures' directory if it doesn't exist
 
+# Path to cache folder
+CACHE_DIR = BASE_DIR / "cache"
+CACHE_DIR.mkdir(parents=True, exist_ok=True)  # Create 'cache' directory if it doesn't exist
+
 # Cached Files
 GA_GDF_CACHE_FILE_NAME = "GA_gdf.gpkg"
 GA_GDF_CACHE_FILE = DATA_DIR / GA_GDF_CACHE_FILE_NAME
@@ -74,7 +78,7 @@ NUM_AGENTS = 150    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
-PLOT_CITIES = False     # PLOT SIMULATION?
+PLOT_CITIES = True     # PLOT SIMULATION?
 SAVE_DATA = True        # SAVE POPULATION/ENDOWMENT DATA TO CSV'S?
 
 # City Key (name)

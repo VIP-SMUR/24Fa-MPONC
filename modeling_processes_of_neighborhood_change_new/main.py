@@ -1,6 +1,6 @@
 # main.py
 
-from config import DATA_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
+from config import FIGURES_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
 from download_extract import download_file, extract_file
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -111,7 +111,7 @@ def main():
             for alpha in ALPHA_L:
                 for t_max in T_MAX_L:
                     pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t_max}.pkl"
-                    pickle_path = DATA_DIR / pickle_filename
+                    pickle_path = FIGURES_DIR / pickle_filename
                     if pickle_path.exists():
                         with open(pickle_path, 'rb') as file:
                             city = pickle.load(file)

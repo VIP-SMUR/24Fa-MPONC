@@ -3,15 +3,15 @@
 import requests
 import zipfile
 from tqdm import tqdm
-from config import ZIP_URL, ZIP_FILENAME, DATA_DIR, EXTRACTED_NAME
+from config import ZIP_URL, ZIP_FILENAME, EXTRACTED_NAME, CACHE_DIR
 
 # ========================
 # DOWNLOAD AND EXTRACT ZIP
 # ========================
 
 # Download
-def download_file(url=ZIP_URL, filename=ZIP_FILENAME, data_dir=DATA_DIR):
-    file_path = data_dir / filename
+def download_file(url=ZIP_URL, filename=ZIP_FILENAME, cache_dir=CACHE_DIR):
+    file_path = cache_dir / filename
 
     # Check if ZIP file already exists
     if file_path.exists():
@@ -19,7 +19,7 @@ def download_file(url=ZIP_URL, filename=ZIP_FILENAME, data_dir=DATA_DIR):
         return file_path
     else:
         # Make the request
-        print(f"Downloading '{filename}' to '{data_dir}'...")
+        print(f"Downloading '{filename}' to '{cache_dir}'...")
         response = requests.get(url, stream=True)
 
         # Check if the request was successful
@@ -49,8 +49,8 @@ def download_file(url=ZIP_URL, filename=ZIP_FILENAME, data_dir=DATA_DIR):
             return None
 
 # Extract
-def extract_file(file_path, extracted_name=EXTRACTED_NAME, data_dir=DATA_DIR):
-    extract_path = data_dir / extracted_name
+def extract_file(file_path, extracted_name=EXTRACTED_NAME, cache_dir=CACHE_DIR):
+    extract_path = cache_dir / extracted_name
 
     # Check if the file is a valid ZIP archive
     if not zipfile.is_zipfile(file_path):
