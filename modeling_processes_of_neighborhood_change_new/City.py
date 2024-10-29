@@ -4,7 +4,9 @@ import numpy as np
 import pandas as pd
 import osmnx as ox
 import matplotlib.pyplot as plt
-from matplotlib.colors import Normalize
+import matplotlib as mpl
+from matplotlib.patches import Patch
+
 
 # ==========
 # CITY CLASS
@@ -23,10 +25,11 @@ class City:
         self.n = len(centroids)
         
         # STORE ATTRIBUTES OF ALL CENTROIDS 
-        self.lat_array = np.array([lat for _, lat, _, _ in centroids])  # Latitude
-        self.lon_array = np.array([lon for lon, _, _, _ in centroids])  # Longitude
-        self.beltline_array = np.array([beltline for _, _, _, beltline in centroids], dtype=bool).astype(float)  # In Beltline?
-        self.name_array = [name for _, _, name, _ in centroids]  # Centroid region name
+        self.lon_array = np.array([lon for lon, _, _, _, _ in centroids])  # Longitude
+        self.lat_array = np.array([lat for _, lat, _, _, _ in centroids])  # Latitude
+        self.name_array = [name for _, _, name, _, _ in centroids]  # Centroid region name
+        self.beltline_array = np.array([beltline for _, _, _, beltline, _ in centroids], dtype=bool).astype(float)  # In Beltline?
+        self.geoid_array = self.geoid_array = [geoid for _, _, _, _, geoid in centroids]  # GEOID
         
         self.inh_array = [set() for _ in range(self.n)]  # Array of sets - each set contains Agent inhabitants
         self.dow_thr_array = np.zeros(self.n)  # Endowment threshold
@@ -94,6 +97,10 @@ class City:
         data = []  # Array storing data for each centroid
         
         for ID in range(self.n):
+
+            # GEOID
+            geoid = self.geoid_array[ID]
+
             # Name
             centroid_name = self.name_array[ID]
             
@@ -113,6 +120,7 @@ class City:
             amenity_density = self.amts_dens[ID]
 
             data.append({
+                'GEOID': geoid,
                 'Centroid': centroid_name,
                 'Population': population,
                 'Avg Endowment': round(avg_endowment, 2),
@@ -121,11 +129,12 @@ class City:
             })
         df = pd.DataFrame(data)
         return df
-            
+    
+    
     # ==================
     # CITY PLOTTING CODE
     # ==================
-    def plot(self, cmap='YlOrRd', figkey='city', graph=None):
+    def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
         """
         Plot the city visualization including the graph, agents, and centroids.
 
@@ -136,48 +145,38 @@ class City:
         """
         fig, ax = plt.subplots(figsize=(10, 10))
 
-        if graph:
-            ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
+        ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
 
-        # Prepare agent data
-        agent_lats = np.array([self.lat_array[agent.u] for agent in self.agts])
-        agent_lons = np.array([self.lon_array[agent.u] for agent in self.agts])
-        agent_wealths = np.array([agent.dow for agent in self.agts])
-
-        # Population density heatmap
-        heatmap, xedges, yedges = np.histogram2d(agent_lons, agent_lats, bins=30)
-        extent = [xedges[0], xedges[-1], yedges[0], yedges[-1]]
-        ax.imshow(heatmap.T, extent=extent, origin='lower', cmap=cmap, alpha=0.5)
-
-        # Plot agents with wealth-based marker sizes
-        norm = Normalize(vmin=agent_wealths.min(), vmax=agent_wealths.max())
-        marker_sizes = 50 + 150 * norm(agent_wealths)
-        sc = ax.scatter(agent_lons, agent_lats, c=agent_wealths, s=marker_sizes, cmap='coolwarm', alpha=0.7, edgecolor='red')
+        # Plot GDF layer (region boundaries)
+        gdf_plot = gdf.plot(column='Avg Endowment', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
 
         # Plot centroids locations (this comes after the graph to make sure they are visible on top)
-        colors = np.where(self.beltline_array, 'yellow', 'white')
-        ax.scatter(self.lon_array, self.lat_array, color=colors, s=100, alpha=0.7, edgecolor='black')
+        colors = np.where(self.beltline_array, 'palegreen', 'white')
+        ax.scatter(self.lon_array, self.lat_array, color=colors, s=120, alpha=0.8, edgecolor='black', linewidth=0.5)
             
+        # Display inhabitant populations at each node:
         for ID in range(self.n):    
             lon = self.lon_array[ID]
             lat = self.lat_array[ID]
-            # Display inhabitant populations at each node:
             inhabitants = len(self.inh_array[ID])
             ax.text(lon, lat, str(inhabitants), fontsize=9, ha='center', va='center', color='black')
 
-        # Add color bar for wealth
-        cbar = plt.colorbar(sc, ax=ax, orientation='vertical', label='Wealth (dow)')
+        # ScalarMappable for color bar implementation
+        sm = mpl.cm.ScalarMappable(
+            cmap=cmap, 
+            norm=plt.Normalize(vmin=gdf['Avg Endowment'].min(), vmax=gdf['Avg Endowment'].max())
+        )
+        
+        # Add color bar
+        cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
+        cbar.set_label('Average Wealth', fontsize=12)
 
         # Labels and title
-        ax.set_title(f"City Visualization: {figkey}")
-        ax.set_xlabel("Longitude")
-        ax.set_ylabel("Latitude")
+        ax.set_title(f"City Visualization: {figkey}", fontsize=14)
 
         # Legend
-        ax.scatter([], [], c='yellow', s=100, label='Beltline Housing')
-        ax.scatter([], [], c='white', s=100, label='Non-Beltline Housing')
-        ax.scatter([], [], c='red', s=100, label='Agents')
-        ax.legend(loc='upper right')
+        legend_handles = [Patch(facecolor='palegreen', edgecolor='black', label='Beltline Housing'), Patch(facecolor='lightgray', edgecolor='black', label='Non-Beltline Housing')]
+        ax.legend(handles=legend_handles, loc='upper left', fontsize=12, frameon=True, bbox_to_anchor=(1.02, 1))
 
         plt.tight_layout()
         plt.savefig(f'./figures/{figkey}.pdf', format='pdf', bbox_inches='tight')

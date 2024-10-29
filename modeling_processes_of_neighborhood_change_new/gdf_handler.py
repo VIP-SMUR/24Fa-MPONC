@@ -17,7 +17,7 @@ def create_gdf(shapefile_path, cache_file=GA_GDF_CACHE_FILE):
     GA_gdf = gpd.read_file(shapefile_path)
 
     # Simplify geometries
-    GA_gdf['geometry'] = GA_gdf['geometry'].simplify(tolerance=0.001, preserve_topology=True)    
+    GA_gdf['geometry'] = GA_gdf['geometry'].simplify(tolerance=0.001, preserve_topology=True)   
 
     # Add 'Sqkm' area column:
     GA_gdf = GA_gdf.to_crs(epsg=32616)  # Update CRS for area calculations
@@ -31,3 +31,10 @@ def create_gdf(shapefile_path, cache_file=GA_GDF_CACHE_FILE):
     GA_gdf.to_file(cache_file, driver='GPKG')  # Using GeoPackage for better compatibility
     
     return GA_gdf
+
+def update_gdf_with_endowment(gdf, endowment_df, id_column='ID'):
+
+    # Ensure that 'ID' in endowment_df corresponds to 'ID' in gdf
+    gdf = gdf.merge(endowment_df[[id_column, 'Avg Endowment']], on=id_column, how='left')
+
+    return gdf

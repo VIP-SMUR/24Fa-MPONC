@@ -1,8 +1,8 @@
 # main.py
 
-from config import FIGURES_DIR, GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
+from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, FIGURES_DIR
 from download_extract import download_file, extract_file
-from gdf_handler import load_gdf, create_gdf
+from gdf_handler import load_gdf, create_gdf, update_gdf_with_endowment
 from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import compute_amts_dens, compute_centroid_distances
 from simulation import run_simulation
@@ -34,7 +34,7 @@ def main():
     else:
         shapefile_path = extracted_path / 'Geographic_boundaries,_ACS_2022.shp'  # Define shapefile path
         GA_gdf = create_gdf(shapefile_path)
-    
+        
     # =========================
     # GRAPH FILE INITIALIZATION
     # =========================
@@ -72,15 +72,15 @@ def main():
     
     # Initialize centroids
     centroids = []
-    # tuple format: (longitude, latitude, region_name, is_beltline)
+    # tuple format: (longitude, latitude, region_name, is_beltline, GEOID)
     
-    GEOID_info = {geoid: is_beltline for geoid, is_beltline in GEOIDS}
+    GEOID_info = {geoid: is_beltline for geoid, is_beltline in GEOIDS if geoid in used_GEOIDS}
     
     # ===================================
     # CENTROID INITIALIZATION FROM GEOIDS
     # ===================================
     for geoid in tqdm(used_GEOIDS[:-1], desc="\nInitializing Centroids", unit="centroid"):
-        # Default is_beltline to False if it's not in tuple
+        # Is_beltline
         is_beltline = GEOID_info.get(geoid, False)
         
         # Fetch GEOID instance from GA_gdf
@@ -91,7 +91,7 @@ def main():
         
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid
-        centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline))
+        centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, geoid))
     
     # Compute centroid distances
     centroid_distances = compute_centroid_distances(centroids, g, used_GEOIDS)
@@ -116,7 +116,7 @@ def main():
                         with open(pickle_path, 'rb') as file:
                             city = pickle.load(file)
                         figkey = f"{CTY_KEY}_{rho}_{alpha}_{t_max}"
-                        plot_city(city, g, figkey=figkey)
+                        plot_city(city, g, GA_gdf, figkey=figkey)
                     else:
                         print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
                     

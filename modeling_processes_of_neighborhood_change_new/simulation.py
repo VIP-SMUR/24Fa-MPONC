@@ -4,7 +4,7 @@ import numpy as np
 import itertools
 from tqdm import tqdm
 import pickle
-from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, SAVE_DATA, CTY_KEY, DATA_DIR, FIGURES_DIR)
+from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, DATA_DIR, FIGURES_DIR)
 from Agent import Agent
 from City import City
 
@@ -56,12 +56,11 @@ def run_simulation(centroids, g, amts_dens, centroid_distances):
                     # ==================================
                     # CENTROID DATA TO CSV via DATAFRAME
                     # ==================================
-                    if SAVE_DATA:
-                        df_data = city.get_data()
+                    df_data = city.get_data()
 
-                        # CSV filename
-                        csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}_data.csv"
-                        
-                        # Save dataframe to CSV file
-                        csv_path = DATA_DIR / csv_filename
-                        df_data.to_csv(csv_path, index=False)
+                    # CSV filename
+                    csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}_data.csv"
+                    
+                    # Save dataframe to CSV file
+                    csv_path = DATA_DIR / csv_filename
+                    df_data.to_csv(csv_path, index=False)
