@@ -71,11 +71,11 @@ GRAPH_FILE = DATA_DIR / GRAPH_FILE_NAME
 # =====================
 
 # Pre-determined Parameters
-RHO_L = [1, 2]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [2000, 4000, 10000]     # Benchmarks
+RHO_L = [1, 2, 4, 8]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25, 0.75]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [500, 10000]     # Benchmarks
 
-NUM_AGENTS = 200    # Number of agents
+NUM_AGENTS = 1000    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
