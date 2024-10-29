@@ -12,6 +12,7 @@ def plot_city(city, g, gdf, figkey='final_city'):
 
     # Merge 'GEOID' and 'Avg Endowment' from df_data to gdf
     gdf = gdf.merge(df_data[['GEOID', 'Avg Endowment']], on='GEOID', how='left')
+    gdf = gdf.merge(df_data[['GEOID', 'Amt Density']], on='GEOID', how='left')
 
     # Plot
     if PLOT_LIBRARY == 1:

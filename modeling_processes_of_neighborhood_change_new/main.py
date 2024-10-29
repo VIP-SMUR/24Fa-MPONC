@@ -1,4 +1,4 @@
-from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, CACHE_DIR
+from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, CACHE_DIR, NUM_AGENTS
 from download_extract import download_file, extract_file
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -182,12 +182,12 @@ def main():
         for rho in RHO_L:
             for alpha in ALPHA_L:
                 for t_max in T_MAX_L:
-                    pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t_max}.pkl"
+                    pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}.pkl"
                     pickle_path = CACHE_DIR / pickle_filename
                     if pickle_path.exists():
                         with open(pickle_path, 'rb') as file:
                             city = pickle.load(file)
-                        figkey = f"{CTY_KEY}_{rho}_{alpha}_{t_max}"
+                        figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
                         plot_city(city, g, GA_gdf, figkey=figkey)
                     else:
                         print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")

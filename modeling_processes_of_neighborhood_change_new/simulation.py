@@ -72,7 +72,7 @@ def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_dista
                 a.avg_probabilities = a.tot_probabilities / (t + 1)
 
             # Pickle city object
-            pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}.pkl"
+            pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t + 1}.pkl"
             with open(CACHE_DIR / pickle_filename, 'wb') as file:
                 pickle.dump(city, file, protocol=pickle.HIGHEST_PROTOCOL)
             
@@ -82,13 +82,13 @@ def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_dista
             df_data = city.get_data()
 
             # CSV filename
-            csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}_data.csv"
+            csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t + 1}_data.csv"
             
             # Save dataframe to CSV file
             csv_path = DATA_DIR / csv_filename
             df_data.to_csv(csv_path, index=False)
             
-            simulation_name = f"{rho}_{alpha}_{t + 1}"
+            simulation_name = f"{rho}_{alpha}_{NUM_AGENTS}_{t + 1}"
             end_time = time.time()
             print(f"Simulation {simulation_name} done [{end_time - start_time:.2f} s]")
             

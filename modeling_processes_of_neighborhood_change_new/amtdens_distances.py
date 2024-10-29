@@ -46,9 +46,8 @@ def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
         amts_dens /= np.max(amts_dens)
     
     # Display data
-    if viewData:
-        tqdm.write(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
-        tqdm.write("\n".join(data_output))
+    tqdm.write(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
+    tqdm.write("\n".join(data_output))
     
     return amts_dens
 
