@@ -1,4 +1,4 @@
-from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, FIGURES_DIR
+from config import GA_GDF_CACHE_FILE, GEOIDS, GRAPH_FILE, CTY_KEY, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, CACHE_DIR
 from download_extract import download_file, extract_file
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -9,7 +9,6 @@ from tqdm import tqdm
 import pickle
 import numpy as np
 import time
-from memory_profiler import profile
 
 # ========================
 # FOUR STEP MODEL FUNCTIONS
@@ -60,7 +59,6 @@ def route_assignment(split_distribution, g):
     return assigned_routes
 
 
-@profile
 def main():
     # ========================
     # DOWNLOAD AND EXTRACT ZIP
@@ -109,7 +107,6 @@ def main():
             print("Graph already exists. Using cached graph.")
     else:
         # Create new graph
-        print("Creating graph for the first time.")
         g, used_GEOIDS = create_graph(GA_gdf, GEOIDS)
         save_graph(g, used_GEOIDS)
 
@@ -186,7 +183,7 @@ def main():
             for alpha in ALPHA_L:
                 for t_max in T_MAX_L:
                     pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t_max}.pkl"
-                    pickle_path = FIGURES_DIR / pickle_filename
+                    pickle_path = CACHE_DIR / pickle_filename
                     if pickle_path.exists():
                         with open(pickle_path, 'rb') as file:
                             city = pickle.load(file)

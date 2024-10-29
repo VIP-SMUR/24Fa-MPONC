@@ -1,6 +1,6 @@
 # simulation.py
 
-from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, DATA_DIR, FIGURES_DIR)
+from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, DATA_DIR, CACHE_DIR)
 from Agent import Agent
 from City import City
 from itertools import product
@@ -69,7 +69,7 @@ def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_dista
             # Pickle city object
             pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}.pkl"
             start_time = time.time()
-            with open(FIGURES_DIR / pickle_filename, 'wb') as file:
+            with open(CACHE_DIR / pickle_filename, 'wb') as file:
                 pickle.dump(city, file, protocol=pickle.HIGHEST_PROTOCOL)
             end_time = time.time()
             

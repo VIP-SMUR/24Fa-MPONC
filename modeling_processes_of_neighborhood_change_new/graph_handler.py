@@ -35,7 +35,7 @@ def create_graph(GA_gdf, GEOIDS):
     # Combines all polygons within GEOID regions
     combined_shape = gdf_combined.geometry.unary_union  # More efficient than union_all
     
-    print("Generating graph from OSMnx...")
+    print("Generating graph from OSMnx for the first time...")
     
     # Generate the graph
     g = ox.graph_from_polygon(combined_shape, network_type='drive', simplify=True)  # Roadmap of GA (networkx.MultiDiGraph)

@@ -1,5 +1,7 @@
 # visualization.py
 
+from config import PLOT_LIBRARY
+
 # =======================
 # VISUALIZATION FUNCTIONS
 # =======================
@@ -12,4 +14,7 @@ def plot_city(city, g, gdf, figkey='final_city'):
     gdf = gdf.merge(df_data[['GEOID', 'Avg Endowment']], on='GEOID', how='left')
 
     # Plot
-    city.plot(cmap='YlOrRd', figkey=figkey, graph=g, gdf=gdf)
+    if PLOT_LIBRARY == 1:
+        city.plot_plt(cmap='YlOrRd', figkey=figkey, graph=g, gdf=gdf)
+    else:
+        city.plot_folium(cmap='YlOrRd', figkey=figkey, graph=g, gdf=gdf)

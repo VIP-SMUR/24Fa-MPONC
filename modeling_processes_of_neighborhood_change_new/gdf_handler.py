@@ -13,7 +13,7 @@ def load_gdf(cache_file=GA_GDF_CACHE_FILE):
     return GA_gdf
 
 def create_gdf(shapefile_path, cache_file=GA_GDF_CACHE_FILE):
-    print(f"Initializing GDF file for the first time.")
+    print(f"Initializing GDF file for the first time...")
     GA_gdf = gpd.read_file(shapefile_path)
 
     # Simplify geometries

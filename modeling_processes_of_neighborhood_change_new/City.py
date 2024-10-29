@@ -4,13 +4,14 @@ import numpy as np
 import pandas as pd
 import osmnx as ox
 import matplotlib.pyplot as plt
-import matplotlib.cm as cm
 import time
 import folium
+import matplotlib as mpl
 from branca.colormap import LinearColormap
 from folium import CircleMarker
 from config import FIGURES_DIR
 from pathlib import Path
+from matplotlib.patches import Patch
 
 
 # ==========
@@ -139,23 +140,11 @@ class City:
     # ==================
     # CITY PLOTTING CODE
     # ==================
-    def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
-        
+    
+    # Matplotlib:
+    def plot_plt(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
         start_time = time.time()
         
-        gdf = gdf.to_crs(epsg=32616)
-
-
-        #Old mathew code not using folium
-        '''def plot(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
-        """
-        Plot the city visualization including the graph, agents, and centroids.
-
-        Parameters:
-        - cmap (str): Colormap for the heatmap.
-        - figkey (str): Identifier for the figure filename.
-        - graph (Graph): NetworkX graph to plot.
-        """
         fig, ax = plt.subplots(figsize=(10, 10))
 
         ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
@@ -195,11 +184,17 @@ class City:
         plt.savefig(f'./figures/{figkey}.pdf', format='pdf', bbox_inches='tight')
         plt.close()
         
-        matplotlib_filename = f"{CTY_KEY}_{rho}_{alpha}_{t + 1}.pdf"
+        PLT_DIR = Path(FIGURES_DIR) / f"{figkey}_matplotlib.pdf"
         end_time = time.time()
-        print(f"Plotted and saved {matplotlib_filename} in {end_time - start_time:.2f} seconds.")
-        '''
+        print(f"Plotted and saved {PLT_DIR.name} in {end_time - start_time:.2f} seconds.")
 
+
+    # Folium:
+    def plot_folium(self, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
+        
+        start_time = time.time()
+        
+        gdf = gdf.to_crs(epsg=32616)
         # Initialize matplotlib plot
         fig, ax = plt.subplots(figsize=(10, 10))
         ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False,
@@ -219,15 +214,16 @@ class City:
         center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
         m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
         
-        bar_colors = [ # Color bar color spectrum
-            '#3b4cc0',  # Vibrant blue
-            '#6a51a3',  # Deep violet
-            '#984ea3',  # Rich purple
-            '#b5179e',  # Magenta
-            '#d73027',  # Strong red
-            '#e41a1c',  # Vivid red
-            '#99000d',  # Dark red
-                ]
+        bar_colors = [
+            '#ffffcc',  # Light yellow
+            '#ffeda0',  # Soft yellow
+            '#fed976',  # Light orange
+            '#feb24c',  # Orange
+            '#fd8d3c',  # Deep orange
+            '#fc4e2a',  # Reddish orange
+            '#e31a1c',  # Strong red
+            '#b10026',  # Dark red
+        ]
         
         # Colormap for GDF layer - shade polygons based on Avg Endowment
         min_value = gdf['Avg Endowment'].min()

@@ -72,13 +72,14 @@ GRAPH_FILE = DATA_DIR / GRAPH_FILE_NAME
 # Pre-determined Parameters
 RHO_L = [1, 2, 4, 8]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25, 0.75]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [20000]     # [5000, 10000, 15000, 20000] for each iteration (timesteps)
+T_MAX_L = [200]     # [5000, 10000, 15000, 20000] for each iteration (timesteps)
 
 NUM_AGENTS = 150    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
-PLOT_CITIES = True     # PLOT SIMULATION?
+PLOT_CITIES = True      # PLOT SIMULATION?
+PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 
 # City Key (name)
 CTY_KEY = 'Georgia'
