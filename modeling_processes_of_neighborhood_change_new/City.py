@@ -7,11 +7,10 @@ import matplotlib.pyplot as plt
 import time
 import folium
 import matplotlib as mpl
-from branca.colormap import LinearColormap
 from folium import CircleMarker
-from config import FIGURES_DIR
+from helper import FIGURES_DIR
 from pathlib import Path
-from matplotlib.patches import Patch
+from branca.colormap import LinearColormap
 
 
 # ==========
@@ -35,7 +34,7 @@ class City:
         self.lat_array = np.array([lat for _, lat, _, _, _ in centroids])  # Latitude
         self.name_array = [name for _, _, name, _, _ in centroids]  # Centroid region name
         self.beltline_array = np.array([beltline for _, _, _, beltline, _ in centroids], dtype=bool).astype(float)  # In Beltline?
-        self.geoid_array = self.geoid_array = [geoid for _, _, _, _, geoid in centroids]  # GEOID
+        self.id_array = self.id_array = [id for _, _, _, _, id in centroids]  # ID
         
         self.inh_array = [set() for _ in range(self.n)]  # Array of sets - each set contains Agent inhabitants
         self.dow_thr_array = np.zeros(self.n)  # Endowment threshold
@@ -102,33 +101,33 @@ class City:
         """
         data = []  # Array storing data for each centroid
         
-        for ID in range(self.n):
+        for index in range(self.n):
 
-            # GEOID
-            geoid = self.geoid_array[ID]
+            # ID
+            ID = self.id_array[index]
 
             # Name
-            centroid_name = self.name_array[ID]
+            centroid_name = self.name_array[index]
             
             # Population
-            population = len(self.inh_array[ID])
+            population = len(self.inh_array[index])
             
             # Average Endowment
             if population > 0:
-                avg_endowment = 100 * (np.mean([agent.dow for agent in self.inh_array[ID]]))
+                avg_endowment = 100 * (np.mean([agent.dow for agent in self.inh_array[index]]))
                 avg_endowment = round(avg_endowment, 2)
             else:
                 avg_endowment = 0.0
                 
                 
             # In Beltline?
-            in_beltline = self.beltline_array[ID]
+            in_beltline = self.beltline_array[index]
             
             # Amenity Density
-            amenity_density = self.amts_dens[ID]
+            amenity_density = self.amts_dens[index]
 
             data.append({
-                'GEOID': geoid,
+                'ID': ID,
                 'Centroid': centroid_name,
                 'Population': population,
                 'Avg Endowment': avg_endowment,
@@ -185,7 +184,7 @@ class City:
         # Save graph to 'figures' folder
         PLT_DIR = Path(FIGURES_DIR) / f"{figkey}_matplotlib.pdf"
         end_time = time.time()
-        print(f"Plotted and saved {PLT_DIR.name} in {end_time - start_time:.2f} seconds.")
+        print(f"Plotted and saved {PLT_DIR.name} [{end_time - start_time:.2f} s]")
 
 
     # Folium:
@@ -198,23 +197,21 @@ class City:
         # Starting coords
         center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
         m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
-        
-        bar_colors = [
-            '#ffffcc',  # Light yellow
-            '#ffeda0',  # Soft yellow
-            '#fed976',  # Light orange
-            '#feb24c',  # Orange
-            '#fd8d3c',  # Deep orange
-            '#fc4e2a',  # Reddish orange
-            '#e31a1c',  # Strong red
-            '#b10026',  # Dark red
-        ]
-        
+
         # Colormap for GDF layer - shade polygons based on Avg Endowment
         min_value = gdf['Avg Endowment'].min()
         max_value = gdf['Avg Endowment'].max()
-        colormap = LinearColormap(
-            colors=bar_colors,
+        colormap = plt.get_cmap(cmap)
+        norm = plt.Normalize(vmin=min_value, vmax=max_value)
+        color_mapper = lambda x: colormap(norm(x))
+        
+        # Convert matplotlib colors to hex for folium
+        def rgb_to_hex(rgb):
+            return '#{:02x}{:02x}{:02x}'.format(int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
+        
+        # Define LinearColormap for folium
+        folium_colormap = LinearColormap(
+            colors=[rgb_to_hex(color_mapper(val)[:3]) for val in np.linspace(min_value, max_value, 256)],
             vmin=min_value,
             vmax=max_value,
             caption='Average Wealth'
@@ -231,7 +228,7 @@ class City:
             if avg_endowment is None:
                 style_dict['fillOpacity'] = 0  # Make polygon transparent
             else:
-                style_dict['fillColor'] = colormap(avg_endowment)
+                style_dict['fillColor'] = folium_colormap(avg_endowment)
                 style_dict['fillOpacity'] = 0.4  # Transparency
             return style_dict
         
@@ -243,7 +240,7 @@ class City:
         ).add_to(m)
         
         # Add colormap
-        colormap.add_to(m)
+        folium_colormap.add_to(m)
 
         # Add centroids as CircleMarker with beltline coloring
         for i, (lat, lon) in enumerate(zip(self.lat_array, self.lon_array)):
@@ -307,5 +304,5 @@ class City:
         end_time = time.time()
         
         FOLIUM_DIR = Path(FIGURES_DIR) / f"{figkey}_folium.html"
-        print(f"Plotted and saved {FOLIUM_DIR.name} in {end_time - start_time:.2f} seconds.")
+        print(f"Plotted and saved {FOLIUM_DIR.name} [{end_time - start_time:.2f} s]")
         

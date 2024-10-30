@@ -1,21 +1,39 @@
 # config.py
 
-from pathlib import Path
+# =====================================================
+# ================== CONFIGURATION ====================
 
-# =============
-# CONFIGURATION
-# =============
+'''
+[URLS]
+1. Original geographic
+2. Zip codes
+3. Housing districts
+'''
+ZIP_URLS = [
+ "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
+#,
+#"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Demographic Population GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Demographic Population GeoSplitJoined_-5541227124544312025.zip"
+#,
+# "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Econ WorkerType GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Econ WorkerType GeoSplitJoined_2117979253204255635.zip"
+]
 
-# URL of the file to download
-ZIP_URL = "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
+# Name of 'ID'' columns for respective shapefiles
+IDENTIFIER_COLUMNS = {
+    1: 'GEOID',
+#    2: 'GEOID',
+#    3: 'GEOID'
+}
 
-# Name of zip folder
-ZIP_FILENAME = "ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
-# Name of extracted folder (same as above, excluding '.zip')
-EXTRACTED_NAME = ZIP_FILENAME.rsplit('.', 1)[0] 
+# Name of 'Name' columns for respective shapefiles
+NAME_COLUMNS = {
+    1: 'Name',
+#    2: 'NAME',
+#    3: 'NAME'
+}
 
-# Format: ([GEOID], [IS_IN_BELTLINE])
-GEOIDS = [
+# ID's:
+ID_LIST = [
+    # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('BELTLINE01', True),
     ('BELTLINE02', True),
     ('BELTLINE03', True),
@@ -38,56 +56,39 @@ GEOIDS = [
     ('1368516', False),     # Sandy Springs City
     ('HS6331069', False),   # Wheeler HS
     ('HS6334066', False),   # Pebblebrook hS
-    ('HS6605069', False),   # Westlake HS
     ('1317776', False),     # College Park
     ('HS6312052', False),   # North Clayton HS
     ('HS6310115', False),   # Drew HS
-    ('HS6311054', False),   # Forest Park HS    
+    ('HS6311054', False),   # Forest Park HS
     ('HS6314058', False),   # Morrow HS
     ('HS6442054', False),   # Columbia HS
     
+    # # ZCTA
+    # ('30331', False),
+    # ('30311', True),     
+    # ('30327', False),    
+    # ('30305', True),    
+    # ('30315', True),     
+    # ('30354', False),   
+    # ('30318', True),    
+    # ('30313', True),        
+    # ('30303', True),
+    # ('30308', True),   
+    # ('30309', True),
+    # ('30336', False),
+    
+    # # Housing Districts
+    # ('HOUSE081', False),
+    # ('HOUSE087', False),
+
     ('1304000', False)      # Atlanta City - KEEP AS LAST ELEMENT (for graphing purposes)
 ]
 
-# Constants:
-EPSILON = 1e-3
-TAU = 0.5  # Inequality factor in Lorentz curve
-
-# ===================
-# PATH CONFIGURATIONS
-# ===================
-
-# Path to current directory
-BASE_DIR = Path.cwd()
-# Path to data folder
-DATA_DIR = BASE_DIR / "data"
-DATA_DIR.mkdir(parents=True, exist_ok=True)  # Create 'data' directory if it doesn't exist
-
-# Path to figures folder
-FIGURES_DIR = BASE_DIR / "figures"
-FIGURES_DIR.mkdir(parents=True, exist_ok=True)  # Create 'figures' directory if it doesn't exist
-
-# Path to cache folder
-CACHE_DIR = BASE_DIR / "cache"
-CACHE_DIR.mkdir(parents=True, exist_ok=True)  # Create 'cache' directory if it doesn't exist
-
-# Cached Files
-GA_GDF_CACHE_FILE_NAME = "GA_gdf.gpkg"
-GA_GDF_CACHE_FILE = DATA_DIR / GA_GDF_CACHE_FILE_NAME
-
-GRAPH_FILE_NAME = "GA_graph.pkl"
-GRAPH_FILE = DATA_DIR / GRAPH_FILE_NAME
-
-# =====================
-# SIMULATION PARAMETERS
-# =====================
-
-# Pre-determined Parameters
-RHO_L = [1]         # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]    # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [97]     # Benchmarks
-
-NUM_AGENTS = 11   # Number of agents
+# Simulation Parameters
+RHO_L = [1]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [100]       # Benchmarks
+NUM_AGENTS = 11      # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?

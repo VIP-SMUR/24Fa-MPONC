@@ -9,22 +9,22 @@ from tqdm import tqdm
 # AMENITY DENSITY & CENTROID DISTANCE CALCULATIONS
 # ================================================
 
-def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
+def compute_amts_dens(gdf, used_IDS, viewData=True):
     # [AMENITY FILTER]
     tags = {'highway': 'bus_stop'}  # TODO: I don't think number of bus stops is accurate
 
     # Initialize empty arrays
-    amenities = np.zeros(len(used_GEOIDS) - 1)
-    areas_sqkm = np.zeros(len(used_GEOIDS) - 1)
+    amenities = np.zeros(len(used_IDS) - 1)
+    areas_sqkm = np.zeros(len(used_IDS) - 1)
     data_output = []
 
-    # Iterate over each GEOID
+    # Iterate over each ID
     print()
-    for index, geoid in enumerate(tqdm(used_GEOIDS[:-1], desc="Computing amenity densities", unit="GEOID")):
-        name = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'Name'].iloc[0]
+    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing amenity densities", unit="ID")):
+        name = gdf.loc[gdf['ID'] == id, 'Name'].iloc[0]
     
-        # Extract polygon of current GEOID
-        polygon = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'geometry'].union_all()
+        # Extract polygon of current ID
+        polygon = gdf.loc[gdf['ID'] == id, 'geometry'].union_all()
 
         # Collect amenities
         try:
@@ -32,8 +32,8 @@ def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
         except:  # No bus stops
             amenities[index] = 0
     
-        # Area of current GEOID
-        areas_sqkm[index] = GA_gdf.loc[GA_gdf['GEOID'] == geoid, 'Sqkm'].iloc[0]
+        # Area of current ID
+        areas_sqkm[index] = gdf.loc[gdf['ID'] == id, 'Sqkm'].iloc[0]
     
         if viewData:
             data_output.append(f"{name:<40} {areas_sqkm[index]:>12.2f} {amenities[index]:>10}")
@@ -51,7 +51,7 @@ def compute_amts_dens(GA_gdf, used_GEOIDS, viewData=True):
     
     return amts_dens
 
-def compute_centroid_distances(centroids, g, used_GEOIDS):
+def compute_centroid_distances(centroids, g, used_IDS):
     n = len(centroids)
     
     # Map centroids to nearest node

@@ -1,5 +1,5 @@
 import numpy as np
-from config import EPSILON
+from helper import EPSILON
 
 
 # ===========

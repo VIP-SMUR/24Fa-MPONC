@@ -1,6 +1,7 @@
 # simulation.py
 
-from config import (RHO_L, ALPHA_L, T_MAX_L, TAU, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, DATA_DIR, CACHE_DIR)
+from config import (RHO_L, ALPHA_L, T_MAX_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY)
+from helper import TAU, DATA_DIR, CACHE_DIR
 from Agent import Agent
 from City import City
 from itertools import product

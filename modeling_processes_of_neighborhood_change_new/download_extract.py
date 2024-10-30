@@ -1,16 +1,17 @@
 # download_extract.py
 
+from config import ZIP_URLS
 import requests
 import zipfile
 from tqdm import tqdm
-from config import ZIP_URL, ZIP_FILENAME, EXTRACTED_NAME, CACHE_DIR
+from helper import CACHE_DIR, zip_filenames, extracted_names
 
 # ========================
 # DOWNLOAD AND EXTRACT ZIP
 # ========================
 
 # Download
-def download_file(url=ZIP_URL, filename=ZIP_FILENAME, cache_dir=CACHE_DIR):
+def download_file(url, filename, cache_dir=CACHE_DIR):
     file_path = cache_dir / filename
 
     # Check if ZIP file already exists
@@ -49,12 +50,12 @@ def download_file(url=ZIP_URL, filename=ZIP_FILENAME, cache_dir=CACHE_DIR):
             return None
 
 # Extract
-def extract_file(file_path, extracted_name=EXTRACTED_NAME, cache_dir=CACHE_DIR):
+def extract_file(file_path, extracted_name, cache_dir=CACHE_DIR):
     extract_path = cache_dir / extracted_name
 
     # Check if the file is a valid ZIP archive
     if not zipfile.is_zipfile(file_path):
-        print(f"The file '{file_path}' is not a valid ZIP archive. Extraction aborted.")
+        print(f"The file '{file_path}' is not a valid ZIP archive. Cannot extract.")
         return None
 
     # Check if extraction folder already exists
@@ -73,5 +74,37 @@ def extract_file(file_path, extracted_name=EXTRACTED_NAME, cache_dir=CACHE_DIR):
             for file in tqdm(zip_ref.infolist(), desc="Extracting", total=total_files):
                 zip_ref.extract(file, extract_path)
         
-        print(f"Successfully extracted '{file_path.name}' to '{extract_path}'.\n")
+        print(f"Successfully extracted '{file_path.name}'.\n")
         return extract_path
+
+# Helper function to find shapefile in extracted folder
+def find_shapefile(extract_path):
+    shapefiles = list(extract_path.rglob("*.shp"))
+    if shapefiles:
+        return shapefiles[0]  # Return the first shapefile found
+
+def download_and_extract_all():
+    shapefile_paths = {}
+    for i in range(1, len(ZIP_URLS) +1):
+        url = ZIP_URLS[i -1]
+        filename = zip_filenames[i]
+        extracted_name = extracted_names[i]
+
+        # Download
+        file_path = download_file(url, filename)
+        if not file_path:
+            continue  # Skip if download failed
+
+        # Extract
+        extract_path = extract_file(file_path, extracted_name)
+        if not extract_path:
+            continue  # Skip if extraction failed
+
+        # Find the shapefile name
+        shapefile_path = find_shapefile(extract_path)
+        if shapefile_path:
+            shapefile_paths[i] = shapefile_path
+        else:
+            print(f"No shapefile found in '{filename}'.")
+
+    return shapefile_paths
