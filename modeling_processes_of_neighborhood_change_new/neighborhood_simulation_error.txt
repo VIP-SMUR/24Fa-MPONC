@@ -1,6 +1,0 @@
-
-EnvironmentNameNotFound: Could not find conda environment: neighborhood_env
-You can list all discoverable environments with `conda info --envs`.
-
-
-python: can't open file '/home/hice1/mlim70/24Fa-MPONC/main.py': [Errno 2] No such file or directory

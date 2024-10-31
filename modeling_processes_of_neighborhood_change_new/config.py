@@ -81,19 +81,19 @@ ID_LIST = [
     # ('HOUSE081', False),
     # ('HOUSE087', False),
 
-    ('1304000', False)      # Atlanta City - KEEP AS LAST ELEMENT (for graphing purposes)
+    ('1304000', False)      # Atlanta City - DONT EDIT - KEEP AS LAST ELEMENT (for graphing purposes)
 ]
 
 # Simulation Parameters
-RHO_L = [1]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [100]       # Benchmarks
-NUM_AGENTS = 11      # Number of agents
+T_MAX_L = [20000]       # Benchmarks
+NUM_AGENTS = 1000      # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 
 # City Key (name)
 CTY_KEY = 'Georgia'
