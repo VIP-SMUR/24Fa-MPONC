@@ -1,6 +1,7 @@
 import numpy as np
 from helper import EPSILON
-
+from __future__ import absolute_import
+import grid2demand as gd
 
 # ===========
 # AGENT CLASS
@@ -69,6 +70,7 @@ class Agent:
         self.city.inh_array[self.u].add(self)
 
     # LEARN METHOD
+    # todo: rather than update all weights, update the weight that is for the specific action taken
     def learn(self):
         costs = self.cost_vector()
         self.weights *= (1 - EPSILON * costs)  # Update weights based on cost

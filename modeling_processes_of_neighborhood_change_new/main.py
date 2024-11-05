@@ -16,15 +16,20 @@ import time
 # FOUR STEP MODEL FUNCTIONS
 # =========================
 
-def generate_trips(centroids):
+def generate_trips(centroids, amts_dens):
     """ Estimate trip generation based on some criteria (e.g., population). """
     trip_counts = {}
-    for (lon, lat, region_name, is_beltline, geoid) in centroids:
-        # Placeholder logic for trip generation based on a simple factor
-        trip_counts[geoid] = np.random.poisson(lam=100)  # Using a Poisson distribution as an example
+    # Normalize amenity scores to sum to 1 for use as probabilities
+    total_amenity_score = sum(amts_dens)
+    amenity_probabilities = [score / total_amenity_score for score in amts_dens]
+
+    for idx, (lon, lat, region_name, is_beltline, geoid) in enumerate(centroids):
+        # Use each centroid's amenity score as a probability factor for generating trips
+        trip_counts[geoid] = np.random.poisson(lam=100 * amenity_probabilities[idx])
+
     return trip_counts
 
-
+#ToDo: make random, make thresholds for car ownership, integrate demographic data with prices.
 def distribute_trips(trip_counts, centroids):
     """ Distribute trips using a gravity model or similar approach. """
     trip_distribution = {}
@@ -193,3 +198,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+#ToDo: make random, make thresholds for car ownership, integrate demographic data with prices.
+# todo: rather than update all weights, update the weight that is for the specific action taken

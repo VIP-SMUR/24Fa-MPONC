@@ -26,7 +26,7 @@ class City:
         '''
         self.rho = rho  # house capacity
         self.centroids = centroids  # centroids list
-        self.g = g  # OSMnx map
+        self.g = g  # OSMnx map.osm
         self.n = len(centroids)
         
         # STORE ATTRIBUTES OF ALL CENTROIDS 
@@ -299,7 +299,7 @@ class City:
         '''
         m.get_root().html.add_child(folium.Element(legend_html))
 
-        # Save Folium map as HTML
+        # Save Folium map.osm as HTML
         m.save(f"./figures/{figkey}_folium.html")
         end_time = time.time()
         
