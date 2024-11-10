@@ -57,6 +57,7 @@ def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_dista
 
     # Iterate through timesteps
     for t in range(t_max):
+        
         for a in city.agts:
             # Find the trips assigned to this agent based on the assigned routes
             # This logic will need to be tailored based on how agents are supposed to interact with routes

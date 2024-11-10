@@ -201,10 +201,8 @@ if __name__ == "__main__":
     main()
 
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
-#TODO: rather than update all weights, update the weight that is for the specific action taken
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: low priority: multiprocessing of graphing
 #TODO: parallelize agent.learn() and agent.update() and agent.act() in simulation
 #TODO: patrick's list of attractive amenities in 15-min city: 
    # Add up # of total amenities and get amenity density (separate into transportation vs amenities, ask reyli)

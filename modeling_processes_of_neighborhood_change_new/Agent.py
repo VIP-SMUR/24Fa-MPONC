@@ -54,6 +54,9 @@ class Agent:
 
     # ACTION METHOD
     def act(self):
+        # Store current node
+        self.prev_u = self.u
+        
         # Leave current node
         self.city.inh_array[self.u].remove(self)
 
@@ -70,22 +73,27 @@ class Agent:
         self.city.inh_array[self.u].add(self)
 
     # LEARN METHOD
-    # todo: rather than update all weights, update the weight that is for the specific action taken
+    # TODO: rather than update all weights, update the weight that is for the specific action taken
     def learn(self):
-        costs = self.cost_vector()
-        self.weights *= (1 - EPSILON * costs)  # Update weights based on cost
-        self.probabilities = self.weights / np.sum(self.weights)  # Normalize probabilities
+        
+        cost = self.calculateCost(self.u) # Calculate cost of self.u
+        self.weights[self.u] *= (1 - EPSILON * cost) # Update weight of self.u (based on cost)
+        
+        # Normalize probabilities
+        self.probabilities = self.weights / np.sum(self.weights)
+        
+        # Accumulate total probabilites (=1?)
         self.tot_probabilities += self.probabilities
 
-    def cost_vector(self):
-        dow_thr = self.city.dow_thr_array
-
+    def calculateCost(self, u):
+        dow_thr = self.city.dow_thr_array[u]
         aff = (self.dow >= dow_thr).astype(float)  # Affordability: Is the agent's endowment >= endowment threshold?
-        loc = self.city.centroid_distances[self.u, :]  # Location cost: Distances from centroid to all other centroids
-        cmt = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array))  # Community cost
-        acc = np.exp(-(1 - self.alpha) * self.city.amts_dens)  # Accessibility cost
-        upk = self.city.upk_array  # Upkeep cost
-        beltline = self.city.beltline_array  # Beltline cost
+        loc = self.city.centroid_distances[self.prev_u, u]  # Location cost: Distance from previous to current region
+        cmt = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))  # Community cost
+        acc = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])  # Accessibility cost
+        upk = self.city.upk_array[u]  # Upkeep cost
+        beltline = self.city.beltline_array[u]  # Beltline cost
 
         cost = 1 - aff * upk * beltline * loc * cmt * acc
+        print(loc)
         return cost

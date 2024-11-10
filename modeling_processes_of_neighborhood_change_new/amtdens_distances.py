@@ -55,7 +55,7 @@ def compute_centroid_distances(centroids, g, used_IDS):
     n = len(centroids)
     
     # Map centroids to nearest node
-    centroid_nodes = [ox.nearest_nodes(g, c[1], c[0]) for c in centroids]
+    centroid_nodes = [ox.nearest_nodes(g, c[0], c[1]) for c in centroids]
     # 2D matrix of centroid-to-centroid distance
     distance_matrix = np.zeros((n, n))
     
