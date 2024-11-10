@@ -85,10 +85,10 @@ ID_LIST = [
 ]
 
 # Simulation Parameters
-RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+RHO_L = [1, 1, 10, 10]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [20000]       # Benchmarks
-NUM_AGENTS = 1000      # Number of agents
+T_MAX_L = [200]       # Benchmarks
+NUM_AGENTS = 50      # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?

@@ -1,6 +1,6 @@
-import numpy as np
-from helper import EPSILON
 from __future__ import absolute_import
+from helper import EPSILON
+import numpy as np
 import grid2demand as gd
 
 # ===========

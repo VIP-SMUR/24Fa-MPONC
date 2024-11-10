@@ -1,5 +1,5 @@
-from helper import gdf_cache_filenames, graph_filenames, CACHE_DIR
-from config import ID_LIST, PLOT_CITIES, CTY_KEY, RHO_L, ALPHA_L, T_MAX_L, NUM_AGENTS
+from helper import gdf_cache_filenames, graph_filenames
+from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -8,7 +8,8 @@ from simulation import run_simulation
 from visualization import plot_city
 from tqdm import tqdm
 from pathlib import Path
-import pickle
+from itertools import product
+from joblib import Parallel, delayed
 import numpy as np
 import time
 
@@ -150,7 +151,7 @@ def main():
     # ========================
 
     # Step 1: Generate trips
-    trip_counts = generate_trips(centroids)
+    trip_counts = generate_trips(centroids, amts_dens)
 
     # Step 2: Distribute trips
     trip_distribution = distribute_trips(trip_counts, centroids)
@@ -170,7 +171,6 @@ def main():
     simulation_end_time = time.time()
     print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")
 
-
     # =======================
     # PLOT SIMULATION RESULTS
     # =======================
@@ -178,19 +178,20 @@ def main():
     plot_start_time = time.time()
     
     if PLOT_CITIES:
-        for rho in RHO_L:
-            for alpha in ALPHA_L:
-                for t_max in T_MAX_L:
-                    pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}.pkl"
-                    pickle_path = CACHE_DIR / pickle_filename
-                    if pickle_path.exists():
-                        with open(pickle_path, 'rb') as file:
-                            city = pickle.load(file)
-                        figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
-                        plot_city(city, g, combined_gdf, figkey=figkey)
-                    else:
-                        print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
-    
+        # All combinations of parameters
+        simulation_params = list(product(RHO_L, ALPHA_L, T_MAX_L))
+        
+        # Number of CPU's
+        n_jobs = -1 # maximum
+        
+        # Multiprocessing
+        Parallel(n_jobs=n_jobs, backend='loky')(
+            delayed(plot_city)(
+                rho, alpha, t_max, centroids, g, combined_gdf
+            )
+            for rho, alpha, t_max in simulation_params
+        )
+        
     plot_end_time = time.time()
     
     print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.")
@@ -199,5 +200,11 @@ def main():
 if __name__ == "__main__":
     main()
 
-#ToDo: make random, make thresholds for car ownership, integrate demographic data with prices.
-# todo: rather than update all weights, update the weight that is for the specific action taken
+#TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
+#TODO: rather than update all weights, update the weight that is for the specific action taken
+
+#TODO: low priority: centroid distance = avg shortest path between every node in a region 
+#TODO: low priority: multiprocessing of graphing
+#TODO: parallelize agent.learn() and agent.update() and agent.act() in simulation
+#TODO: patrick's list of attractive amenities in 15-min city: 
+   # Add up # of total amenities and get amenity density (separate into transportation vs amenities, ask reyli)

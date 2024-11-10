@@ -10,9 +10,9 @@ import numpy as np
 import pickle
 import time
 
-# ===============================
+# ==========================
 # SIMULATION EXECUTION LOGIC
-# ===============================
+# ==========================
 
 # [ALL SIMULATIONS] (parallel processing)
 def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
@@ -38,7 +38,8 @@ def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes,
         
 # [SINGLE SIMULATION]
 def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
-    np.random.seed(0)
+    seed = int(rho*1000 + alpha*100)
+    np.random.seed(seed)
 
     # Initialize city
     city = City(centroids, g, amts_dens, centroid_distances, rho=rho)
@@ -64,7 +65,7 @@ def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_dista
         for a in city.agts:
             a.act()
         city.update()
-        for a in city.agts:
+        for a in city.agts: 
             a.learn()
         
     # After simulation completes, save results
