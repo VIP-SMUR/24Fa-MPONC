@@ -52,8 +52,13 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
 
     ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
 
+    # Normalize AVG Endowment
+    avg_endowment_min = gdf['Avg Endowment'].min()
+    avg_endowment_max = gdf['Avg Endowment'].max()
+    gdf['Avg Endowment Normalized'] = (gdf['Avg Endowment'] - avg_endowment_min) / (avg_endowment_max - avg_endowment_min)
+
     # Plot GDF layer (region boundaries)
-    gdf_plot = gdf.plot(column='Avg Endowment', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
+    gdf_plot = gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
 
     # Plot centroids locations (this comes after the graph to make sure they are visible on top)
     colors = np.where(city.beltline_array, 'palegreen', 'white')
@@ -69,7 +74,7 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
     # ScalarMappable for color bar implementation
     sm = mpl.cm.ScalarMappable(
         cmap=cmap,
-        norm=plt.Normalize(vmin=gdf['Avg Endowment'].min(), vmax=gdf['Avg Endowment'].max())
+        norm=mpl.colors.Normalize(vmin=0, vmax=1)
     )
 
     # Add color bar
@@ -90,7 +95,7 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
     
     
 # FOLIUM GRAPHER
-def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', gdf=None):
+def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
     
     start_time = time.time()
     
@@ -100,11 +105,13 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', gdf=None):
     center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
     m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
 
+    avg_endowment_min = gdf['Avg Endowment'].min()
+    avg_endowment_max = gdf['Avg Endowment'].max()
+    gdf['Avg Endowment Normalized'] = (gdf['Avg Endowment'] - avg_endowment_min) / (avg_endowment_max - avg_endowment_min)
+    
     # Colormap for GDF layer - shade polygons based on Avg Endowment
-    min_value = gdf['Avg Endowment'].min()
-    max_value = gdf['Avg Endowment'].max()
     colormap = plt.get_cmap(cmap)
-    norm = plt.Normalize(vmin=min_value, vmax=max_value)
+    norm = plt.Normalize(vmin=0, vmax=1)
     color_mapper = lambda x: colormap(norm(x))
     
     # Convert matplotlib colors to hex for folium
@@ -113,15 +120,15 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', gdf=None):
     
     # Define LinearColormap for folium
     folium_colormap = LinearColormap(
-        colors=[rgb_to_hex(color_mapper(val)[:3]) for val in np.linspace(min_value, max_value, 256)],
-        vmin=min_value,
-        vmax=max_value,
+        colors=[rgb_to_hex(color_mapper(val)[:3]) for val in np.linspace(0, 1, 256)],
+        vmin=0,
+        vmax=1,
         caption='Average Wealth'
     )
     
-        # Customize GDF layer
+    # Customize GDF layer
     def style_function(feature):
-        avg_endowment = feature['properties']['Avg Endowment']
+        avg_endowment = feature['properties']['Avg Endowment Normalized']
         style_dict = {
             'color': 'black',     # Outline color of polygons
             'weight': 1,          # Outline weight

@@ -71,7 +71,6 @@ def main():
     # ========================
     # DOWNLOAD AND EXTRACT ZIP
     # ========================
-    simulation_start_time = time.time()
     
     shapefile_paths = download_and_extract_all()
 
@@ -90,8 +89,6 @@ def main():
     # GRAPH FILE INITIALIZATION
     # =========================
 
-    graph_start_time = time.time()
-
     # Load or create Graph
     graph_file = graph_filenames[1]
     if Path(graph_file).exists():
@@ -107,12 +104,14 @@ def main():
             g, used_IDS = create_graph(combined_gdf)
             save_graph(g, used_IDS, graph_file)
     else:
+        graph_start_time = time.time()
+        
         # Create new graph
         g, used_IDS = create_graph(combined_gdf)
         save_graph(g, used_IDS, graph_file)
         
-    graph_end_time = time.time()
-    print(f"Graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
+        graph_end_time = time.time()
+        print(f"New graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
     
     # =========================
     # COMPUTE AMENITY DENSITIES
@@ -165,7 +164,7 @@ def main():
     centroid_distances = compute_centroid_distances(centroids, g, used_IDS)
     
     distances_end_time = time.time()
-    print(f"Complete distance calculations after {distances_end_time - distances_start_time:.2f} seconds")
+    print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds\n")
 
     # ========================
     # RUN TRANSPORTATION MODEL
@@ -186,8 +185,10 @@ def main():
     # ==============
     # RUN SIMULATION
     # ==============
-
-    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, simulation_start_time)
+    simulation_start_time = time.time()
+    print("Simulating...")
+    
+    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes)
 
     simulation_end_time = time.time()
     print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")
@@ -197,6 +198,7 @@ def main():
     # =======================
 
     plot_start_time = time.time()
+    print("Plotting...")
     
     if PLOT_CITIES:
         # All combinations of parameters
@@ -214,7 +216,6 @@ def main():
         )
         
     plot_end_time = time.time()
-    
     print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.")
 
 

@@ -15,7 +15,8 @@ import time
 # ==========================
 
 # [ALL SIMULATIONS] (parallel processing)
-def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
+def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes):
+    start_time = time.time()
     if not RUN_EXPERIMENTS:
         return
 
@@ -26,18 +27,17 @@ def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes,
     # Number of CPU's
     n_jobs = -1 # maximum
     
-    print("\nSimulating...")
-    
     # Run parallel processing
     Parallel(n_jobs=n_jobs, backend='loky')(
         delayed(single_simulation)(
-            rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes, start_time
+            rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes
         )
         for rho, alpha in simulation_params
     )
         
 # [SINGLE SIMULATION]
-def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
+def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes):
+    start_time = time.time()
     seed = int(rho*1000 + alpha*100)
     np.random.seed(seed)
 

@@ -32,7 +32,7 @@ def compute_amts_dens(gdf, used_IDS):
     data_output = []
 
     # Iterate over each ID
-    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing distances", unit="ID")):
+    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing amenity densities", unit="ID")):
         name = gdf.loc[gdf['ID'] == id, 'Name'].iloc[0]
     
         # Extract polygon of current ID
@@ -72,7 +72,7 @@ def compute_centroid_distances(centroids, g, used_IDS):
     distance_matrix = np.zeros((n, n))
     
     # Loop through each pair of nodes
-    for i in (tqdm(range(n), desc="Computing amenity densities", unit="ID")):
+    for i in (tqdm(range(n), desc="Computing distances", unit="ID")):
         source_node = centroid_nodes[i]
         for j in range(i, n):
             target_node = centroid_nodes[j]

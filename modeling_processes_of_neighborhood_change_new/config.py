@@ -85,15 +85,15 @@ ID_LIST = [
 ]
 
 # Simulation Parameters
-RHO_L = [10]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [200]       # Benchmarks
+RHO_L = [8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [1000]       # Benchmarks
 NUM_AGENTS = 150     # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
 
 # City Key (name)
