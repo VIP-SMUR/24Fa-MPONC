@@ -33,23 +33,23 @@ class SimulationManager:
         agents = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)]
         return agents
 
-    def run_parallel_simulations(self, assigned_routes, start_time):
+    def run_parallel_simulations(self, assigned_routes):
         """Execute multiple simulations in parallel"""
         if not RUN_EXPERIMENTS:
             return
 
-        print("\nSimulating...")
-
         # Run parallel processing using all available CPUs
         Parallel(n_jobs=-1, backend='loky')(
             delayed(self.run_single_simulation)(
-                rho, alpha, assigned_routes, start_time
+                rho, alpha, assigned_routes
             )
             for rho, alpha in self.simulation_params
         )
 
-    def run_single_simulation(self, rho, alpha, assigned_routes, start_time):
+    def run_single_simulation(self, rho, alpha, assigned_routes):
         """Execute a single simulation with given parameters"""
+        start_time = time.time()
+        
         # Set random seed based on parameters for reproducibility
         seed = int(rho * 1000 + alpha * 100)
         np.random.seed(seed)
@@ -71,6 +71,11 @@ class SimulationManager:
             if (t + 1) == self.benchmarks[benchmark_index]:
                 self.save_simulation_state(city, rho, alpha, t + 1, start_time)
                 benchmark_index += 1
+        
+        # Log completion
+        simulation_name = f"{rho}_{alpha}_{NUM_AGENTS}_{self.benchmarks[benchmark_index-1]}"
+        end_time = time.time()
+        print(f"Simulation {simulation_name} done [{end_time - start_time:.2f} s]")
 
     def execute_simulation_step(self, city, assigned_routes):
         """Execute one step of the simulation"""
@@ -97,11 +102,6 @@ class SimulationManager:
         # Save centroid data
         self._save_csv(city, rho, alpha, timestep)
 
-        # Log completion
-        simulation_name = f"{rho}_{alpha}_{NUM_AGENTS}_{timestep}"
-        end_time = time.time()
-        print(f"Simulation {simulation_name} done [{end_time - start_time:.2f} s]")
-
     def _save_pickle(self, city, rho, alpha, timestep):
         """Save city state to pickle file"""
         pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{timestep}.pkl"
@@ -116,7 +116,7 @@ class SimulationManager:
         df_data.to_csv(csv_path, index=False)
 
 
-def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
+def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes):
     """Main entry point for running simulations"""
     manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
-    manager.run_parallel_simulations(assigned_routes, start_time)
+    manager.run_parallel_simulations(assigned_routes)
