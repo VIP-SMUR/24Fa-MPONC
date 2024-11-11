@@ -44,7 +44,7 @@ class Agent:
         # Initialize current node - Initialize starting position at random node (based on weights)
         self.u = np.random.choice(self.city.n, p=self.probabilities)
 
-        # Adds self to the current node's set of inhabitants in inh_array
+        # Add self to the current node's set of inhabitants in inh_array
         self.city.inh_array[self.u].add(self)
 
     # Assign routes to the agent
@@ -73,7 +73,6 @@ class Agent:
         self.city.inh_array[self.u].add(self)
 
     # LEARN METHOD
-    # TODO: rather than update all weights, update the weight that is for the specific action taken
     def learn(self):
         
         cost = self.calculateCost(self.u) # Calculate cost of self.u
@@ -95,5 +94,4 @@ class Agent:
         beltline = self.city.beltline_array[u]  # Beltline cost
 
         cost = 1 - aff * upk * beltline * loc * cmt * acc
-        print(loc)
         return cost

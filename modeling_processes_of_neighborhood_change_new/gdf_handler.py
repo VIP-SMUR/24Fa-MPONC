@@ -12,7 +12,7 @@ def load_gdf(cache_files):
     gdfs = []
     for i in cache_files:
         cache_file = cache_files[i]
-        print(f"Loading GeoDataFrame from '{cache_file}...'\n")
+        print(f"Loading GeoDataFrame from '{cache_file}...'")
         gdf = gpd.read_file(cache_file)
         gdfs.append(gdf)
         

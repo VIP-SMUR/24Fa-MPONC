@@ -43,7 +43,6 @@ def create_graph(GA_gdf):
     g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()  # Ensures all nodes are connected
     g = nx.convert_node_labels_to_integers(g)  # Converts nodes to integers
     
-    print("Graph generated.")
     if invalid_IDS:
         print(f"Invalid IDs: {invalid_IDS}")
     return g, used_IDS
@@ -68,5 +67,5 @@ def load_graph(file_path, GA_gdf):
         data = pickle.load(file)
     g = data['graph']
     saved_IDs = data['ID']
-    print(f"Loading graph '{file_path.name}' from cache...")
+    print(f"Loading graph '{file_path.name}' from cache...\n")
     return g, saved_IDs

@@ -90,6 +90,8 @@ def main():
     # GRAPH FILE INITIALIZATION
     # =========================
 
+    graph_start_time = time.time()
+
     # Load or create Graph
     graph_file = graph_filenames[1]
     if Path(graph_file).exists():
@@ -108,28 +110,36 @@ def main():
         # Create new graph
         g, used_IDS = create_graph(combined_gdf)
         save_graph(g, used_IDS, graph_file)
-
+        
+    graph_end_time = time.time()
+    print(f"Graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
+    
     # =========================
     # COMPUTE AMENITY DENSITIES
     # =========================
 
-    amts_dens = None
+    amts_dens_start_time = time.time()
+    print("Processing amenities...")
+    
     amts_dens = compute_amts_dens(combined_gdf, used_IDS)
+    
+    amts_dens_end_time = time.time()
+    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
 
-    # ==========================
-    # COMPUTE CENTROID DISTANCES
-    # ==========================
+    # ================================
+    # CENTROID INITIALIZATION FROM IDS
+    # ================================
 
-    # Initialize centroids
+    centroid_start_time = time.time()
+    print("Initializing centroids...")
+    
+    # Initialize centroids array
     centroids = []
     # tuple format: (longitude, latitude, region_name, is_beltline, ID)
 
     ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST if ID in used_IDS}
 
-    # ================================
-    # CENTROID INITIALIZATION FROM IDS
-    # ================================
-    for ID in tqdm(used_IDS[:-1], desc="\nInitializing Centroids", unit="centroid"):
+    for ID in used_IDS[:-1]:
         # Is_beltline
         is_beltline = ID_info.get(ID, False)
 
@@ -142,9 +152,20 @@ def main():
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid
         centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, ID))
+        
+    centroid_end_time = time.time()
+    print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds")
 
-    # Compute centroid distances
+    # ==========================
+    # COMPUTE CENTROID DISTANCES
+    # ==========================
+    distances_start_time = time.time()
+    print("\nProcessing distances...")
+    
     centroid_distances = compute_centroid_distances(centroids, g, used_IDS)
+    
+    distances_end_time = time.time()
+    print(f"Complete distance calculations after {distances_end_time - distances_start_time:.2f} seconds")
 
     # ========================
     # RUN TRANSPORTATION MODEL
@@ -203,6 +224,8 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: parallelize agent.learn() and agent.update() and agent.act() in simulation
 #TODO: patrick's list of attractive amenities in 15-min city: 
    # Add up # of total amenities and get amenity density (separate into transportation vs amenities, ask reyli)
+#TODO: parallelize amenity density + distance computations
+#TODO: print # of each amenity 
+#TODO: normalize bar on graph

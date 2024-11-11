@@ -61,7 +61,7 @@ ID_LIST = [
     ('HS6310115', False),   # Drew HS
     ('HS6311054', False),   # Forest Park HS
     ('HS6314058', False),   # Morrow HS
-    ('HS6442054', False),   # Columbia HS
+    #('HS6442054', False),   # Columbia HS
     
     # # ZCTA
     # ('30331', False),
@@ -85,15 +85,16 @@ ID_LIST = [
 ]
 
 # Simulation Parameters
-RHO_L = [1, 1, 10, 10]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+RHO_L = [10]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
 T_MAX_L = [200]       # Benchmarks
-NUM_AGENTS = 50      # Number of agents
+NUM_AGENTS = 150     # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+viewData = True         # View amenity density and region distance?
 
 # City Key (name)
 CTY_KEY = 'Georgia'

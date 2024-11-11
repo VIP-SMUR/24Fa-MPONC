@@ -1,17 +1,30 @@
 # amtsdens_distances.py
 
+from config import viewData
 import osmnx as ox
 import networkx as nx
 import numpy as np
 from tqdm import tqdm
+from joblib import Parallel, delayed
+import time
 
 # ================================================
 # AMENITY DENSITY & CENTROID DISTANCE CALCULATIONS
 # ================================================
 
-def compute_amts_dens(gdf, used_IDS, viewData=True):
+def compute_amts_dens(gdf, used_IDS):
     # [AMENITY FILTER]
-    tags = {'highway': 'bus_stop'}  # TODO: I don't think number of bus stops is accurate
+    tags = {
+        'public_transport': ['platform', 'stop_position', 'station'],
+        'highway': 'bus_stop',
+        'railway': ['station', 'tram_stop', 'halt', 'subway_entrance'],
+        'amenity': ['bus_station', 'ferry_terminal', 'train_station', 'airport',
+                'government', 'university', 'place_of_worship', 'school', 'civic_center', 'hospital'],
+        'shop': 'supermarket',
+        'tourism': ['museum', 'hotel'],
+        'building': ['apartments', 'house', 'service', 'shed', 'guardhouse'],
+        'landuse': ['residential', 'industrial'],
+        }
 
     # Initialize empty arrays
     amenities = np.zeros(len(used_IDS) - 1)
@@ -19,8 +32,7 @@ def compute_amts_dens(gdf, used_IDS, viewData=True):
     data_output = []
 
     # Iterate over each ID
-    print()
-    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing amenity densities", unit="ID")):
+    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing distances", unit="ID")):
         name = gdf.loc[gdf['ID'] == id, 'Name'].iloc[0]
     
         # Extract polygon of current ID
@@ -29,7 +41,7 @@ def compute_amts_dens(gdf, used_IDS, viewData=True):
         # Collect amenities
         try:
             amenities[index] = len(ox.features_from_polygon(polygon, tags))
-        except:  # No bus stops
+        except:  # No amenities
             amenities[index] = 0
     
         # Area of current ID
@@ -60,7 +72,7 @@ def compute_centroid_distances(centroids, g, used_IDS):
     distance_matrix = np.zeros((n, n))
     
     # Loop through each pair of nodes
-    for i in tqdm(range(n), desc="Computing centroid distances"):
+    for i in (tqdm(range(n), desc="Computing amenity densities", unit="ID")):
         source_node = centroid_nodes[i]
         for j in range(i, n):
             target_node = centroid_nodes[j]
