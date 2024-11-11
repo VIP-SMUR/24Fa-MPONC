@@ -7,92 +7,116 @@ from City import City
 from itertools import product
 from joblib import Parallel, delayed
 import numpy as np
+import pandas as pd
 import pickle
 import time
 
-# ==========================
-# SIMULATION EXECUTION LOGIC
-# ==========================
 
-# [ALL SIMULATIONS] (parallel processing)
-def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
-    if not RUN_EXPERIMENTS:
-        return
+class SimulationManager:
+    """Manages the execution of multiple simulation runs"""
 
-    # Combination of all parameters
-    simulation_params = list(product(RHO_L, ALPHA_L))
-    t_max = max(T_MAX_L)
-    
-    # Number of CPU's
-    n_jobs = -1 # maximum
-    
-    print("\nSimulating...")
-    
-    # Run parallel processing
-    Parallel(n_jobs=n_jobs, backend='loky')(
-        delayed(single_simulation)(
-            rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes, start_time
+    def __init__(self, centroids, g, amts_dens, centroid_distances):
+        self.centroids = centroids
+        self.g = g
+        self.amts_dens = amts_dens
+        self.centroid_distances = centroid_distances
+        self.simulation_params = list(product(RHO_L, ALPHA_L))
+        self.t_max = max(T_MAX_L)
+        self.benchmarks = sorted(T_MAX_L)
+
+    def initialize_agents(self, city, alpha):
+        """Step 1: Initialize agents with sampling distribution"""
+        # Generate agent endowments using Lorentz curve
+        agt_dows = np.diff([1 - (1 - x) ** TAU for x in np.linspace(0, 1, NUM_AGENTS + 1)])
+
+        # Create agents with initial sampling distributions
+        agents = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)]
+        return agents
+
+    def run_parallel_simulations(self, assigned_routes, start_time):
+        """Execute multiple simulations in parallel"""
+        if not RUN_EXPERIMENTS:
+            return
+
+        print("\nSimulating...")
+
+        # Run parallel processing using all available CPUs
+        Parallel(n_jobs=-1, backend='loky')(
+            delayed(self.run_single_simulation)(
+                rho, alpha, assigned_routes, start_time
+            )
+            for rho, alpha in self.simulation_params
         )
-        for rho, alpha in simulation_params
-    )
-        
-# [SINGLE SIMULATION]
-def single_simulation(rho, alpha, t_max, centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
-    seed = int(rho*1000 + alpha*100)
-    np.random.seed(seed)
 
-    # Initialize city
-    city = City(centroids, g, amts_dens, centroid_distances, rho=rho)
-    agt_dows = np.diff([1 - (1 - x) ** TAU for x in np.linspace(0, 1, NUM_AGENTS + 1)]) 
-    
-    # Initialize clean slate of agents based on Lorentz curve
-    agts = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)]
+    def run_single_simulation(self, rho, alpha, assigned_routes, start_time):
+        """Execute a single simulation with given parameters"""
+        # Set random seed based on parameters for reproducibility
+        seed = int(rho * 1000 + alpha * 100)
+        np.random.seed(seed)
 
-    city.set_agts(agts)
-    city.update()
-    
-    # Timesteps at which to save data (T_MAX_L)
-    benchmarks = sorted(T_MAX_L)
-    benchmark_index = 0
-
-    # Iterate through timesteps
-    for t in range(t_max):
-        
-        for a in city.agts:
-            # Find the trips assigned to this agent based on the assigned routes
-            # This logic will need to be tailored based on how agents are supposed to interact with routes
-            a.assign_routes(assigned_routes)  # Assuming there's a method to assign routes
-
-        for a in city.agts:
-            a.act()
+        # Step 1: Initialize city and agents
+        city = City(self.centroids, self.g, self.amts_dens, self.centroid_distances, rho=rho)
+        agents = self.initialize_agents(city, alpha)
+        city.set_agts(agents)
         city.update()
-        for a in city.agts: 
-            a.learn()
-        
-    # After simulation completes, save results
-        if (t + 1) == benchmarks[benchmark_index]:
-            for a in city.agts:
-                a.avg_probabilities = a.tot_probabilities / (t + 1)
 
-            # Pickle city object
-            pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t + 1}.pkl"
-            with open(CACHE_DIR / pickle_filename, 'wb') as file:
-                pickle.dump(city, file, protocol=pickle.HIGHEST_PROTOCOL)
-            
-            # ==================================
-            # CENTROID DATA TO CSV via DATAFRAME
-            # ==================================
-            df_data = city.get_data()
+        # Track current benchmark for saving data
+        benchmark_index = 0
 
-            # CSV filename
-            csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t + 1}_data.csv"
-            
-            # Save dataframe to CSV file
-            csv_path = DATA_DIR / csv_filename
-            df_data.to_csv(csv_path, index=False)
-            
-            simulation_name = f"{rho}_{alpha}_{NUM_AGENTS}_{t + 1}"
-            end_time = time.time()
-            print(f"Simulation {simulation_name} done [{end_time - start_time:.2f} s]")
-            
-            benchmark_index += 1
+        # Main simulation loop
+        for t in range(self.t_max):
+            self.execute_simulation_step(city, assigned_routes)
+
+            # Save results at benchmark timesteps
+            if (t + 1) == self.benchmarks[benchmark_index]:
+                self.save_simulation_state(city, rho, alpha, t + 1, start_time)
+                benchmark_index += 1
+
+    def execute_simulation_step(self, city, assigned_routes):
+        """Execute one step of the simulation"""
+        # Step 2: Modify routes and positions
+        for agent in city.agts:
+            agent.assign_routes(assigned_routes)
+
+        # Step 3: Update positions and calculate costs
+        for agent in city.agts:
+            agent.act()
+        city.update()
+        for agent in city.agts:
+            agent.learn()
+
+    def save_simulation_state(self, city, rho, alpha, timestep, start_time):
+        """Save simulation results to files"""
+        # Update average probabilities for each agent
+        for agent in city.agts:
+            agent.avg_probabilities = agent.tot_probabilities / timestep
+
+        # Save city state
+        self._save_pickle(city, rho, alpha, timestep)
+
+        # Save centroid data
+        self._save_csv(city, rho, alpha, timestep)
+
+        # Log completion
+        simulation_name = f"{rho}_{alpha}_{NUM_AGENTS}_{timestep}"
+        end_time = time.time()
+        print(f"Simulation {simulation_name} done [{end_time - start_time:.2f} s]")
+
+    def _save_pickle(self, city, rho, alpha, timestep):
+        """Save city state to pickle file"""
+        pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{timestep}.pkl"
+        with open(CACHE_DIR / pickle_filename, 'wb') as file:
+            pickle.dump(city, file, protocol=pickle.HIGHEST_PROTOCOL)
+
+    def _save_csv(self, city, rho, alpha, timestep):
+        """Save centroid data to CSV"""
+        df_data = city.get_data()
+        csv_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{timestep}_data.csv"
+        csv_path = DATA_DIR / csv_filename
+        df_data.to_csv(csv_path, index=False)
+
+
+def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, start_time):
+    """Main entry point for running simulations"""
+    manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
+    manager.run_parallel_simulations(assigned_routes, start_time)
