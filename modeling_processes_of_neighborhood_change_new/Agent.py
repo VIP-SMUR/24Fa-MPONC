@@ -3,28 +3,27 @@ from helper import EPSILON
 import numpy as np
 import grid2demand as gd
 
-# ===========
-# AGENT CLASS
-# ===========
 
 class Agent:
-    # Constructor
     def __init__(self, i, dow, city, alpha=0.5):
-        self.i = i
-        self.dow = dow
-        self.city = city
-        self.alpha = alpha
+        self.i = i  # Agent identifier
+        self.dow = dow  # Day of week
+        self.city = city  # City object
+        self.alpha = alpha  # Weight parameter for cost calculation
 
+        # Step 1: Initialize sampling variables
         self.weights = None
-        self.probabilities = None  # Probability to go to each centroid
+        self.probabilities = None
         self.tot_probabilities = None
         self.avg_probabilities = None
-        self.u = None
-        self.routes = None  # To hold assigned routes
+
+        # Step 2: Location tracking
+        self.u = None  # Current location
+        self.prev_u = None  # Previous location
+        self.routes = None  # Assigned routes
 
         self.reset()
 
-    # Create hash identifier
     def __hash__(self):
         return hash(self.i)
 
@@ -32,66 +31,88 @@ class Agent:
         return self.i == other.i
 
     def reset(self):
-        # Initialize weights
+        # Step 1: Initialize sampling
         self.weights = np.ones(len(self.city.centroids))
-
-        # Initialize probabilities
         self.probabilities = np.array(self.weights / self.weights.sum())
-
-        # Initialize tot_probabilities
         self.tot_probabilities = self.probabilities.copy()
 
-        # Initialize current node - Initialize starting position at random node (based on weights)
+        # Initialize starting position based on sampling distribution
         self.u = np.random.choice(self.city.n, p=self.probabilities)
-
-        # Add self to the current node's set of inhabitants in inh_array
         self.city.inh_array[self.u].add(self)
 
-    # Assign routes to the agent
     def assign_routes(self, assigned_routes):
-        # Assigned routes should be a mapping of agents to their routes
+        """Step 2: Route modification based on assigned paths"""
         self.routes = assigned_routes.get(self.i, [])
 
-    # ACTION METHOD
     def act(self):
-        # Store current node
+        """Step 2: Movement based on sampling distribution"""
+        # Store previous location
         self.prev_u = self.u
-        
-        # Leave current node
+
+        # Leave current location
         self.city.inh_array[self.u].remove(self)
 
-        # Choose another node based on assigned routes if available, otherwise randomly
+        # Choose next location based on routes or probabilities
         if self.routes:
-            # Choose from assigned routes with probabilities based on weights
-            self.u = np.random.choice(self.routes, p=self.probabilities[
-                self.routes])  # Routes might need a specific way to get probabilities
+            route_probs = self.probabilities[self.routes]
+            route_probs = route_probs / route_probs.sum()  # Normalize probabilities for routes
+            self.u = np.random.choice(self.routes, p=route_probs)
         else:
-            # Random choice among all centroids
             self.u = np.random.choice(self.city.n, p=self.probabilities)
 
-            # Join new node
+        # Join new location
         self.city.inh_array[self.u].add(self)
 
-    # LEARN METHOD
     def learn(self):
-        
-        cost = self.calculateCost(self.u) # Calculate cost of self.u
-        self.weights[self.u] *= (1 - EPSILON * cost) # Update weight of self.u (based on cost)
-        
-        # Normalize probabilities
+        """Step 3: Update based on cost calculation"""
+        cost = self.calculateCost(self.u)
+        self.weights[self.u] *= (1 - EPSILON * cost)
+
+        # Update sampling distribution
         self.probabilities = self.weights / np.sum(self.weights)
-        
-        # Accumulate total probabilites (=1?)
         self.tot_probabilities += self.probabilities
 
     def calculateCost(self, u):
-        dow_thr = self.city.dow_thr_array[u]
-        aff = (self.dow >= dow_thr).astype(float)  # Affordability: Is the agent's endowment >= endowment threshold?
-        loc = self.city.centroid_distances[self.prev_u, u]  # Location cost: Distance from previous to current region
-        cmt = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))  # Community cost
-        acc = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])  # Accessibility cost
-        upk = self.city.upk_array[u]  # Upkeep cost
-        beltline = self.city.beltline_array[u]  # Beltline cost
+        """Step 3: Cost function C = f(a_j, c_j, p_trans)"""
+        # Calculate individual cost components
+        affordability = (self.dow >= self.city.dow_thr_array[u]).astype(float)
+        location_cost = self.city.centroid_distances[self.prev_u, u]
+        community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))
+        accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])
+        upkeep = self.city.upk_array[u]
+        beltline = self.city.beltline_array[u]
 
-        cost = 1 - aff * upk * beltline * loc * cmt * acc
+        # Combine costs according to diagram's formula
+        cost = 1 - (affordability * upkeep * beltline * location_cost * community_cost * accessibility)
         return cost
+
+
+class Simulation:
+    def __init__(self, city, num_agents):
+        self.city = city
+        self.agents = [Agent(i, np.random.random(), city) for i in range(num_agents)]
+        self.routes = {}  # Dictionary to store agent routes
+
+    def step(self):
+        """Execute one simulation step"""
+        # Step 1: Sample current state
+        for agent in self.agents:
+            agent.act()
+
+        # Step 2: Apply modifications (routes)
+        self.update_routes()
+
+        # Step 3: Calculate costs and update
+        for agent in self.agents:
+            agent.learn()
+
+    def update_routes(self):
+        """Update routes based on current state"""
+        # Implementation depends on routing strategy
+        pass
+
+    def reset(self):
+        """Reset simulation state"""
+        for agent in self.agents:
+            agent.reset()
+        self.routes = {}
