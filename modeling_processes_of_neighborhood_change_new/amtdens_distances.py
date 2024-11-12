@@ -1,6 +1,6 @@
 # amtsdens_distances.py
 
-from config import viewData
+from config import viewData, AMENITY_TAGS
 import osmnx as ox
 import networkx as nx
 import numpy as np
@@ -27,12 +27,12 @@ CENTROID_DIST_CACHE_DIR = 'cache/centroid_distances'
 os.makedirs(AMTS_DENS_CACHE_DIR, exist_ok=True)
 os.makedirs(CENTROID_DIST_CACHE_DIR, exist_ok=True)
 
-# ================================================
-# AMENITY DENSITY & CENTROID DISTANCE CALCULATIONS
-# ================================================
+# ===============
+# CACHE FUNCTIONS
+# ===============
 
-def cached_amts_dens(gdf, used_IDS, cache_dir=AMTS_DENS_CACHE_DIR):
-    cache_key = _hash(gdf, used_IDS)
+def cached_amts_dens(gdf, used_IDS, tags=AMENITY_TAGS, cache_dir=AMTS_DENS_CACHE_DIR):
+    cache_key = _hash(gdf, used_IDS, tags=tags)
     cache_path = os.path.join(cache_dir, f"{cache_key}.pkl")
     
     if os.path.exists(cache_path):
@@ -40,7 +40,7 @@ def cached_amts_dens(gdf, used_IDS, cache_dir=AMTS_DENS_CACHE_DIR):
         with open(cache_path, 'rb') as f:
             amts_dens = pickle.load(f)
     else:
-        amts_dens = compute_amts_dens(gdf, used_IDS)
+        amts_dens = compute_amts_dens(gdf, used_IDS, tags)
         with open(cache_path, 'wb') as f:
             pickle.dump(amts_dens, f)
         print(f"Amenity densities cached to {cache_path}")
@@ -62,20 +62,11 @@ def cached_centroid_distances(centroids, g, used_IDS, cache_dir=CENTROID_DIST_CA
     
     return distance_matrix
 
-def compute_amts_dens(gdf, used_IDS):
-    # [AMENITY FILTER]
-    tags = {
-        'public_transport': ['platform', 'stop_position', 'station'],
-        'highway': 'bus_stop',
-        'railway': ['station', 'tram_stop', 'halt', 'subway_entrance'],
-        'amenity': ['bus_station', 'ferry_terminal', 'train_station', 'airport',
-                'government', 'university', 'place_of_worship', 'school', 'civic_center', 'hospital'],
-        'shop': 'supermarket',
-        'tourism': ['museum', 'hotel'],
-        'building': ['apartments', 'house', 'service', 'shed', 'guardhouse'],
-        'landuse': ['residential', 'industrial'],
-        }
+# =====================
+# CALCULATION FUNCTIONS
+# =====================
 
+def compute_amts_dens(gdf, used_IDS, tags):
     # Initialize empty arrays
     amenities = np.zeros(len(used_IDS) - 1)
     areas_sqkm = np.zeros(len(used_IDS) - 1)
@@ -96,7 +87,7 @@ def compute_amts_dens(gdf, used_IDS):
     
         # Area of current ID
         areas_sqkm[index] = gdf.loc[gdf['ID'] == id, 'Sqkm'].iloc[0]
-    
+        
         if viewData:
             data_output.append(f"{name:<40} {areas_sqkm[index]:>12.2f} {amenities[index]:>10}")
     
@@ -108,8 +99,9 @@ def compute_amts_dens(gdf, used_IDS):
         amts_dens /= np.max(amts_dens)
     
     # Display data
-    tqdm.write(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
-    tqdm.write("\n".join(data_output))
+    if viewData:
+        tqdm.write(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
+        tqdm.write("\n".join(data_output))
     
     return amts_dens
 

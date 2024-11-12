@@ -6,15 +6,13 @@ import matplotlib.pyplot as plt
 import time
 import folium
 import matplotlib as mpl
-from matplotlib.colors import to_hex
 from helper import FIGURES_DIR
 from folium import CircleMarker
 from pathlib import Path
-from branca.colormap import LinearColormap, linear
+from branca.colormap import linear
 import osmnx as ox
 import numpy as np
 import pickle
-import pandas as pd
 
 # =============================
 # VISUALIZATION EXECUTION LOGIC

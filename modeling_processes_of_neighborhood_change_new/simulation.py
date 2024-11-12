@@ -7,7 +7,6 @@ from City import City
 from itertools import product
 from joblib import Parallel, delayed
 import numpy as np
-import pandas as pd
 import pickle
 import time
 

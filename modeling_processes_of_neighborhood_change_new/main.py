@@ -1,12 +1,11 @@
 from helper import gdf_cache_filenames, graph_filenames
-from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
+from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import cached_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
-from tqdm import tqdm
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -120,7 +119,7 @@ def main():
     amts_dens_start_time = time.time()
     print("Processing amenities...")
     
-    amts_dens = cached_amts_dens(combined_gdf, used_IDS)
+    amts_dens = cached_amts_dens(combined_gdf, used_IDS, AMENITY_TAGS)
     
     amts_dens_end_time = time.time()
     print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
@@ -225,3 +224,5 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
+#TODO: print("amenity density cached to []") never runs
+#TODO: add functionality for viewData flag to view amenity data
