@@ -91,9 +91,29 @@ class City:
         - DataFrame: Data containing Centroid, Population, Avg Endowment, In Beltline, Amt Density.
         """
         data = []  # Array storing data for each centroid
+        avg_endowments = np.zeros(self.n)
         
         for index in range(self.n):
-
+            population = len(self.inh_array[index])
+            # Average Endowment
+            if population > 0:
+                avg_endowment = 100 * (np.mean([agent.dow for agent in self.inh_array[index]]))
+                avg_endowment = round(avg_endowment, 2)
+            else:
+                avg_endowment = 0.0
+            avg_endowments[index] = avg_endowment
+            
+        # Normalize avg_endowments
+        min_val = avg_endowments.min()
+        max_val = avg_endowments.max()
+        
+        # Avoid division by 0
+        if max_val > min_val:
+            normalized_avg_endowments = (avg_endowments - min_val) / (max_val - min_val)
+        else:
+            normalized_avg_endowments = np.zeros_like(avg_endowments)
+        
+        for index in range(self.n):
             # ID
             ID = self.id_array[index]
 
@@ -103,13 +123,7 @@ class City:
             # Population
             population = len(self.inh_array[index])
             
-            # Average Endowment
-            if population > 0:
-                avg_endowment = 100 * (np.mean([agent.dow for agent in self.inh_array[index]]))
-                avg_endowment = round(avg_endowment, 2)
-            else:
-                avg_endowment = 0.0
-                
+            avg_endowment = normalized_avg_endowments[index]
                 
             # In Beltline?
             in_beltline = self.beltline_array[index]
@@ -121,9 +135,11 @@ class City:
                 'ID': ID,
                 'Centroid': centroid_name,
                 'Population': population,
-                'Avg Endowment': avg_endowment,
+                'Avg Endowment Normalized': avg_endowment,
                 'In Beltline': in_beltline,
                 'Amt Density': round(amenity_density, 2)
             })
+            
         df = pd.DataFrame(data)
+        
         return df

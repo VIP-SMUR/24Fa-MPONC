@@ -44,23 +44,23 @@ ID_LIST = [
     ('BELTLINE08', True),
     ('BELTLINE09', True),
     ('BELTLINE10', True),
-    # ('HS6443070', False),   # Gresham Park
-    # ('HS6442055', False),   # Druid Hills
-    # ('1322052', False),     # Decatur city
-    # ('1325720', False),     # East Point
-    # ('HS6331054', False),   # Campbell HS
-    # ('1310944', False),     # BrookHaven City
-    # ('HS6440172', False),   # Panthersville
-    # ('HS6443060', False),   # Lakeside HS
-    # ('1315172', False),     # Chamblee City
-    # ('1368516', False),     # Sandy Springs City
-    # ('HS6331069', False),   # Wheeler HS
-    # ('HS6334066', False),   # Pebblebrook hS
-    # ('1317776', False),     # College Park
-    # ('HS6312052', False),   # North Clayton HS
-    # ('HS6310115', False),   # Drew HS
-    # ('HS6311054', False),   # Forest Park HS
-    # ('HS6314058', False),   # Morrow HS
+    ('HS6443070', False),   # Gresham Park
+    ('HS6442055', False),   # Druid Hills
+    ('1322052', False),     # Decatur city
+    ('1325720', False),     # East Point
+    ('HS6331054', False),   # Campbell HS
+    ('1310944', False),     # BrookHaven City
+    ('HS6440172', False),   # Panthersville
+    ('HS6443060', False),   # Lakeside HS
+    ('1315172', False),     # Chamblee City
+    ('1368516', False),     # Sandy Springs City
+    ('HS6331069', False),   # Wheeler HS
+    ('HS6334066', False),   # Pebblebrook hS
+    ('1317776', False),     # College Park
+    ('HS6312052', False),   # North Clayton HS
+    ('HS6310115', False),   # Drew HS
+    ('HS6311054', False),   # Forest Park HS
+    ('HS6314058', False),   # Morrow HS
     #('HS6442054', False),   # Columbia HS
     
     # # ZCTA
@@ -85,15 +85,15 @@ ID_LIST = [
 ]
 
 # Simulation Parameters
-RHO_L = [1, 10]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.20, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [100, 200]       # Benchmarks
-NUM_AGENTS = 150     # Number of agents
+RHO_L = [1]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [100]       # Benchmarks
+NUM_AGENTS = 60     # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
 
 # City Key (name)

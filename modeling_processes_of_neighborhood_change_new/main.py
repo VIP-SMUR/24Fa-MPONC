@@ -3,7 +3,7 @@ from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
-from amtdens_distances import compute_amts_dens, compute_centroid_distances
+from amtdens_distances import cached_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
 from tqdm import tqdm
@@ -120,7 +120,7 @@ def main():
     amts_dens_start_time = time.time()
     print("Processing amenities...")
     
-    amts_dens = compute_amts_dens(combined_gdf, used_IDS)
+    amts_dens = cached_amts_dens(combined_gdf, used_IDS)
     
     amts_dens_end_time = time.time()
     print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
@@ -161,7 +161,7 @@ def main():
     distances_start_time = time.time()
     print("\nProcessing distances...")
     
-    centroid_distances = compute_centroid_distances(centroids, g, used_IDS)
+    centroid_distances = cached_centroid_distances(centroids, g, used_IDS)
     
     distances_end_time = time.time()
     print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds\n")
@@ -225,8 +225,3 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: patrick's list of attractive amenities in 15-min city: 
-   # Add up # of total amenities and get amenity density (separate into transportation vs amenities, ask reyli)
-#TODO: parallelize amenity density + distance computations
-#TODO: print # of each amenity 
-#TODO: normalize bar on graph

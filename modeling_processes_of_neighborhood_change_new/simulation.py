@@ -69,7 +69,7 @@ class SimulationManager:
 
             # Save results at benchmark timesteps
             if (t + 1) == self.benchmarks[benchmark_index]:
-                self.save_simulation_state(city, rho, alpha, t + 1, start_time)
+                self.save_simulation_state(city, rho, alpha, t + 1)
                 benchmark_index += 1
         
         # Log completion
@@ -90,7 +90,7 @@ class SimulationManager:
         for agent in city.agts:
             agent.learn()
 
-    def save_simulation_state(self, city, rho, alpha, timestep, start_time):
+    def save_simulation_state(self, city, rho, alpha, timestep):
         """Save simulation results to files"""
         # Update average probabilities for each agent
         for agent in city.agts:

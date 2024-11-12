@@ -6,19 +6,21 @@ import matplotlib.pyplot as plt
 import time
 import folium
 import matplotlib as mpl
+from matplotlib.colors import to_hex
 from helper import FIGURES_DIR
 from folium import CircleMarker
 from pathlib import Path
-from branca.colormap import LinearColormap
+from branca.colormap import LinearColormap, linear
 import osmnx as ox
 import numpy as np
 import pickle
+import pandas as pd
 
 # =============================
 # VISUALIZATION EXECUTION LOGIC
 # =============================
 
-def plot_city(rho, alpha, t_max, centroids, g, combined_gdf):
+def plot_city(rho, alpha, t_max, centroids, g, gdf):
     # Graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
     pickle_filename = f"{figkey}.pkl"
@@ -29,21 +31,36 @@ def plot_city(rho, alpha, t_max, centroids, g, combined_gdf):
         with open(pickle_path, 'rb') as file:
             city = pickle.load(file)
             
-        # Retrieve data for plotting:
-        # City data
+        # Retrieve city data for plotting:
         df_data = city.get_data()
         # 'Avg Endowment' from csv to gdf
-        combined_gdf = combined_gdf.merge(df_data[['ID', 'Avg Endowment']], on='ID', how='left')
+        gdf = gdf.merge(df_data[['ID', 'Avg Endowment Normalized']], on='ID', how='left')
     
         if PLOT_LIBRARY == 1:
-            plot_matplotlib(centroids=centroids, city=city, cmap='YlOrRd', figkey=figkey, graph=g, gdf=combined_gdf)
+            plot_matplotlib(
+                centroids=centroids, 
+                city=city, 
+                cmap='YlOrRd', 
+                figkey=figkey, 
+                graph=g,
+                gdf=gdf,
+                )
         else:
-            plot_folium(centroids=centroids, city=city, cmap='YlOrRd', figkey=figkey, graph=g, gdf=combined_gdf)
+            plot_folium(
+                centroids=centroids, 
+                city=city, 
+                cmap='YlOrRd', 
+                figkey=figkey, 
+                graph=g, 
+                gdf=gdf
+                )
     else:
         print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
     
 
-# MATPLOTLIB GRAPHER
+# ================
+# MATPLOTLIB GRAPH
+# ================
 def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
     
     start_time = time.time()
@@ -51,11 +68,6 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
     fig, ax = plt.subplots(figsize=(10, 10))
 
     ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
-
-    # Normalize AVG Endowment
-    avg_endowment_min = gdf['Avg Endowment'].min()
-    avg_endowment_max = gdf['Avg Endowment'].max()
-    gdf['Avg Endowment Normalized'] = (gdf['Avg Endowment'] - avg_endowment_min) / (avg_endowment_max - avg_endowment_min)
 
     # Plot GDF layer (region boundaries)
     gdf_plot = gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
@@ -94,54 +106,38 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
     print(f"Plotted and saved {PLT_DIR.name} [{end_time - start_time:.2f} s]")
     
     
-# FOLIUM GRAPHER
-def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
+# ============    
+# FOLIUM GRAPH
+# ============
+def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf = None):
     
     start_time = time.time()
     
+    # Set correct CRS
     gdf = gdf.to_crs(epsg=32616)
             
-    # Starting coords
-    center_lat, center_lon = 33.7490, -84.3880  # Example coordinates (Atlanta, GA)
+    # Center the map
+    center_lat = np.mean(city.lat_array)
+    center_lon = np.mean(city.lon_array)
+    
+    # Initialize folium graph
     m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
-
-    avg_endowment_min = gdf['Avg Endowment'].min()
-    avg_endowment_max = gdf['Avg Endowment'].max()
-    gdf['Avg Endowment Normalized'] = (gdf['Avg Endowment'] - avg_endowment_min) / (avg_endowment_max - avg_endowment_min)
-    
-    # Colormap for GDF layer - shade polygons based on Avg Endowment
-    colormap = plt.get_cmap(cmap)
-    norm = plt.Normalize(vmin=0, vmax=1)
-    color_mapper = lambda x: colormap(norm(x))
-    
-    # Convert matplotlib colors to hex for folium
-    def rgb_to_hex(rgb):
-        return '#{:02x}{:02x}{:02x}'.format(int(rgb[0] * 255), int(rgb[1] * 255), int(rgb[2] * 255))
     
     # Define LinearColormap for folium
-    folium_colormap = LinearColormap(
-        colors=[rgb_to_hex(color_mapper(val)[:3]) for val in np.linspace(0, 1, 256)],
-        vmin=0,
-        vmax=1,
-        caption='Average Wealth'
-    )
+    folium_colormap = linear.YlOrRd_09.scale(0, 1)
+    folium_colormap.caption = 'Average Wealth'
     
     # Customize GDF layer
     def style_function(feature):
         avg_endowment = feature['properties']['Avg Endowment Normalized']
-        style_dict = {
-            'color': 'black',     # Outline color of polygons
-            'weight': 1,          # Outline weight
-            'opacity': 0.3          # Outline opacity
-        }
-        if avg_endowment is None:
-            style_dict['fillOpacity'] = 0  # Make polygon transparent
-        else:
-            style_dict['fillColor'] = folium_colormap(avg_endowment)
-            style_dict['fillOpacity'] = 0.4  # Transparency
-        return style_dict
-    
-    # Add the GDF layer (entirety of GA)
+        return {
+            'fillColor': folium_colormap(avg_endowment) if avg_endowment is not None else 'transparent',
+            'color': 'black',
+            'weight': 1,
+            'fillOpacity': 0.4 if avg_endowment is not None else 0,
+    }
+        
+    # Add GDF layer
     folium.GeoJson(
         data=gdf,
         name='GDF Layer',
@@ -150,7 +146,7 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=N
     
     # Add colormap
     folium_colormap.add_to(m)
-
+    
     # Add centroids as CircleMarker with beltline coloring
     for i, (lat, lon) in enumerate(zip(city.lat_array, city.lon_array)):
         beltline_status = city.beltline_array[i]
@@ -165,7 +161,8 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=N
         amenity_density = city.amts_dens[i]
         # avg endowment
         if inhabitants > 0: # Latest population > 0
-            avg_endowment = 100 * (np.mean([agent.dow for agent in city.inh_array[i]]))
+            avg_endowment = gdf.loc[gdf['ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
+            avg_endowment = avg_endowment[0] if len(avg_endowment) > 0 else 0.0
             avg_endowment = round(avg_endowment, 2)
         else:
             avg_endowment = 0.0
@@ -210,7 +207,7 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=N
 
     # Save Folium map.osm as HTML
     m.save(f"./figures/{figkey}_folium.html")
-    end_time = time.time()
     
+    end_time = time.time()
     FOLIUM_DIR = Path(FIGURES_DIR) / f"{figkey}_folium.html"
     print(f"Plotted and saved {FOLIUM_DIR.name} [{end_time - start_time:.2f} s]")

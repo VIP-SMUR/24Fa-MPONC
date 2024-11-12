@@ -4,13 +4,63 @@ from config import viewData
 import osmnx as ox
 import networkx as nx
 import numpy as np
+import pickle
+import hashlib
 from tqdm import tqdm
-from joblib import Parallel, delayed
-import time
+import os
+
+
+def _hash(*args, **kwargs):
+    # Hash function
+    hasher = hashlib.md5()
+    for arg in args:
+        hasher.update(pickle.dumps(arg))
+    for key, value in sorted(kwargs.items()):
+        hasher.update(pickle.dumps((key, value)))
+    return hasher.hexdigest()
+
+# Define cache directories
+AMTS_DENS_CACHE_DIR = 'cache/amts_dens'
+CENTROID_DIST_CACHE_DIR = 'cache/centroid_distances'
+
+# Create cache directories if they don't exist
+os.makedirs(AMTS_DENS_CACHE_DIR, exist_ok=True)
+os.makedirs(CENTROID_DIST_CACHE_DIR, exist_ok=True)
 
 # ================================================
 # AMENITY DENSITY & CENTROID DISTANCE CALCULATIONS
 # ================================================
+
+def cached_amts_dens(gdf, used_IDS, cache_dir=AMTS_DENS_CACHE_DIR):
+    cache_key = _hash(gdf, used_IDS)
+    cache_path = os.path.join(cache_dir, f"{cache_key}.pkl")
+    
+    if os.path.exists(cache_path):
+        print("Loading cached amenity densities...")
+        with open(cache_path, 'rb') as f:
+            amts_dens = pickle.load(f)
+    else:
+        amts_dens = compute_amts_dens(gdf, used_IDS)
+        with open(cache_path, 'wb') as f:
+            pickle.dump(amts_dens, f)
+        print(f"Amenity densities cached to {cache_path}")
+    
+    return amts_dens
+
+def cached_centroid_distances(centroids, g, used_IDS, cache_dir=CENTROID_DIST_CACHE_DIR):
+    # Create a unique hash for the current inputs
+    cache_key = _hash(centroids, g, used_IDS)
+    cache_path = os.path.join(cache_dir, f"{cache_key}.npy")
+
+    if os.path.exists(cache_path):
+        print("Loading cached centroid distances...")
+        distance_matrix = np.load(cache_path)
+    else:
+        distance_matrix = compute_centroid_distances(centroids, g, used_IDS)
+        np.save(cache_path, distance_matrix)
+        print(f"Centroid distances cached to {cache_path}")
+    
+    return distance_matrix
 
 def compute_amts_dens(gdf, used_IDS):
     # [AMENITY FILTER]
