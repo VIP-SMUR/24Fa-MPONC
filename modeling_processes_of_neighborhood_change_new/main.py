@@ -224,5 +224,6 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: print("amenity density cached to []") never runs
 #TODO: add functionality for viewData flag to view amenity data
+#TODO: optimize graphing
+#TODO: requirements.txt

@@ -90,26 +90,26 @@ AMENITY_TAGS = {
     'highway': 'bus_stop',
     'railway': ['station', 'tram_stop', 'halt', 'subway_entrance'],
     'amenity': [
-        'bus_station', 'ferry_terminal', 'train_station', 'airport',
+        'bus_station', 'train_station', 'airport',
         'government', 'university', 'place_of_worship', 'school',
         'civic_center', 'hospital'
     ],
     'shop': 'supermarket',
     'tourism': ['museum', 'hotel'],
-    'building': ['apartments', 'house', 'service', 'shed', 'guardhouse'],
+    'building': ['apartments', 'house', 'service'],
     'landuse': ['residential', 'industrial'],
 }
 
 # Simulation Parameters
 RHO_L = [1, 2, 4, 8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [5000, 10000, 15000, 20000]       # Benchmarks
-NUM_AGENTS = 200     # Number of agents
+T_MAX_L = [200]       # Benchmarks
+NUM_AGENTS = 20     # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
 
 # City Key (name)
