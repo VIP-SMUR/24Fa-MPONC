@@ -1,7 +1,7 @@
 # simulation.py
 
 from config import (RHO_L, ALPHA_L, T_MAX_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY)
-from helper import TAU, DATA_DIR, CACHE_DIR
+from helper import TAU, DATA_DIR, FIGURE_PKL_CACHE_DIR
 from Agent import Agent
 from City import City
 from itertools import product
@@ -104,7 +104,7 @@ class SimulationManager:
     def _save_pickle(self, city, rho, alpha, timestep):
         """Save city state to pickle file"""
         pickle_filename = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{timestep}.pkl"
-        with open(CACHE_DIR / pickle_filename, 'wb') as file:
+        with open(FIGURE_PKL_CACHE_DIR / pickle_filename, 'wb') as file:
             pickle.dump(city, file, protocol=pickle.HIGHEST_PROTOCOL)
 
     def _save_csv(self, city, rho, alpha, timestep):

@@ -1,17 +1,18 @@
 # amtsdens_distances.py
 
-from config import viewData, AMENITY_TAGS
+from config import viewData
+from helper import AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR
+import os
 import osmnx as ox
 import networkx as nx
 import numpy as np
 import pickle
 import hashlib
 from tqdm import tqdm
-import os
-
+from joblib import Parallel, delayed
 
 def _hash(*args, **kwargs):
-    # Hash function
+    """ Hash function """
     hasher = hashlib.md5()
     for arg in args:
         hasher.update(pickle.dumps(arg))
@@ -19,123 +20,125 @@ def _hash(*args, **kwargs):
         hasher.update(pickle.dumps((key, value)))
     return hasher.hexdigest()
 
-# Define cache directories
-AMTS_DENS_CACHE_DIR = 'cache/amts_dens'
-CENTROID_DIST_CACHE_DIR = 'cache/centroid_distances'
-
-# Create cache directories if they don't exist
-os.makedirs(AMTS_DENS_CACHE_DIR, exist_ok=True)
-os.makedirs(CENTROID_DIST_CACHE_DIR, exist_ok=True)
-
-# ===============
-# CACHE FUNCTIONS
-# ===============
-
-def cached_amts_dens(gdf, used_IDS, tags=AMENITY_TAGS, cache_dir=AMTS_DENS_CACHE_DIR):
-    cache_key = _hash(gdf, used_IDS, tags=tags)
-    cache_path = os.path.join(cache_dir, f"{cache_key}.pkl")
+def fetch_amenities(region_idx, region_polygon, tags, cache_dir=AMTS_DENS_CACHE_DIR):
+    """ Fetch amenities for a single region. Utilize caching to avoid redundant API calls. """
+    cache_key = f"region_{region_idx}_{_hash(tags=tags)}.npy"
+    cache_path = os.path.join(cache_dir, cache_key)
     
     if os.path.exists(cache_path):
-        print("Loading cached amenity densities...")
+        # Fetch from cache
         with open(cache_path, 'rb') as f:
-            amts_dens = pickle.load(f)
+            amenities_count = pickle.load(f)
+        return amenities_count
     else:
-        amts_dens = compute_amts_dens(gdf, used_IDS, tags)
-        with open(cache_path, 'wb') as f:
-            pickle.dump(amts_dens, f)
-        print(f"Amenity densities cached to {cache_path}")
+        # Calculate from OSM
+        try:
+            amenities = ox.features_from_polygon(region_polygon, tags=tags)
+            amenities_count = len(amenities)
+            # Save to cache
+            with open(cache_path, 'wb') as f:
+                pickle.dump(amenities_count, f)
+        except:
+            amenities_count = 0
     
+    return amenities_count
+
+def compute_amts_dens(gdf, tags):
+    # Exclude Atlanta City from amts density calculations
+    gdf = gdf[gdf['ID'] != '1304000'].reset_index(drop=True)
+    
+    amts_dens = np.zeros(len(gdf))
+    amenities_counts = np.zeros(len(gdf))
+    areas_sqkm = gdf['Sqkm'].values
+    region_names = gdf['Name'].values
+
+    print("Fetching amenities per region...")
+
+    # Fetch amenities per region
+    for idx, row in tqdm(gdf.iterrows(), total=len(gdf), desc="Regions"):
+        region_polygon = row['geometry']
+        amenities_count = fetch_amenities(idx, region_polygon, tags)
+        amenities_counts[idx] = amenities_count
+        if areas_sqkm[idx] > 0:
+            amts_dens[idx] = amenities_count / areas_sqkm[idx]
+        else:
+            amts_dens[idx] = 0  # Avoid division by zero
+
+    # Normalize densities
+    max_density = amts_dens.max()
+    if max_density > 0:
+        amts_dens /= amts_dens.max()
+
+    # View Data?
+    if viewData:
+        output_lines = [
+            f"{name:<40} {area:>12.2f} {amt:>10}" for name, area, amt in zip(region_names, areas_sqkm, amenities_counts)
+        ]
+        print(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
+        print("\n".join(output_lines))
+
     return amts_dens
 
-def cached_centroid_distances(centroids, g, used_IDS, cache_dir=CENTROID_DIST_CACHE_DIR):
+
+def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
+    """ Retrieve DISTANCES from cache or calculate for first time """
     # Create a unique hash for the current inputs
-    cache_key = _hash(centroids, g, used_IDS)
-    cache_path = os.path.join(cache_dir, f"{cache_key}.npy")
+    centroids_coords = [(c[0], c[1]) for c in centroids]
+    cache_key = f"centroid_distances_{_hash(*centroids_coords)}.npy"
+    cache_path = os.path.join(cache_dir, cache_key)
 
     if os.path.exists(cache_path):
         print("Loading cached centroid distances...")
         distance_matrix = np.load(cache_path)
     else:
-        distance_matrix = compute_centroid_distances(centroids, g, used_IDS)
+        distance_matrix = compute_centroid_distances(centroids, g)
         np.save(cache_path, distance_matrix)
-        print(f"Centroid distances cached to {cache_path}")
+        print(f"Centroid distances cached.")
     
     return distance_matrix
 
-# =====================
-# CALCULATION FUNCTIONS
-# =====================
+# Multiprocessing: Num CPU's
+n_jobs = -1 #maximum
 
-def compute_amts_dens(gdf, used_IDS, tags):
-    # Initialize empty arrays
-    amenities = np.zeros(len(used_IDS) - 1)
-    areas_sqkm = np.zeros(len(used_IDS) - 1)
-    data_output = []
-
-    # Iterate over each ID
-    for index, id in enumerate(tqdm(used_IDS[:-1], desc="Computing amenity densities", unit="ID")):
-        name = gdf.loc[gdf['ID'] == id, 'Name'].iloc[0]
-    
-        # Extract polygon of current ID
-        polygon = gdf.loc[gdf['ID'] == id, 'geometry'].union_all()
-
-        # Collect amenities
-        try:
-            amenities[index] = len(ox.features_from_polygon(polygon, tags))
-        except:  # No amenities
-            amenities[index] = 0
-    
-        # Area of current ID
-        areas_sqkm[index] = gdf.loc[gdf['ID'] == id, 'Sqkm'].iloc[0]
-        
-        if viewData:
-            data_output.append(f"{name:<40} {areas_sqkm[index]:>12.2f} {amenities[index]:>10}")
-    
-    # Amenity density (amenities / square kilometer)
-    amts_dens = amenities / areas_sqkm
-    
-    # Normalize densities
-    if np.max(amts_dens) > 0:
-        amts_dens /= np.max(amts_dens)
-    
-    # Display data
-    if viewData:
-        tqdm.write(f"{'[Region]':<40} {'[Area (sq km)]':>12} {'[# Amenities]':>10}")
-        tqdm.write("\n".join(data_output))
-    
-    return amts_dens
-
-def compute_centroid_distances(centroids, g, used_IDS):
+def compute_centroid_distances(centroids, g):
+    # Number of centroids
     n = len(centroids)
     
     # Map centroids to nearest node
     centroid_nodes = [ox.nearest_nodes(g, c[0], c[1]) for c in centroids]
-    # 2D matrix of centroid-to-centroid distance
+    
+    # Initialize distance matrix
     distance_matrix = np.zeros((n, n))
     
-    # Loop through each pair of nodes
-    for i in (tqdm(range(n), desc="Computing distances", unit="ID")):
+    def compute_distances_from_source(i):
         source_node = centroid_nodes[i]
-        for j in range(i, n):
+        lengths = nx.single_source_dijkstra_path_length(g, source_node, weight='length')
+        distances = []
+        for j in range(n):
             target_node = centroid_nodes[j]
-            
-            # Retrieve distance between source and target centroid nodes
-            if i == j:
-                distance = 0
-            else:
-                try:
-                    distance = nx.shortest_path_length(g, source=source_node, target=target_node, weight='length')
-                except nx.NetworkXNoPath:
-                    distance = np.inf  # Assign infinity if no path exists
-            distance_matrix[i][j] = distance
-            distance_matrix[j][i] = distance  # Symmetric matrix
+            distance = lengths.get(target_node, np.inf) # np.inf for disconnected centroids
+            distances.append(distance)
+        return distances
     
-    # Handle infinities by setting them to the maximum finite distance
+    # Parallel computation of distances
+    print("Computing centroid distances...")
+    distances_list = Parallel(n_jobs=n_jobs, backend='loky')(
+        delayed(compute_distances_from_source)(i) for i in tqdm(range(n), desc="Centroids")
+    )
+    
+    distance_matrix = np.array(distances_list)
+    
+    # Handle disconnected centroids by setting them to the maximum finite distance
     if np.isinf(distance_matrix).any():
-        raise ValueError("Distance matrix contains infinite values due to disconnected centroids.")
+        finite_max = np.max(distance_matrix[np.isfinite(distance_matrix)])
+        distance_matrix[np.isinf(distance_matrix)] = finite_max
     
     # Normalize the distance matrix
     if distance_matrix.max() > 0:
         distance_matrix /= distance_matrix.max()
     
     return distance_matrix
+
+# Notes:
+#   - Overpass API does not allow concurrent calls
+#   - Limit to size of region to query amenities from; do region by region

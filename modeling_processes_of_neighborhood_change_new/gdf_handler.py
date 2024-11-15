@@ -2,12 +2,13 @@
 
 import geopandas as gpd
 import pandas as pd
-from config import IDENTIFIER_COLUMNS, NAME_COLUMNS
+from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST, GRAPH_ID_LIST
 
 # =======================
 # GDF FILE INITIALIZATION
 # =======================
 
+# load from cache
 def load_gdf(cache_files):
     gdfs = []
     for i in cache_files:
@@ -17,9 +18,12 @@ def load_gdf(cache_files):
         gdfs.append(gdf)
         
     # Combine all gdfs:
-    combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True)) #TODO: cache?
+    combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
+    used_IDS = [ID for ID, _ in ID_LIST]
+    combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
     return combined_gdf
 
+# create new gdf
 def create_gdf(shapefile_paths, cache_files):
     gdfs = []
     for i in shapefile_paths:
@@ -51,6 +55,10 @@ def create_gdf(shapefile_paths, cache_files):
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
+    # Subset the combined_gdf to only include regions in ID_LIST
+    graph_used_IDS = [ID for ID, _ in GRAPH_ID_LIST]
+    combined_gdf = combined_gdf[combined_gdf['ID'].isin(graph_used_IDS)].reset_index(drop=True)
+    
     return combined_gdf
 
 def rename_columns(gdf, layer_index):
@@ -70,14 +78,13 @@ def print_overlaps(gdf):
     # Check for overlaps
     overlaps = gpd.sjoin(combined_gdf, combined_gdf, predicate='overlaps', how='inner')
     
-    # Filter out when comparing to itself
+    # Ignore when comparing to itself
     overlaps = overlaps[overlaps['ID_left'] != overlaps['ID_right']]
     
     # Unique pair identifier
     overlaps['sorted_pair'] = overlaps.apply(lambda row: tuple(sorted([row['Name_left'], row['Name_right']])), axis=1)
     # Filter out repeat checks by checking for unique pair identifier
     overlaps = overlaps.drop_duplicates(subset='sorted_pair')
-    
     # Drop duplicate pairs based on the sorted pair identifier
     overlaps = overlaps.drop_duplicates(subset='sorted_pair')
 

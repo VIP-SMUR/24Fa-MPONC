@@ -1,7 +1,7 @@
 # visualization.py
 
 from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS
-from helper import CACHE_DIR
+from helper import FIGURE_PKL_CACHE_DIR
 import matplotlib.pyplot as plt
 import time
 import folium
@@ -22,7 +22,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
     # Graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
     pickle_filename = f"{figkey}.pkl"
-    pickle_path = CACHE_DIR / pickle_filename
+    pickle_path = FIGURE_PKL_CACHE_DIR / pickle_filename
     
     # Graphing logic
     if pickle_path.exists():

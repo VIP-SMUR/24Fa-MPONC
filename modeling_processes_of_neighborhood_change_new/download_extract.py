@@ -4,14 +4,14 @@ from config import ZIP_URLS
 import requests
 import zipfile
 from tqdm import tqdm
-from helper import CACHE_DIR, zip_filenames, extracted_names
+from helper import LAYER_CACHE_DIR, zip_filenames, extracted_names
 
 # ========================
 # DOWNLOAD AND EXTRACT ZIP
 # ========================
 
 # Download
-def download_file(url, filename, cache_dir=CACHE_DIR):
+def download_file(url, filename, cache_dir=LAYER_CACHE_DIR):
     file_path = cache_dir / filename
 
     # Check if ZIP file already exists
@@ -50,7 +50,7 @@ def download_file(url, filename, cache_dir=CACHE_DIR):
             return None
 
 # Extract
-def extract_file(file_path, extracted_name, cache_dir=CACHE_DIR):
+def extract_file(file_path, extracted_name, cache_dir=LAYER_CACHE_DIR):
     extract_path = cache_dir / extracted_name
 
     # Check if the file is a valid ZIP archive

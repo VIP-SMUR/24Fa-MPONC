@@ -1,9 +1,9 @@
 from helper import gdf_cache_filenames, graph_filenames
-from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
+from config import ID_LIST, GRAPH_ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
-from amtdens_distances import cached_amts_dens, cached_centroid_distances
+from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
 from pathlib import Path
@@ -29,7 +29,7 @@ def generate_trips(centroids, amts_dens):
 
     return trip_counts
 
-#ToDo: make random, make thresholds for car ownership, integrate demographic data with prices.
+#TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 def distribute_trips(trip_counts, centroids):
     """ Distribute trips using a gravity model or similar approach. """
     trip_distribution = {}
@@ -76,7 +76,7 @@ def main():
     # =======================
     # GDF FILE INITIALIZATION
     # =======================
-
+    
     # Load or create GeoDataFrame
     
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
@@ -87,47 +87,34 @@ def main():
     # =========================
     # GRAPH FILE INITIALIZATION
     # =========================
-
+    
     # Load or create Graph
     graph_file = graph_filenames[1]
-    if Path(graph_file).exists():
-        # Load existing graph and its IDs
-        g, saved_IDS = load_graph(graph_file, combined_gdf)
+    if Path(graph_file).exists(): 
+        # PULL GRAPH FROM CACHE
+        g, saved_IDS = load_graph(graph_file)
 
-        # Populate used_IDS based on current valid IDs in gdf_1
-        used_IDS = [ID for ID, _ in ID_LIST if ID in set(combined_gdf['ID'])]
+        # Populate used_IDS
+        used_IDS = [ID for ID, _ in GRAPH_ID_LIST if ID in set(combined_gdf['ID'])]
         
         # Compare saved_IDS with current IDs
-        if set(saved_IDS) != set(used_IDS):
-            print("\nRegions have changed. Recreating the graph...")
+        if set(saved_IDS) != set(used_IDS): # If different, create new graph
+            print("Regions have changed. Recreating the graph...")
             g, used_IDS = create_graph(combined_gdf)
             save_graph(g, used_IDS, graph_file)
-    else:
+    else: 
+        # CREATE NEW GRAPH
         graph_start_time = time.time()
         
-        # Create new graph
         g, used_IDS = create_graph(combined_gdf)
         save_graph(g, used_IDS, graph_file)
         
         graph_end_time = time.time()
         print(f"New graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
     
-    # =========================
-    # COMPUTE AMENITY DENSITIES
-    # =========================
-
-    amts_dens_start_time = time.time()
-    print("Processing amenities...")
-    
-    amts_dens = cached_amts_dens(combined_gdf, used_IDS, AMENITY_TAGS)
-    
-    amts_dens_end_time = time.time()
-    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
-
     # ================================
     # CENTROID INITIALIZATION FROM IDS
     # ================================
-
     centroid_start_time = time.time()
     print("Initializing centroids...")
     
@@ -137,7 +124,7 @@ def main():
 
     ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST if ID in used_IDS}
 
-    for ID in used_IDS[:-1]:
+    for ID in [ID for ID, _ in ID_LIST]:
         # Is_beltline
         is_beltline = ID_info.get(ID, False)
 
@@ -152,15 +139,28 @@ def main():
         centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, ID))
         
     centroid_end_time = time.time()
-    print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds")
+    print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds\n")
+
+    # =========================
+    # COMPUTE AMENITY DENSITIES
+    # =========================
+
+    amts_dens_start_time = time.time()
+    print("Processing amenities...")
+    
+    amts_dens = compute_amts_dens(combined_gdf, AMENITY_TAGS)
+    
+    amts_dens_end_time = time.time()
+    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
+
 
     # ==========================
     # COMPUTE CENTROID DISTANCES
     # ==========================
     distances_start_time = time.time()
-    print("\nProcessing distances...")
+    print("Processing distances...")
     
-    centroid_distances = cached_centroid_distances(centroids, g, used_IDS)
+    centroid_distances = cached_centroid_distances(centroids, g)
     
     distances_end_time = time.time()
     print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds\n")
@@ -227,3 +227,4 @@ if __name__ == "__main__":
 #TODO: add functionality for viewData flag to view amenity data
 #TODO: optimize graphing
 #TODO: requirements.txt
+#TODO: only use regions in fulton and other county
