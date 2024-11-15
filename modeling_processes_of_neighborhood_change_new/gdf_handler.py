@@ -2,7 +2,7 @@
 
 import geopandas as gpd
 import pandas as pd
-from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST, GRAPH_ID_LIST
+from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
 
 # =======================
 # GDF FILE INITIALIZATION
@@ -19,6 +19,8 @@ def load_gdf(cache_files):
         
     # Combine all gdfs:
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
+    
+    # Create gdf consisting only of regions in ID_LIST
     used_IDS = [ID for ID, _ in ID_LIST]
     combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
     return combined_gdf
@@ -55,10 +57,9 @@ def create_gdf(shapefile_paths, cache_files):
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
-    # Subset the combined_gdf to only include regions in ID_LIST
-    graph_used_IDS = [ID for ID, _ in GRAPH_ID_LIST]
-    combined_gdf = combined_gdf[combined_gdf['ID'].isin(graph_used_IDS)].reset_index(drop=True)
-    
+    # Convert gdf to only contain regions in ID_LIST
+    used_IDS = [ID for ID, _ in ID_LIST]
+    combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
     return combined_gdf
 
 def rename_columns(gdf, layer_index):

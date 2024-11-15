@@ -1,5 +1,5 @@
 from helper import gdf_cache_filenames, graph_filenames
-from config import ID_LIST, GRAPH_ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
+from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -95,7 +95,7 @@ def main():
         g, saved_IDS = load_graph(graph_file)
 
         # Populate used_IDS
-        used_IDS = [ID for ID, _ in GRAPH_ID_LIST if ID in set(combined_gdf['ID'])]
+        used_IDS = [ID for ID, _ in ID_LIST if ID in set(combined_gdf['ID'])]
         
         # Compare saved_IDS with current IDs
         if set(saved_IDS) != set(used_IDS): # If different, create new graph
@@ -124,7 +124,7 @@ def main():
 
     ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST if ID in used_IDS}
 
-    for ID in [ID for ID, _ in ID_LIST]:
+    for ID in used_IDS[:-1]:
         # Is_beltline
         is_beltline = ID_info.get(ID, False)
 

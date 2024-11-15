@@ -44,15 +44,15 @@ ID_LIST = [
     ('BELTLINE08', True),
     ('BELTLINE09', True),
     ('BELTLINE10', True),
-    ('HS6443070', False),   # Gresham Park
-    ('HS6442055', False),   # Druid Hills
-    ('1322052', False),     # Decatur city
-    ('1325720', False),     # East Point
+    # ('HS6443070', False),   # Gresham Park
+    # ('HS6442055', False),   # Druid Hills
+    # ('1322052', False),     # Decatur city
+    # ('1325720', False),     # East Point
     # ('HS6331054', False),   # Campbell HS
-    ('1310944', False),     # BrookHaven City
+    # ('1310944', False),     # BrookHaven City
     # ('HS6440172', False),   # Panthersville
     # ('HS6443060', False),   # Lakeside HS
-    ('1315172', False),     # Chamblee City
+    # ('1315172', False),     # Chamblee City
     # ('1368516', False),     # Sandy Springs City
     # ('HS6331069', False),   # Wheeler HS
     # ('HS6334066', False),   # Pebblebrook hS
@@ -64,9 +64,9 @@ ID_LIST = [
     #('HS6442054', False),   # Columbia HS
     
     # # ZCTA
-     ('30331', False),
-     ('30311', True),     
-     ('30327', False),    
+    # ('30331', False),
+    # ('30311', True),     
+    # ('30327', False),    
     # ('30305', True),    
     # ('30315', True),     
     # ('30354', False),   
@@ -78,11 +78,10 @@ ID_LIST = [
     # ('30336', False),
     
      # Housing Districts
-     ('HOUSE081', False),
-     ('HOUSE087', False),
-]
-
-GRAPH_ID_LIST = ID_LIST + [
+    #  ('HOUSE081', False),
+    #  ('HOUSE087', False),
+    #  ('1304000', False)
+    
     ('1304000', False)  # Atlanta City - Used only for graph generation
 ]
 
@@ -111,7 +110,7 @@ NUM_AGENTS = 20     # Number of agents
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
 
 # City Key (name)

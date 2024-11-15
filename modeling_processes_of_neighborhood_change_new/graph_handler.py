@@ -1,5 +1,6 @@
 # graph_handler
 
+from config import ID_LIST
 import osmnx as ox
 import networkx as nx
 import pickle
@@ -11,10 +12,11 @@ import os
 def create_graph(combined_gdf):
     
     used_IDS = []  # List to store valid IDS being used for simulation
+    for ID, _ in (ID_LIST):
+        used_IDS.append(ID)
     
     # Create and set OSMnx cache directory
     osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
-    os.makedirs(osmnx_cache_dir, exist_ok=True)
     ox.settings.cache_folder = osmnx_cache_dir  # Set OSMnx cache directory
     
     combined_shape = combined_gdf.geometry.unary_union
@@ -24,9 +26,6 @@ def create_graph(combined_gdf):
     g = ox.graph_from_polygon(combined_shape, network_type='drive', simplify=True)  # Roadmap of simulation region (networkx.MultiDiGraph)
     g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()  # Ensures all nodes are connected
     g = nx.convert_node_labels_to_integers(g)  # Converts nodes to integers
-    
-    # Store used_ID's
-    used_IDS = combined_gdf['ID'].tolist()
 
     return g, used_IDS
     
