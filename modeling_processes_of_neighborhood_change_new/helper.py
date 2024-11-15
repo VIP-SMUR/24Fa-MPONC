@@ -15,7 +15,8 @@ OSMNX_CACHE_DIR = Path('cache/osmnx_cache')
 FIGURE_PKL_CACHE_DIR = Path('cache/pkl_figures')
 GDF_CACHE_DIR = Path('cache/gdfs')
 LAYER_CACHE_DIR = Path('cache/layers')
-for directory in [LAYER_CACHE_DIR, GDF_CACHE_DIR, CACHE_DIR, DATA_DIR, FIGURES_DIR, AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR, FIGURE_PKL_CACHE_DIR]:
+GIFS_DIR = Path('figures/gifs')
+for directory in [GIFS_DIR, LAYER_CACHE_DIR, GDF_CACHE_DIR, CACHE_DIR, DATA_DIR, FIGURES_DIR, AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR, FIGURE_PKL_CACHE_DIR]:
     os.makedirs(directory, exist_ok=True)
 
 # Constants:

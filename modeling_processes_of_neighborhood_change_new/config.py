@@ -102,10 +102,10 @@ AMENITY_TAGS = {
 }
 
 # Simulation Parameters
-RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [500]       # Benchmarks
-NUM_AGENTS = 20     # Number of agents
+RHO_L = [1, 4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [500, 1000, 1500, 2000]       # Benchmarks
+NUM_AGENTS = 100     # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?

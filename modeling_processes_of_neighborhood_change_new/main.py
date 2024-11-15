@@ -1,11 +1,11 @@
-from helper import gdf_cache_filenames, graph_filenames
+from helper import gdf_cache_filenames, graph_filenames, GIFS_DIR, FIGURES_DIR
 from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
-from visualization import plot_city
+from visualization import plot_city, process_pdfs_to_gifs
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -213,6 +213,8 @@ def main():
             )
             for rho, alpha, t_max in simulation_params
         )
+        
+        process_pdfs_to_gifs(FIGURES_DIR, GIFS_DIR, duration=600, num_pause_frames=2)
         
     plot_end_time = time.time()
     print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.")

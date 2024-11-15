@@ -1,7 +1,7 @@
 # visualization.py
 
 from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS
-from helper import FIGURE_PKL_CACHE_DIR
+from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR
 import matplotlib.pyplot as plt
 import time
 import folium
@@ -15,6 +15,10 @@ from branca.colormap import linear
 import osmnx as ox
 import numpy as np
 import pickle
+from PIL import Image
+import os
+from collections import defaultdict
+import fitz
 
 # =============================
 # VISUALIZATION EXECUTION LOGIC
@@ -228,3 +232,67 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
     end_time = time.time()
     FOLIUM_DIR = Path(FIGURES_DIR) / f"{figkey}_folium.html"
     print(f"Plotted and saved {FOLIUM_DIR.name} [{end_time - start_time:.2f} s]")
+    
+    
+
+# GIF GENERATION
+def pdf_to_images(pdf_path):
+    """Converts a PDF to a list of PIL Image objects."""
+    doc = fitz.open(pdf_path)
+    images = []
+    for page_num in range(doc.page_count):
+        page = doc[page_num]
+        pix = page.get_pixmap()
+        img = Image.frombytes("RGB", [pix.width, pix.height], pix.samples)
+        images.append(img)
+    return images
+
+def images_to_gif(images, output_path, duration=600, num_pause_frames=2):
+    """Creates a GIF from a list of PIL Image objects."""
+    # Duplicate the last frame to create a pause
+    pause_frame = images[-1].copy()
+    
+    images = images + [pause_frame] * num_pause_frames
+    
+    images[0].save(
+        output_path,
+        save_all=True,
+        append_images=images[1:],
+        optimize=False,
+        duration=duration,
+        loop=0,
+    )
+
+def process_pdfs_to_gifs(pdf_directory, output_directory, duration, num_pause_frames):
+    """Processes all PDFs in a directory, groups by filename pattern, and creates GIFs."""
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Dictionary to group files
+    groups = defaultdict(list)
+    for filename in os.listdir(pdf_directory):
+        if filename.endswith(".pdf"):
+            parts = filename.replace(".pdf", "").split("_")
+            X, Y, Z, NUM = parts[-5:-1]
+            key = (X, Y, Z)
+            groups[key].append((int(NUM), os.path.join(pdf_directory, filename)))
+
+    # Process each group
+    for key, file_tuples in groups.items():
+        # Sort by NUM
+        file_tuples.sort()
+        pdf_files = [filepath for _, filepath in file_tuples]
+        all_images = []
+        for pdf_file in pdf_files:
+            images = pdf_to_images(pdf_file)
+            all_images.extend(images)
+
+        if all_images:
+            # Add back prefix
+            example_filename = os.path.basename(pdf_files[0])
+            prefix = "_".join(example_filename.split("_")[:-5])
+            
+            output_gif = os.path.join(output_directory, f"{prefix}_{'_'.join(key)}.gif")
+            images_to_gif(all_images, output_gif, duration=duration, num_pause_frames=num_pause_frames)
+            print(f"Created GIF: {output_gif}")
+        else:
+            print(f"No images found for group: {key}")
