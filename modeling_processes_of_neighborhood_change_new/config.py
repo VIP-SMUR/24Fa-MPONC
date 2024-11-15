@@ -102,21 +102,24 @@ AMENITY_TAGS = {
 }
 
 # Simulation Parameters
-RHO_L = [1, 8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 1000 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 100     # Number of agents
+RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 10 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 150    # Number of agents
+
+# Graph Visualization Settings
+COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
+
+# GIF Settings
+GIF_FRAME_DURATION = 200 # Millseconds
+GIF_NUM_PAUSE_FRAMES = 8 # Number of repeat frames to show upon GIF completion
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
-
-# GIF Settings
-GIF_FRAME_DURATION = 75 # Millseconds
-GIF_NUM_PAUSE_FRAMES = 4 # Number of repeat frames to show upon GIF completion
 
 # City Key (name)
 CTY_KEY = 'Georgia'

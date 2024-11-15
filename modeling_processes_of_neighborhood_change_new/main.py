@@ -6,7 +6,7 @@ from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
-from gif_visualization import process_pdfs_to_gifs
+from gif import process_pdfs_to_gifs
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -219,6 +219,7 @@ def main():
     # ======================
     if PLOT_CITIES:
         gif_start_time = time.time()
+        print("Creating GIF(s)...")
     
         process_pdfs_to_gifs(FIGURES_DIR, GIFS_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
         

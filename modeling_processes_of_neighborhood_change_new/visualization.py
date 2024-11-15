@@ -1,6 +1,6 @@
 # visualization.py
 
-from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS
+from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS
 from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR
 import matplotlib.pyplot as plt
 import time
@@ -11,7 +11,7 @@ from helper import FIGURES_DIR
 from folium import CircleMarker
 from folium.plugins import MarkerCluster
 from pathlib import Path
-from branca.colormap import linear
+from branca.colormap import linear, StepColormap
 import osmnx as ox
 import numpy as np
 import pickle
@@ -45,7 +45,6 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
             plot_matplotlib(
                 centroids=centroids, 
                 city=city, 
-                cmap='YlOrRd', 
                 figkey=figkey, 
                 graph=g,
                 gdf=gdf,
@@ -55,7 +54,6 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
             plot_folium(
                 centroids=centroids, 
                 city=city, 
-                cmap='YlOrRd', 
                 figkey=figkey, 
                 graph=g, 
                 gdf=gdf
@@ -67,8 +65,22 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
 # ================
 # MATPLOTLIB GRAPH
 # ================
-def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf=None):
-    
+
+# Global setup for colors and colormap
+cmap_base = plt.get_cmap('YlOrRd')
+fixed_colors = [cmap_base(i / (COLORBAR_NUM_INTERVALS - 1)) for i in range(COLORBAR_NUM_INTERVALS)]
+discrete_cmap = mpl.colors.ListedColormap(fixed_colors)
+
+# Fix boundaries and normalization
+boundaries = np.linspace(0, 1, COLORBAR_NUM_INTERVALS + 1)
+norm = mpl.colors.BoundaryNorm(boundaries, discrete_cmap.N, clip=True)
+
+# Create ScalarMappable from above settings
+global_sm = mpl.cm.ScalarMappable(cmap=discrete_cmap, norm=norm)
+global_sm.set_array([])  # Fix color scale
+
+
+def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
     start_time = time.time()
     
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -76,7 +88,7 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
     ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
 
     # Plot GDF layer (region boundaries)
-    gdf_plot = gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=cmap, alpha=0.6, edgecolor='black', legend=False)
+    gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=discrete_cmap, alpha=0.6, edgecolor='black', legend=False)
 
     # Plot centroids locations (this comes after the graph to make sure they are visible on top)
     colors = np.where(city.beltline_array, 'palegreen', 'white')
@@ -88,14 +100,9 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
         lat = city.lat_array[ID]
         inhabitants = len(city.inh_array[ID])
         ax.text(lon, lat, str(inhabitants), fontsize=9, ha='center', va='center', color='black')
-
-    # ScalarMappable for color bar implementation
-    sm = mpl.cm.ScalarMappable(
-        cmap=cmap,
-        norm=mpl.colors.Normalize(vmin=0, vmax=1)
-    )
-    # Add color bar
-    cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
+        
+    # Use the global ScalarMappable for consistent colorbar
+    cbar = fig.colorbar(global_sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
     cbar.set_label('Average Wealth', fontsize=12)
 
     # Labels and title
@@ -114,7 +121,7 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
 # ============    
 # FOLIUM GRAPH
 # ============
-def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf = None):
+def plot_folium(centroids, city, figkey='city', graph=None, gdf = None):
     start_time = time.time()
             
     # Center the map
@@ -125,8 +132,14 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
     m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
     
     # Define LinearColormap for folium
-    folium_colormap = linear.YlOrRd_09.scale(0, 1)
-    folium_colormap.caption = 'Average Wealth'
+    boundaries = np.linspace(0, 1, COLORBAR_NUM_INTERVALS + 1)
+    folium_colormap = StepColormap(
+        colors=fixed_colors, 
+        vmin=0, 
+        vmax=1, 
+        index=boundaries,  # Use the same boundaries
+        caption="Average Wealth"
+    )
     
     # Customize GDF layer
     def style_function(feature):

@@ -1,4 +1,4 @@
-# gif_visualization.py
+# gif.py
 
 from config import N_JOBS
 from PIL import Image
