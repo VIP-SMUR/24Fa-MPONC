@@ -1,6 +1,6 @@
 # amtsdens_distances.py
 
-from config import viewData
+from config import viewData, N_JOBS
 from helper import AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR
 import os
 import osmnx as ox
@@ -97,9 +97,6 @@ def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
     
     return distance_matrix
 
-# Multiprocessing: Num CPU's
-n_jobs = -1 #maximum
-
 def compute_centroid_distances(centroids, g):
     # Number of centroids
     n = len(centroids)
@@ -122,7 +119,7 @@ def compute_centroid_distances(centroids, g):
     
     # Parallel computation of distances
     print("Computing centroid distances...")
-    distances_list = Parallel(n_jobs=n_jobs, backend='loky')(
+    distances_list = Parallel(n_jobs=N_JOBS, backend='loky')(
         delayed(compute_distances_from_source)(i) for i in tqdm(range(n), desc="Centroids")
     )
     

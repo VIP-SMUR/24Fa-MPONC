@@ -1,11 +1,12 @@
-from helper import gdf_cache_filenames, graph_filenames, GIFS_DIR, FIGURES_DIR
-from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, T_MAX_L, AMENITY_TAGS
+from helper import gdf_cache_filenames, graph_filenames, GIFS_DIR, FIGURES_DIR, T_MAX_L
+from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
 from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
-from visualization import plot_city, process_pdfs_to_gifs
+from visualization import plot_city
+from gif_visualization import process_pdfs_to_gifs
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -195,29 +196,34 @@ def main():
     # =======================
     # PLOT SIMULATION RESULTS
     # =======================
-
-    plot_start_time = time.time()
-    print("Plotting...")
-    
     if PLOT_CITIES:
+        plot_start_time = time.time()
+        print("Plotting...")
+        
         # All combinations of parameters
         simulation_params = list(product(RHO_L, ALPHA_L, T_MAX_L))
         
-        # Number of CPU's
-        n_jobs = -1 # maximum
-        
         # Multiprocessing
-        Parallel(n_jobs=n_jobs, backend='loky')(
+        Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(plot_city)(
                 rho, alpha, t_max, centroids, g, combined_gdf
             )
             for rho, alpha, t_max in simulation_params
         )
         
-        process_pdfs_to_gifs(FIGURES_DIR, GIFS_DIR, duration=600, num_pause_frames=2)
-        
     plot_end_time = time.time()
     print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.")
+        
+    # ======================
+    # CREATE SIMULATION GIFS
+    # ======================
+    if PLOT_CITIES:
+        gif_start_time = time.time()
+    
+        process_pdfs_to_gifs(FIGURES_DIR, GIFS_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
+        
+        gif_end_time = time.time()
+        print(f"Completed creating GIF's after {gif_end_time - gif_start_time:.2f} seconds.")
 
 
 if __name__ == "__main__":

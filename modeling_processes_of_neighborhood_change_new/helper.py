@@ -1,11 +1,15 @@
 #helper.py
-from config import ZIP_URLS
+from config import ZIP_URLS, T_MAX_RANGE, BENCHMARK_INTERVALS
 from pathlib import Path
 import os
+import numpy as np
+
+# Create T_MAX_L from T_MAX_RANGE and BENCHMARK_INTERVALS
+num_benchmarks = int(T_MAX_RANGE/BENCHMARK_INTERVALS)
+T_MAX_L = np.linspace(BENCHMARK_INTERVALS, T_MAX_RANGE, num_benchmarks, dtype=int)
 
 # Directories
 BASE_DIR = Path.cwd()
-
 CACHE_DIR = Path("cache")
 DATA_DIR = Path("data")
 FIGURES_DIR = Path("figures")

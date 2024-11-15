@@ -1,7 +1,7 @@
 # simulation.py
 
-from config import (RHO_L, ALPHA_L, T_MAX_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY)
-from helper import TAU, DATA_DIR, FIGURE_PKL_CACHE_DIR
+from config import RHO_L, ALPHA_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, N_JOBS
+from helper import TAU, DATA_DIR, FIGURE_PKL_CACHE_DIR, T_MAX_L
 from Agent import Agent
 from City import City
 from itertools import product
@@ -38,7 +38,7 @@ class SimulationManager:
             return
 
         # Run parallel processing using all available CPUs
-        Parallel(n_jobs=-1, backend='loky')(
+        Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(self.run_single_simulation)(
                 rho, alpha, assigned_routes
             )
