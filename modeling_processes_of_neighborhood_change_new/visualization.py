@@ -6,8 +6,10 @@ import matplotlib.pyplot as plt
 import time
 import folium
 import matplotlib as mpl
+mpl.use('Agg') # Set non-interactive mpl backend
 from helper import FIGURES_DIR
 from folium import CircleMarker
+from folium.plugins import MarkerCluster
 from pathlib import Path
 from branca.colormap import linear
 import osmnx as ox
@@ -31,8 +33,13 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
             
         # Retrieve city data for plotting:
         df_data = city.get_data()
+        
+        # Set index
+        gdf.set_index('ID', inplace=True)
+        df_data.set_index('ID', inplace=True)
+        
         # 'Avg Endowment' from csv to gdf
-        gdf = gdf.merge(df_data[['ID', 'Avg Endowment Normalized']], on='ID', how='left')
+        gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
     
         if PLOT_LIBRARY == 1:
             plot_matplotlib(
@@ -44,6 +51,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
                 gdf=gdf,
                 )
         else:
+            gdf = gdf.to_crs(epsg=32616)
             plot_folium(
                 centroids=centroids, 
                 city=city, 
@@ -86,7 +94,6 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
         cmap=cmap,
         norm=mpl.colors.Normalize(vmin=0, vmax=1)
     )
-
     # Add color bar
     cbar = fig.colorbar(sm, ax=ax, orientation='vertical', fraction=0.035, pad=0.02)
     cbar.set_label('Average Wealth', fontsize=12)
@@ -108,11 +115,7 @@ def plot_matplotlib(centroids, city, cmap='YlOrRd', figkey='city', graph=None, g
 # FOLIUM GRAPH
 # ============
 def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf = None):
-    
     start_time = time.time()
-    
-    # Set correct CRS
-    gdf = gdf.to_crs(epsg=32616)
             
     # Center the map
     center_lat = np.mean(city.lat_array)
@@ -145,6 +148,11 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
     # Add colormap
     folium_colormap.add_to(m)
     
+    # Initialize MarkerCluster
+    marker_cluster = MarkerCluster().add_to(m)
+    
+    popup_texts = []
+    
     # Add centroids as CircleMarker with beltline coloring
     for i, (lat, lon) in enumerate(zip(city.lat_array, city.lon_array)):
         beltline_status = city.beltline_array[i]
@@ -157,6 +165,12 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
         inhabitants = len(city.inh_array[i])
         # amenity density
         amenity_density = city.amts_dens[i]
+        
+        # num amenities
+        area = gdf.loc[gdf['ID'] == city.id_array[i], 'Sqkm'].values
+        area = area[0]
+        num_amenities = amenity_density * area
+        
         # avg endowment
         if inhabitants > 0: # Latest population > 0
             avg_endowment = gdf.loc[gdf['ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
@@ -169,11 +183,16 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
         popup_text = f"""
             <div style="font-size: 14px; line-height: 1.6; max-width: 200px;">
                 <strong>{name}</strong><br><br>
+                <strong>Amenities:</strong> {num_amenities:.0f}
                 <strong>Amt density:</strong> {amenity_density:.1f}/sqkm<br>
                 <strong>Population:</strong> {inhabitants}<br>
                 <strong>Wealth:</strong> {avg_endowment:.2f}
             </div>
         """
+
+    for i, (lat, lon, popup_text) in enumerate(zip(city.lat_array, city.lon_array, popup_texts)):
+        beltline_status = city.beltline_array[i]
+        color = 'red' if beltline_status else 'black'
 
         CircleMarker(
             location=[lat, lon],
@@ -182,7 +201,7 @@ def plot_folium(centroids, city, cmap='YlOrRd', figkey='city', graph=None, gdf =
             fill_opacity=0.8,
             radius=5,
             popup=folium.Popup(popup_text, max_width=250)
-        ).add_to(m)
+        ).add_to(marker_cluster)
 
     # Add title and custom legend using HTML
     title_html = f'''

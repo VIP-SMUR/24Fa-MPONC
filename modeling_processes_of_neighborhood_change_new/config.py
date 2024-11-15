@@ -39,11 +39,11 @@ ID_LIST = [
     ('BELTLINE03', True),
     ('BELTLINE04', True),
     ('BELTLINE05', True),
-    ('BELTLINE06', True),
-    ('BELTLINE07', True),
-    ('BELTLINE08', True),
-    ('BELTLINE09', True),
-    ('BELTLINE10', True),
+    # ('BELTLINE06', True),
+    # ('BELTLINE07', True),
+    # ('BELTLINE08', True),
+    # ('BELTLINE09', True),
+    # ('BELTLINE10', True),
     # ('HS6443070', False),   # Gresham Park
     # ('HS6442055', False),   # Druid Hills
     # ('1322052', False),     # Decatur city
@@ -61,7 +61,7 @@ ID_LIST = [
     # ('HS6310115', False),   # Drew HS
     # ('HS6311054', False),   # Forest Park HS
     # ('HS6314058', False),   # Morrow HS
-    #('HS6442054', False),   # Columbia HS
+    # ('HS6442054', False),   # Columbia HS
     
     # # ZCTA
     # ('30331', False),
@@ -102,9 +102,9 @@ AMENITY_TAGS = {
 }
 
 # Simulation Parameters
-RHO_L = [2]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_L = [200]       # Benchmarks
+RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_L = [500]       # Benchmarks
 NUM_AGENTS = 20     # Number of agents
 
 # Flags

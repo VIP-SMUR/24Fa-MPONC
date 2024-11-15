@@ -224,7 +224,5 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: add functionality for viewData flag to view amenity data
-#TODO: optimize graphing
-#TODO: requirements.txt
+#TODO: optimize amenity density calculations
 #TODO: only use regions in fulton and other county

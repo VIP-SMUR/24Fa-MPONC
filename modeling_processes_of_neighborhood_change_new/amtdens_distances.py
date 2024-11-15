@@ -1,7 +1,7 @@
 # amtsdens_distances.py
 
 from config import viewData
-from helper import AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR
+from helper import AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR
 import os
 import osmnx as ox
 import networkx as nx
