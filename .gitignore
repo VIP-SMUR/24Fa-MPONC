@@ -162,3 +162,4 @@ cython_debug/
 #.idea/
 /modeling_processes_of_neighborhood_change_new/map.osm
 /modeling_processes_of_neighborhood_change_new/gravity/
+.DS_Store

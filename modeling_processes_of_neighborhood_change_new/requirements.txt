@@ -27,8 +27,8 @@ matplotlib==3.9.2
 networkx==3.4.2
 nibabel==5.3.2
 nipype==1.9.0
-numpy==1.26.4; python_version < "3.13"
-osmnx==1.9.3; python_version < "3.13"
+numpy>=1.26.4
+osmnx>=1.9.3
 packaging==24.2
 pandas==2.2.3
 pathlib==1.0.1
