@@ -31,7 +31,6 @@ TAU = 0.5  # Inequality factor in Lorentz curve
 zip_filenames = {}
 extracted_names = {}
 shapefile_names = {}
-graph_filenames = {}
 gdf_cache_filenames = {}
 
 # Loop through num_layers
@@ -39,5 +38,7 @@ for i in range(1, len(ZIP_URLS) + 1):
     # Generate variable names
     zip_filenames[i] = f"layer_{i}.zip"
     extracted_names[i] = zip_filenames[i].rsplit('.', 1)[0]
-    graph_filenames[i] = CACHE_DIR / f"graph.pkl"
     gdf_cache_filenames[i] = GDF_CACHE_DIR / f"gdf_{i}.gpkg"
+    
+# Name of pickled graph file
+graph_file = CACHE_DIR / f"graph.pkl"

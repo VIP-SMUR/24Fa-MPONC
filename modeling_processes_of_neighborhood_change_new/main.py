@@ -1,4 +1,4 @@
-from helper import gdf_cache_filenames, graph_filenames, GIFS_DIR, FIGURES_DIR, T_MAX_L
+from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L
 from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
@@ -7,6 +7,7 @@ from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
 from gif import process_pdfs_to_gifs
+from centroids import create_centroids
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -81,37 +82,36 @@ def main():
     # Load or create GeoDataFrame
     
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
-        combined_gdf = load_gdf(gdf_cache_filenames)
+        gdf = load_gdf(gdf_cache_filenames)
     else:
-        combined_gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
 
     # =========================
     # GRAPH FILE INITIALIZATION
     # =========================
     
+    graph_start_time = time.time()
+    
     # Load or create Graph
-    graph_file = graph_filenames[1]
     if Path(graph_file).exists(): 
         # PULL GRAPH FROM CACHE
         g, saved_IDS = load_graph(graph_file)
 
         # Populate used_IDS
-        used_IDS = [ID for ID, _ in ID_LIST if ID in set(combined_gdf['ID'])]
+        used_IDS = [ID for ID, _ in ID_LIST if ID in set(gdf['ID'])]
         
         # Compare saved_IDS with current IDs
         if set(saved_IDS) != set(used_IDS): # If different, create new graph
             print("Regions have changed. Recreating the graph...")
-            g, used_IDS = create_graph(combined_gdf)
+            g, used_IDS = create_graph(gdf)
             save_graph(g, used_IDS, graph_file)
     else: 
         # CREATE NEW GRAPH
-        graph_start_time = time.time()
-        
-        g, used_IDS = create_graph(combined_gdf)
+        g, used_IDS = create_graph(gdf)
         save_graph(g, used_IDS, graph_file)
         
-        graph_end_time = time.time()
-        print(f"New graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
+    graph_end_time = time.time()    
+    print(f"New graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
     
     # ================================
     # CENTROID INITIALIZATION FROM IDS
@@ -119,25 +119,7 @@ def main():
     centroid_start_time = time.time()
     print("Initializing centroids...")
     
-    # Initialize centroids array
-    centroids = []
-    # tuple format: (longitude, latitude, region_name, is_beltline, ID)
-
-    ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST if ID in used_IDS}
-
-    for ID in used_IDS[:-1]:
-        # Is_beltline
-        is_beltline = ID_info.get(ID, False)
-
-        # Fetch ID instance from combined_gdf
-        gdf_sub = combined_gdf[combined_gdf['ID'] == ID]
-
-        # Combined geometry of all geometries in gdf_sub
-        combined_geometry = gdf_sub.geometry.union_all()
-
-        # Initialize centroid with coordinates
-        centroid = combined_geometry.centroid
-        centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, ID))
+    centroids = create_centroids(gdf, ID_LIST)
         
     centroid_end_time = time.time()
     print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds\n")
@@ -149,7 +131,7 @@ def main():
     amts_dens_start_time = time.time()
     print("Processing amenities...")
     
-    amts_dens = compute_amts_dens(combined_gdf, AMENITY_TAGS)
+    amts_dens = compute_amts_dens(gdf, AMENITY_TAGS)
     
     amts_dens_end_time = time.time()
     print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
@@ -206,7 +188,7 @@ def main():
         # Multiprocessing
         Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(plot_city)(
-                rho, alpha, t_max, centroids, g, combined_gdf
+                rho, alpha, t_max, centroids, g, gdf
             )
             for rho, alpha, t_max in simulation_params
         )
@@ -233,5 +215,7 @@ if __name__ == "__main__":
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
 #TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: optimize amenity density calculations
 #TODO: only use regions in fulton and other county
+    # Fetch all geometries within Fulton and Dekalb
+    # Initialize list in config including regions tomark "BELTLINE"
+        # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"

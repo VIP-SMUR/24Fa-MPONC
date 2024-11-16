@@ -40,5 +40,5 @@ def load_graph(file_path):
         data = pickle.load(file)
     g = data['graph']
     saved_IDs = data['ID']
-    print(f"Loading graph from cache: '{file_path}'...\n")
+    print(f"Loading graph from: '{file_path}'...\n")
     return g, saved_IDs

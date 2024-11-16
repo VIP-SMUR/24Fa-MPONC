@@ -138,4 +138,4 @@ def compute_centroid_distances(centroids, g):
 
 # Notes:
 #   - Overpass API does not allow concurrent calls
-#   - Limit to size of region to query amenities from; do region by region
+#   - Limit size of region to query amenities from; do region by region

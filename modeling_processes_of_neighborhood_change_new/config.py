@@ -44,24 +44,6 @@ ID_LIST = [
     ('BELTLINE08', True),
     ('BELTLINE09', True),
     ('BELTLINE10', True),
-    ('HS6443070', False),   # Gresham Park
-    ('HS6442055', False),   # Druid Hills
-    ('1322052', False),     # Decatur city
-    ('1325720', False),     # East Point
-    ('HS6331054', False),   # Campbell HS
-    ('1310944', False),     # BrookHaven City
-    ('HS6440172', False),   # Panthersville
-    ('HS6443060', False),   # Lakeside HS
-    ('1315172', False),     # Chamblee City
-    ('1368516', False),     # Sandy Springs City
-    ('HS6331069', False),   # Wheeler HS
-    ('HS6334066', False),   # Pebblebrook hS
-    ('1317776', False),     # College Park
-    ('HS6312052', False),   # North Clayton HS
-    ('HS6310115', False),   # Drew HS
-    ('HS6311054', False),   # Forest Park HS
-    ('HS6314058', False),   # Morrow HS
-    ('HS6442054', False),   # Columbia HS
     
     # # ZCTA
     # ('30331', False),
