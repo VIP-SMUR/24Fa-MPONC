@@ -1,4 +1,4 @@
-from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L
+from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
 from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
@@ -96,18 +96,15 @@ def main():
     if Path(graph_file).exists(): 
         # PULL GRAPH FROM CACHE
         g, saved_IDS = load_graph(graph_file)
-
-        # Populate used_IDS
-        used_IDS = [ID for ID, _ in ID_LIST if ID in set(gdf['ID'])]
         
         # Compare saved_IDS with current IDs
         if set(saved_IDS) != set(used_IDS): # If different, create new graph
             print("Regions have changed. Recreating the graph...")
-            g, used_IDS = create_graph(gdf)
+            g = create_graph(gdf)
             save_graph(g, used_IDS, graph_file)
     else: 
         # CREATE NEW GRAPH
-        g, used_IDS = create_graph(gdf)
+        g = create_graph(gdf)
         save_graph(g, used_IDS, graph_file)
         
     graph_end_time = time.time()    

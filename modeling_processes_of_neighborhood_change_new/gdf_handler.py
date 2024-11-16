@@ -3,6 +3,7 @@
 import geopandas as gpd
 import pandas as pd
 from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
+from helper import used_IDS
 
 # =======================
 # GDF FILE INITIALIZATION
@@ -21,7 +22,6 @@ def load_gdf(cache_files):
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
     # Create gdf consisting only of regions in ID_LIST
-    used_IDS = [ID for ID, _ in ID_LIST]
     combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
     return combined_gdf
 
@@ -36,14 +36,11 @@ def create_gdf(shapefile_paths, cache_files):
         else:
             print(f"Creating GDF file for Layer {i}...")
             gdf = gpd.read_file(shapefile_path)
+            
+            combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
         
             # Simplify geometries
             gdf['geometry'] = gdf['geometry'].simplify(tolerance=0.001, preserve_topology=True)   
-
-            # Add 'Sqkm' area column:
-            gdf = gdf.to_crs(epsg=32616)  # Update CRS for area calculations
-            gdf['Sqkm'] = gdf['geometry'].area / 1e+6 
-            gdf = gdf.to_crs(epsg=4326)
             
             # Rename identifier column to 'ID'
             gdf = rename_columns(gdf, i)
@@ -58,8 +55,13 @@ def create_gdf(shapefile_paths, cache_files):
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
     # Convert gdf to only contain regions in ID_LIST
-    used_IDS = [ID for ID, _ in ID_LIST]
     combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
+    
+    # Add 'Sqkm' area column:
+    combined_gdf = combined_gdf.to_crs(epsg=32616)  # Update CRS for area calculations
+    combined_gdf['Sqkm'] = combined_gdf['geometry'].area / 1e+6 
+    combined_gdf = combined_gdf.to_crs(epsg=4326)
+    
     return combined_gdf
 
 def rename_columns(gdf, layer_index):

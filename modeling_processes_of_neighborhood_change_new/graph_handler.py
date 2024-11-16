@@ -1,6 +1,5 @@
 # graph_handler
 
-from config import ID_LIST
 import osmnx as ox
 import networkx as nx
 import pickle
@@ -10,10 +9,6 @@ import os
 # GRAPH FILE INITIALIZATION
 # =========================
 def create_graph(combined_gdf):
-    
-    used_IDS = []  # List to store valid IDS being used for simulation
-    for ID, _ in (ID_LIST):
-        used_IDS.append(ID)
     
     # Create and set OSMnx cache directory
     osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
@@ -27,7 +22,7 @@ def create_graph(combined_gdf):
     g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()  # Ensures all nodes are connected
     g = nx.convert_node_labels_to_integers(g)  # Converts nodes to integers
 
-    return g, used_IDS
+    return g
     
 def save_graph(g, used_IDS, file_path):
     with open(file_path, 'wb') as file:
