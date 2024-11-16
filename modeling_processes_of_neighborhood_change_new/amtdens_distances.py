@@ -120,7 +120,7 @@ def compute_centroid_distances(centroids, g):
     # Parallel computation of distances
     print("Computing centroid distances...")
     distances_list = Parallel(n_jobs=N_JOBS, backend='loky')(
-        delayed(compute_distances_from_source)(i) for i in tqdm(range(n), desc="Centroids")
+        delayed(compute_distances_from_source)(i) for i in range(n)
     )
     
     distance_matrix = np.array(distances_list)
