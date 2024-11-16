@@ -31,40 +31,42 @@ def create_gdf(shapefile_paths, cache_files):
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
+        
+        # If cached:
         if cache_file.exists():
             gdf = gpd.read_file(cache_file)
+            
+        # Fetch and manipulate individual GDF's:    
         else:
             print(f"Creating GDF file for Layer {i}...")
             gdf = gpd.read_file(shapefile_path)
             
-            combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
+            # TODO
+            # Filter GDF for specifis regions
+            gdf = gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
         
             # Simplify geometries
             gdf['geometry'] = gdf['geometry'].simplify(tolerance=0.001, preserve_topology=True)   
             
             # Rename identifier column to 'ID'
-            gdf = rename_columns(gdf, i)
-        
+            gdf = rename_ID_column(gdf, i)
+            
+            # Create 'Sqkm' area column
+            create_SQKM_column(gdf)
+            
             # Save to cache
             print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
             gdf.to_file(cache_file, driver='GPKG')
 
+        # Store manipulated GDF's
         gdfs.append(gdf)
         
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
-    # Convert gdf to only contain regions in ID_LIST
-    combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
-    
-    # Add 'Sqkm' area column:
-    combined_gdf = combined_gdf.to_crs(epsg=32616)  # Update CRS for area calculations
-    combined_gdf['Sqkm'] = combined_gdf['geometry'].area / 1e+6 
-    combined_gdf = combined_gdf.to_crs(epsg=4326)
-    
     return combined_gdf
 
-def rename_columns(gdf, layer_index):
+def rename_ID_column(gdf, layer_index):
     identifier_column = IDENTIFIER_COLUMNS.get(layer_index)
     name_column = NAME_COLUMNS.get(layer_index)
     if identifier_column != 'ID':
@@ -72,6 +74,11 @@ def rename_columns(gdf, layer_index):
     if name_column != 'Name':
         gdf = gdf.rename(columns={name_column: 'Name'})
     return gdf
+
+def create_SQKM_column(gdf):
+    gdf = gdf.to_crs(epsg=32616)  # Update CRS for area calculations
+    gdf['Sqkm'] = gdf['geometry'].area / 1e+6 
+    gdf = gdf.to_crs(epsg=4326)
 
 def print_overlaps(gdf):
     combined_gdf = gdf

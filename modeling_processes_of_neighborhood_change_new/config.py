@@ -43,7 +43,7 @@ ID_LIST = [
     ('BELTLINE07', True),
     ('BELTLINE08', True),
     ('BELTLINE09', True),
-    ('BELTLINE10', True),
+    #('BELTLINE10', True),
     
     # # ZCTA
     # ('30331', False),
