@@ -12,18 +12,27 @@ Modeling Processes of Neighborhood Change
 
 
 
-!!! abstract inline "Lorem ipsum"
+:   !!! abstract
 
-    Lorem ipsum dolor sit amet, consectetur
-    adipiscing elit. Nulla et euismod nulla.
-    Curabitur feugiat, tortor non consequat
-    finibus, justo purus auctor massa, nec
-    semper lorem quam in massa.
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
+        euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
+        purus auctor massa, nec semper lorem quam in massa.
 
-### Reference paper
+
+
+## Setup
+
+```
+cd modeling_processes_of_neighborhood_change_new
+conda create -n mponc python=3.12
+conda activate mponc
+pip install -r requirements.txt
+python main.py
+```
+
+
+## Reference paper
 
 https://arxiv.org/abs/2401.03307
 
-### Code
 
-https://github.com/jcmartinezmori/modeling_processes_of_neighborhood_change
