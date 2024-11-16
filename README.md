@@ -14,15 +14,13 @@ Modeling Processes of Neighborhood Change
 
 :   !!! abstract
 
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla et
-        euismod nulla. Curabitur feugiat, tortor non consequat finibus, justo
-        purus auctor massa, nec semper lorem quam in massa.
+        abstract goes here
 
 
 
 ## Setup
 
-```
+```bash
 cd modeling_processes_of_neighborhood_change_new
 conda create -n mponc python=3.12
 conda activate mponc
@@ -33,6 +31,16 @@ python main.py
 
 ## Reference paper
 
-https://arxiv.org/abs/2401.03307
+```bibtex
+@misc{mori2024modelingprocessesneighborhoodchange,
+      title={Modeling Processes of Neighborhood Change}, 
+      author={J. Carlos Martínez Mori and Zhanzhan Zhao},
+      year={2024},
+      eprint={2401.03307},
+      archivePrefix={arXiv},
+      primaryClass={cs.MA},
+      url={https://arxiv.org/abs/2401.03307}, 
+}
+```
 
 
