@@ -2,7 +2,7 @@
 
 import geopandas as gpd
 import pandas as pd
-from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, TARGET_ID_LIST
+from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
 from helper import used_IDS
 import matplotlib.pyplot as plt
 
@@ -50,7 +50,7 @@ def create_gdf(shapefile_paths, cache_files):
             
             # TODO
             # Obtain larger target geometries and find contained geometries:
-            for target_region_ID, _ in TARGET_ID_LIST:
+            for target_region_ID, _ in ID_LIST:
                 target_geometry = gdf[gdf['ID'] == target_region_ID]['geometry'].unary_union
                 
                 # Obtain all geometries within, excluding actual target geometry
@@ -58,17 +58,17 @@ def create_gdf(shapefile_paths, cache_files):
                 print(f"ID {target_region_ID} contains {len(contained_geometries_gdf)} geometries.") 
             
             # Create 'Sqkm' area column
-            create_SQKM_column(gdf)
+            gdf = create_SQKM_column(gdf)
             
             # Save to cache
             print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
             gdf.to_file(cache_file, driver='GPKG')
             
-        # Define CRS
-        contained_geometries_gdf = contained_geometries_gdf.to_crs(epsg=4326)
-        
-        # Store manipulated GDF's
-        gdfs.append(contained_geometries_gdf)  
+            # Define CRS
+            contained_geometries_gdf = contained_geometries_gdf.to_crs(epsg=4326)
+            
+            # Store manipulated GDF's
+            gdfs.append(contained_geometries_gdf)  
     
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
@@ -94,6 +94,7 @@ def create_SQKM_column(gdf):
     gdf = gdf.to_crs(epsg=32616)  # Update CRS for area calculations
     gdf['Sqkm'] = gdf['geometry'].area / 1e+6 
     gdf = gdf.to_crs(epsg=4326)
+    return gdf
 
 def print_overlaps(gdf):
     combined_gdf = gdf

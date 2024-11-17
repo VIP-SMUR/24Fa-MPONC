@@ -1,5 +1,5 @@
 #helper.py
-from config import ZIP_URLS, T_MAX_RANGE, BENCHMARK_INTERVALS, TARGET_ID_LIST
+from config import ZIP_URLS, T_MAX_RANGE, BENCHMARK_INTERVALS, ID_LIST
 from pathlib import Path
 import os
 import numpy as np
@@ -14,7 +14,7 @@ num_benchmarks = int(T_MAX_RANGE/BENCHMARK_INTERVALS)
 T_MAX_L = np.linspace(BENCHMARK_INTERVALS, T_MAX_RANGE, num_benchmarks, dtype=int)
 
 # Create list of used ID's
-used_IDS = [ID for ID, _ in TARGET_ID_LIST]
+used_IDS = [ID for ID, _ in ID_LIST]
 
 # Directories
 BASE_DIR = Path.cwd()

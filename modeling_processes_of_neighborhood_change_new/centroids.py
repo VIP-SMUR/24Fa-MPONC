@@ -6,7 +6,7 @@ def create_centroids(gdf, ID_LIST):
     # Initialize centroids array
     centroids = []
     # tuple format: (longitude, latitude, region_name, is_beltline, ID)
-    ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST if ID in used_IDS}
+    ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST}
 
     # Initialize centroids excluding last element (ATLANTA)
     for ID in used_IDS[:-1]:
@@ -22,5 +22,7 @@ def create_centroids(gdf, ID_LIST):
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid
         centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, ID))
+        
+        print(f'Centroid: {ID}\n')
         
     return centroids

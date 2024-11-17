@@ -18,7 +18,6 @@ def create_all_graphs(gdfs):
 
 def create_graph(gdf):
     shape = gdf.geometry.unary_union
-    print("Generating graph from OSMnx...")
     
     # Generate graph
     g = ox.graph_from_polygon(shape, network_type='drive', simplify=True)  # Roadmap of simulation region (networkx.MultiDiGraph)

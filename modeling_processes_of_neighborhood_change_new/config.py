@@ -32,7 +32,7 @@ NAME_COLUMNS = {
 }
 
 # ID's:
-TARGET_ID_LIST = [
+ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('BELTLINE01', True),
     ('BELTLINE02', True),
@@ -68,8 +68,6 @@ TARGET_ID_LIST = [
     
     ('1304000', False)  # Atlanta City - Used only for graph generation
 ]
-
-ID_LIST = []
 
 # Amenity filterS
 AMENITY_TAGS = {

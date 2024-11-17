@@ -105,6 +105,7 @@ def main():
     # =========================
     
     graph_start_time = time.time()
+    print("Generating graph from OSMnx...")
     
     # If exists
     if Path(graph_file).exists(): 
