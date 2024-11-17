@@ -79,12 +79,16 @@ def main():
     # GDF FILE INITIALIZATION
     # =======================
     
-    # Load or create GeoDataFrame
+    gdf_start_time = time.time()
     
+    # Load or create GeoDataFrame
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
         gdf = load_gdf(gdf_cache_filenames)
     else:
         gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        
+    gdf_end_time = time.time()
+    print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")
 
     # =========================
     # GRAPH FILE INITIALIZATION
@@ -92,23 +96,23 @@ def main():
     
     graph_start_time = time.time()
     
-    # Load or create Graph
+    # If exists
     if Path(graph_file).exists(): 
-        # PULL GRAPH FROM CACHE
         g, saved_IDS = load_graph(graph_file)
         
-        # Compare saved_IDS with current IDs
-        if set(saved_IDS) != set(used_IDS): # If different, create new graph
+        # Check if ID's have changed
+        if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
             g = create_graph(gdf)
             save_graph(g, used_IDS, graph_file)
+            
     else: 
-        # CREATE NEW GRAPH
+        # Create new
         g = create_graph(gdf)
         save_graph(g, used_IDS, graph_file)
         
     graph_end_time = time.time()    
-    print(f"New graph generated after {graph_end_time - graph_start_time:.2f} seconds\n")
+    print(f"Graph generation complete after {graph_end_time - graph_start_time:.2f} seconds\n")
     
     # ================================
     # CENTROID INITIALIZATION FROM IDS
