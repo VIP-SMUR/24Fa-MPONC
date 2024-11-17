@@ -30,6 +30,10 @@ LAYER_CACHE_DIR = Path('cache/layers')
 GIFS_DIR = Path('figures/gifs')
 for directory in [GIFS_DIR, LAYER_CACHE_DIR, GDF_CACHE_DIR, CACHE_DIR, DATA_DIR, FIGURES_DIR, AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR, FIGURE_PKL_CACHE_DIR]:
     os.makedirs(directory, exist_ok=True)
+    
+# OSMNX cache directory
+osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
+ox.settings.cache_folder = osmnx_cache_dir  # Set OSMnx cache directory
 
 # Name of pickled graph file
 graph_file = CACHE_DIR / f"graph.pkl"

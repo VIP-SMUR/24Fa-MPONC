@@ -29,10 +29,9 @@ def load_gdf(cache_files):
     
     return combined_gdf
 
+gdfs = []
 # create new gdf
 def create_gdf(shapefile_paths, cache_files):
-    gdfs = []
-    
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
@@ -55,8 +54,8 @@ def create_gdf(shapefile_paths, cache_files):
                 target_geometry = gdf[gdf['ID'] == target_region_ID]['geometry'].unary_union
                 
                 # Obtain all geometries within, excluding actual target geometry
-                contained_geometries = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_region_ID)]
-                print(f"ID {target_region_ID} contains {len(contained_geometries)} geometries.") 
+                contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_region_ID)]
+                print(f"ID {target_region_ID} contains {len(contained_geometries_gdf)} geometries.") 
             
             # Create 'Sqkm' area column
             create_SQKM_column(gdf)
@@ -64,10 +63,13 @@ def create_gdf(shapefile_paths, cache_files):
             # Save to cache
             print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
             gdf.to_file(cache_file, driver='GPKG')
-
-        # Store manipulated GDF's
-        gdfs.append(gdf)
+            
+        # Define CRS
+        contained_geometries_gdf = contained_geometries_gdf.to_crs(epsg=4326)
         
+        # Store manipulated GDF's
+        gdfs.append(contained_geometries_gdf)  
+    
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
 

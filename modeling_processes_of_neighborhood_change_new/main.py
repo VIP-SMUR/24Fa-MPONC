@@ -1,8 +1,8 @@
 from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
 from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
 from download_extract import download_and_extract_all
-from gdf_handler import load_gdf, create_gdf
-from graph_handler import load_graph, create_graph, save_graph
+from gdf_handler import load_gdf, create_gdf, gdfs
+from graph_handler import load_graph, create_graph, save_graph, create_all_graphs
 from amtdens_distances import compute_amts_dens, cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
@@ -113,11 +113,13 @@ def main():
         # Check if ID's have changed
         if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
+            create_all_graphs(gdfs)
             g = create_graph(gdf)
             save_graph(g, used_IDS, graph_file)
             
     else: 
         # Create new
+        create_all_graphs(gdfs)
         g = create_graph(gdf)
         save_graph(g, used_IDS, graph_file)
         

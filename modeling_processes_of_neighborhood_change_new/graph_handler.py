@@ -1,19 +1,22 @@
 # graph_handler
 
+from config import N_JOBS
 import osmnx as ox
 import networkx as nx
 import pickle
-import os
+from joblib import Parallel, delayed
 
 # =========================
 # GRAPH FILE INITIALIZATION
 # =========================
+
+# Use multiprocessing to create graphs of districts independelty (for caching)
+def create_all_graphs(gdfs):
+    g_list = Parallel(n_jobs=N_JOBS, backend='loky')(
+        delayed(create_graph)(gdf) for gdf in gdfs
+    )
+
 def create_graph(gdf):
-    
-    # Create and set OSMnx cache directory
-    osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
-    ox.settings.cache_folder = osmnx_cache_dir  # Set OSMnx cache directory
-    
     shape = gdf.geometry.unary_union
     print("Generating graph from OSMnx...")
     
