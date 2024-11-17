@@ -17,7 +17,7 @@ def create_centroids(gdf, ID_LIST):
         gdf_sub = gdf[gdf['ID'] == ID]
 
         # Combined geometry of all geometries in gdf_sub
-        combined_geometry = gdf_sub.geometry.union_all()
+        combined_geometry = gdf_sub.geometry.unary_union
 
         # Initialize centroid with coordinates
         centroid = combined_geometry.centroid
