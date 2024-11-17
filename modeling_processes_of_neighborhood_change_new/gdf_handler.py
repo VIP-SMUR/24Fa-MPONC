@@ -2,8 +2,9 @@
 
 import geopandas as gpd
 import pandas as pd
-from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
+from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, TARGET_ID_LIST
 from helper import used_IDS
+import matplotlib.pyplot as plt
 
 # =======================
 # GDF FILE INITIALIZATION
@@ -21,13 +22,17 @@ def load_gdf(cache_files):
     # Combine all gdfs:
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
+    combined_gdf = combined_gdf.to_crs(epsg=4326)
+    
     # Create gdf consisting only of regions in ID_LIST
     combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
+    
     return combined_gdf
 
 # create new gdf
 def create_gdf(shapefile_paths, cache_files):
     gdfs = []
+    
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
@@ -41,15 +46,17 @@ def create_gdf(shapefile_paths, cache_files):
             print(f"Creating GDF file for Layer {i}...")
             gdf = gpd.read_file(shapefile_path)
             
-            # TODO
-            # Filter GDF for specifis regions
-            gdf = gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
-        
-            # Simplify geometries
-            gdf['geometry'] = gdf['geometry'].simplify(tolerance=0.001, preserve_topology=True)   
-            
             # Rename identifier column to 'ID'
             gdf = rename_ID_column(gdf, i)
+            
+            # TODO
+            # Obtain larger target geometries and find contained geometries:
+            for target_region_ID, _ in TARGET_ID_LIST:
+                target_geometry = gdf[gdf['ID'] == target_region_ID]['geometry'].unary_union
+                
+                # Obtain all geometries within, excluding actual target geometry
+                contained_geometries = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_region_ID)]
+                print(f"ID {target_region_ID} contains {len(contained_geometries)} geometries.") 
             
             # Create 'Sqkm' area column
             create_SQKM_column(gdf)
@@ -63,6 +70,12 @@ def create_gdf(shapefile_paths, cache_files):
         
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
+
+    # Set CRS
+    combined_gdf = combined_gdf.to_crs(epsg=4326)
+    
+    geometry_counts = combined_gdf.geometry.geom_type.value_counts()
+    print(geometry_counts)
     
     return combined_gdf
 

@@ -8,17 +8,17 @@ import os
 # =========================
 # GRAPH FILE INITIALIZATION
 # =========================
-def create_graph(combined_gdf):
+def create_graph(gdf):
     
     # Create and set OSMnx cache directory
     osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
     ox.settings.cache_folder = osmnx_cache_dir  # Set OSMnx cache directory
     
-    combined_shape = combined_gdf.geometry.unary_union
+    shape = gdf.geometry.unary_union
     print("Generating graph from OSMnx...")
     
     # Generate graph
-    g = ox.graph_from_polygon(combined_shape, network_type='drive', simplify=True)  # Roadmap of simulation region (networkx.MultiDiGraph)
+    g = ox.graph_from_polygon(shape, network_type='drive', simplify=True)  # Roadmap of simulation region (networkx.MultiDiGraph)
     g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()  # Ensures all nodes are connected
     g = nx.convert_node_labels_to_integers(g)  # Converts nodes to integers
 

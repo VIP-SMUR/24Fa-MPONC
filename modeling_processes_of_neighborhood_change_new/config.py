@@ -11,28 +11,28 @@
 '''
 ZIP_URLS = [
  "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
-,
-"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Demographic Population GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Demographic Population GeoSplitJoined_-5541227124544312025.zip"
-,
- "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Econ WorkerType GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Econ WorkerType GeoSplitJoined_2117979253204255635.zip"
+#,
+#"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Demographic Population GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Demographic Population GeoSplitJoined_-5541227124544312025.zip"
+#,
+# "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Econ WorkerType GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Econ WorkerType GeoSplitJoined_2117979253204255635.zip"
 ]
 
 # Name of 'ID'' columns for respective shapefiles
 IDENTIFIER_COLUMNS = {
     1: 'GEOID',
-    2: 'GEOID',
-    3: 'GEOID'
+#    2: 'GEOID',
+#    3: 'GEOID'
 }
 
 # Name of 'Name' columns for respective shapefiles
 NAME_COLUMNS = {
     1: 'Name',
-    2: 'NAME',
-    3: 'NAME'
+#    2: 'NAME',
+#    3: 'NAME'
 }
 
 # ID's:
-ID_LIST = [
+TARGET_ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('BELTLINE01', True),
     ('BELTLINE02', True),
@@ -43,7 +43,9 @@ ID_LIST = [
     ('BELTLINE07', True),
     ('BELTLINE08', True),
     ('BELTLINE09', True),
-    #('BELTLINE10', True),
+    ('BELTLINE10', True),
+    ('13121', True), #Fulton County
+    #('13089', True), #Dekalb County
     
     # # ZCTA
     # ('30331', False),
@@ -66,6 +68,8 @@ ID_LIST = [
     
     ('1304000', False)  # Atlanta City - Used only for graph generation
 ]
+
+ID_LIST = []
 
 # Amenity filterS
 AMENITY_TAGS = {

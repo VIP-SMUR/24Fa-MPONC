@@ -1,5 +1,5 @@
 from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
-from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION
+from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -86,6 +86,16 @@ def main():
         gdf = load_gdf(gdf_cache_filenames)
     else:
         gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        
+    # Display the GeoDataFrame
+    if viewData:
+        print(gdf)
+    
+    # Check for valid geometries
+    if not gdf.is_valid.all():
+        gdf['geometry'] = gdf['geometry'].buffer(0)
+        if not gdf.is_valid.all():
+            raise ValueError("Some geometries are invalid.")
         
     gdf_end_time = time.time()
     print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")
@@ -220,3 +230,5 @@ if __name__ == "__main__":
     # Fetch all geometries within Fulton and Dekalb
     # Initialize list in config including regions tomark "BELTLINE"
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
+        
+#TODO: convert used_IDS and saved_IDS to sets initially
