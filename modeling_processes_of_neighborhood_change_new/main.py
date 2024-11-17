@@ -114,7 +114,7 @@ def main():
         # Check if ID's have changed
         if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
-            create_all_graphs(gdfs)
+            create_all_graphs(gdfs) # Generate county graphs separately to cache
             g = create_graph(gdf)
             save_graph(g, used_IDS, graph_file)
             
@@ -235,3 +235,4 @@ if __name__ == "__main__":
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
         
 #TODO: convert used_IDS and saved_IDS to sets initially
+#TODO: print out all multipolygons

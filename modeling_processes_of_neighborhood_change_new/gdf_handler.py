@@ -57,9 +57,6 @@ def create_gdf(shapefile_paths, cache_files):
                 contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_region_ID)]
                 print(f"ID {target_region_ID} contains {len(contained_geometries_gdf)} geometries.") 
             
-            # Create 'Sqkm' area column
-            gdf = create_SQKM_column(gdf)
-            
             # Save to cache
             print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
             gdf.to_file(cache_file, driver='GPKG')
@@ -75,6 +72,8 @@ def create_gdf(shapefile_paths, cache_files):
 
     # Set CRS
     combined_gdf = combined_gdf.to_crs(epsg=4326)
+    
+    combined_gdf = create_SQKM_column(combined_gdf)
     
     geometry_counts = combined_gdf.geometry.geom_type.value_counts()
     print(geometry_counts)
