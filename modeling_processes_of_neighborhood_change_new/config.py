@@ -44,7 +44,7 @@ ID_LIST = [
     ('BELTLINE08', True),
     ('BELTLINE09', True),
     ('BELTLINE10', True),
-    ('13121', True), #Fulton County
+    ('13121', True) #Fulton County
     #('13089', True), #Dekalb County
     
     # # ZCTA
@@ -65,8 +65,6 @@ ID_LIST = [
     #  ('HOUSE081', False),
     #  ('HOUSE087', False),
     #  ('1304000', False)
-    
-    ('1304000', False)  # Atlanta City - Used only for graph generation
 ]
 
 # Amenity filterS

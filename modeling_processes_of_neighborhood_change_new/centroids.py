@@ -1,15 +1,13 @@
 #centroids.py
 
-from helper import used_IDS
-
 def create_centroids(gdf, ID_LIST):
     # Initialize centroids array
     centroids = []
     # tuple format: (longitude, latitude, region_name, is_beltline, ID)
     ID_info = {ID: is_beltline for ID, is_beltline in ID_LIST}
 
-    # Initialize centroids excluding last element (ATLANTA)
-    for ID in used_IDS[:-1]:
+    # Initialize centroids
+    for ID, _ in ID_LIST[:]:
         # Is_beltline
         is_beltline = ID_info.get(ID, False)
 
