@@ -35,7 +35,7 @@ NAME_COLUMNS = {
 ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('13121', True) #Fulton County
-    #,('13089', True) #Dekalb County
+    ,('13089', True) #Dekalb County
     
     # # ZCTA
     # ('30331', False),
