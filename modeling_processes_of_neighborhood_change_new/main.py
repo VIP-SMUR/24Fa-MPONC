@@ -177,11 +177,7 @@ def main():
 
     # Load or create GeoDataFrame
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
-        if set(saved_IDS) != set(used_IDS):
-            print("Regions have changed. Recreating the Geodataframe...")
-            gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
-        else:
-            gdf = load_gdf(gdf_cache_filenames)
+        gdf = load_gdf(gdf_cache_filenames)
         
     else:
         gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
