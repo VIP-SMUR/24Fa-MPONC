@@ -318,12 +318,15 @@ def main():
 if __name__ == "__main__":
     main()
 
-#TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
-
-#TODO: reset GDF every time id_list changes
-#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
-#TODO: convert used_IDS and saved_IDS to sets initially
+# MUST get done:
 #TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
     # Initialize list in config including regions tomark "BELTLINE"
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
+#TODO: reset GDF every time id_list changes
+#TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
+#TODO: Separate 4-step-model into its own .py file
+
+# Quality of life:
 #TODO: make GIF speed dynamic
+#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
+#TODO: optimize handling of used_IDS and saved_IDS
