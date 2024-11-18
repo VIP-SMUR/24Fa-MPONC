@@ -74,7 +74,11 @@ def distribute_trips(trip_counts, centroids, amts_dens, centroid_distances):
             dest_idx = geoid_to_index[dest_geoid]
 
             # Get transportation cost (distance) between origin and destination
-            distance = centroid_distances.get((origin_geoid, dest_geoid), float('inf'))
+            try:
+                distance = centroid_distances[origin_geoid, dest_geoid]
+            except IndexError:
+                distance = float('inf')
+
             # Use distance as friction factor F
             friction_factor = 1 / max(distance, 0.1)  # Avoid division by zero
 
@@ -87,7 +91,11 @@ def distribute_trips(trip_counts, centroids, amts_dens, centroid_distances):
             dest_idx = geoid_to_index[dest_geoid]
 
             # Get transportation cost (distance) between origin and destination
-            distance = centroid_distances.get((origin_geoid, dest_geoid), float('inf'))
+            try:
+                distance = centroid_distances[origin_geoid, dest_geoid]
+            except IndexError:
+                distance = float('inf')
+
             friction_factor = 1 / max(distance, 0.1)  # Avoid division by zero
 
             # Calculate T_ij using the formula:
