@@ -43,5 +43,4 @@ def load_graph(file_path=graph_file):
         data = pickle.load(file)
     g = data['graph']
     saved_IDs = data.get('IDs', [])
-    print(f"Loading graph from: '{file_path}'...\n")
     return g, saved_IDs

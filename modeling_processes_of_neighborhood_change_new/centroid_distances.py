@@ -60,7 +60,6 @@ def compute_centroid_distances(centroids, g):
         return distances
     
     # Parallel computation of distances
-    print("Computing centroid distances...")
     distances_list = Parallel(n_jobs=N_JOBS, backend='loky')(
         delayed(compute_distances_from_source)(i) for i in range(n)
     )

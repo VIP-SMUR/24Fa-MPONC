@@ -1,4 +1,4 @@
-from collections import defaultdict
+from collections.abc import defaultdict
 
 from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
 from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
@@ -245,7 +245,7 @@ def main():
     # COMPUTE CENTROID DISTANCES
     # ==========================
     distances_start_time = time.time()
-    print("Processing distances...")
+    print("Processing centroid distances...")
 
     centroid_distances = cached_centroid_distances(centroids, g)
 
@@ -284,9 +284,9 @@ def main():
     simulation_end_time = time.time()
     print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")
 
-    # =======================
-    # PLOT SIMULATION RESULTS
-    # =======================
+    # ==============================
+    # VISUALIZATION LOGIC (PLOTTING)
+    # ==============================
     if PLOT_CITIES:
         plot_start_time = time.time()
         print("Plotting...")
@@ -326,3 +326,4 @@ if __name__ == "__main__":
 #TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
     # Initialize list in config including regions tomark "BELTLINE"
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
+#TODO: make GIF speed dynamic

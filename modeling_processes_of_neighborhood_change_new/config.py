@@ -76,9 +76,9 @@ AMENITY_TAGS = {
 # Simulation Parameters
 RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 10 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 500    # Number of agents
+T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 1000 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 5000    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?

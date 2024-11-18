@@ -24,6 +24,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
     """ Main plot function """
     # Define graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
+    title = f"Timestep: {t_max}"
     pickle_filename = f"{figkey}.pkl"
     pickle_path = FIGURE_PKL_CACHE_DIR / pickle_filename
     
@@ -47,6 +48,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
             plot_matplotlib(
                 centroids=centroids, 
                 city=city, 
+                title=title,
                 figkey=figkey, 
                 graph=g,
                 gdf=gdf,
@@ -57,10 +59,11 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
             plot_folium(
                 centroids=centroids, 
                 city=city, 
+                title=title,
                 figkey=figkey, 
                 graph=g, 
                 gdf=gdf
-                )
+            )
     else:
         print(f"Pickle file '{pickle_filename}' does not exist. Skipping plotting.")
     
@@ -83,7 +86,7 @@ global_sm = mpl.cm.ScalarMappable(cmap=discrete_cmap, norm=norm)
 global_sm.set_array([])  # Fix color scale
 
 
-def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
+def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None):
     """ Matplotlib plotting function """
     start_time = time.time()
     
@@ -110,7 +113,7 @@ def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
     cbar.set_label('Average Wealth', fontsize=12)
 
     # Labels and title
-    ax.set_title(f"City Visualization: {figkey}", fontsize=14)
+    ax.set_title(f"{title}", fontsize=14)
 
     plt.tight_layout()
     plt.savefig(f'./figures/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight', dpi=DPI)
@@ -125,7 +128,7 @@ def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
 # ============    
 # FOLIUM GRAPH
 # ============
-def plot_folium(centroids, city, figkey='city', graph=None, gdf = None):
+def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
     """ Folium plotting function """
     start_time = time.time()
             
@@ -223,7 +226,7 @@ def plot_folium(centroids, city, figkey='city', graph=None, gdf = None):
 
     # Add title and custom legend using HTML
     title_html = f'''
-        <h3 align="center" style="font-size:20px"><b>City Visualization: {figkey}</b></h3>
+        <h3 align="center" style="font-size:20px"><b>City Visualization: {title}</b></h3>
     '''
     m.get_root().html.add_child(folium.Element(title_html))
 
