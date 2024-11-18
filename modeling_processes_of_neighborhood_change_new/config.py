@@ -77,7 +77,7 @@ AMENITY_TAGS = {
 RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
 T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 1000 # [1000] Intervals at which to assign benchmark timesteps
+BENCHMARK_INTERVALS = 200 # [1000] Intervals at which to assign benchmark timesteps
 NUM_AGENTS = 5000    # Number of agents
 
 # Flags
@@ -91,8 +91,8 @@ COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
 DPI = 2400 # DPI resolution of MatPlotLib graphs
 
 # GIF Settings
-GIF_FRAME_DURATION = 200 # Millseconds
-GIF_NUM_PAUSE_FRAMES = 8 # Number of repeat frames to show upon GIF completion
+GIF_FRAME_DURATION = 100 # Millseconds
+GIF_NUM_PAUSE_FRAMES = 15 # Number of repeat frames to show upon GIF completion
 
 # City Key (name)
 CTY_KEY = 'Georgia'
