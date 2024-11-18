@@ -3,8 +3,6 @@
 import geopandas as gpd
 import pandas as pd
 from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
-from helper import used_IDS
-import matplotlib.pyplot as plt
 
 # =======================
 # GDF FILE INITIALIZATION
@@ -44,13 +42,13 @@ def create_gdf(shapefile_paths, cache_files):
             # Rename identifier column to 'ID'
             gdf = rename_ID_Name_columns(gdf, i)
             
+            # Filter for geometries within target geometry
+            gdf = within_gdf(gdf)
+            
             # Create SQKM column
             gdf = create_Sqkm_column(gdf)
             
             gdf = create_Beltline_column(gdf)
-            
-            # Obtain all geometries within target geometry
-            gdf = within_gdf(gdf)
             
             # Set CRS
             gdf = gdf.to_crs(epsg=4326)

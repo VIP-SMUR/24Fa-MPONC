@@ -1,7 +1,7 @@
 from collections import defaultdict
 
-from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS, OSMNX_CACHE_DIR
-from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
+from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
+from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -177,7 +177,12 @@ def main():
 
     # Load or create GeoDataFrame
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
-        gdf = load_gdf(gdf_cache_filenames)
+        if set(saved_IDS) != set(used_IDS):
+            print("Regions have changed. Recreating the Geodataframe...")
+            gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        else:
+            gdf = load_gdf(gdf_cache_filenames)
+        
     else:
         gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
 
@@ -202,13 +207,12 @@ def main():
     print("Generating graph from OSMnx...")
 
     if Path(graph_file).exists():
-        g, saved_IDS = load_graph(graph_file)
-
         if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
             g = create_graph(gdf)
             save_graph(g, graph_file)
         else:
+            g, saved_IDS = load_graph(graph_file)
             print(f"Loaded existing graph from {graph_file}")
 
     else:
