@@ -1,16 +1,15 @@
 # config.py
 
-# =====================================================
-# ================== CONFIGURATION ====================
+# ===========================================================
+# ================== LAYER CONFIGURATION ====================
 
 '''
-[URLS]
 1. Original geographic
 2. Zip codes
 3. Housing districts
 '''
 ZIP_URLS = [
- "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
+"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
 #,
 #"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Demographic Population GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Demographic Population GeoSplitJoined_-5541227124544312025.zip"
 #,
@@ -31,31 +30,16 @@ NAME_COLUMNS = {
 #    3: 'NAME'
 }
 
+# ================== LAYER CONFIGURATION ====================
+# ===========================================================
+
 # ID's:
 ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('13121', True) #Fulton County
     ,('13089', True) #Dekalb County
-    
-    # # ZCTA
-    # ('30331', False),
-    # ('30311', True),     
-    # ('30327', False),    
-    # ('30305', True),    
-    # ('30315', True),     
-    # ('30354', False),   
-    # ('30318', True),    
-    # ('30313', True),        
-    # ('30303', True),
-    # ('30308', True),   
-    # ('30309', True),
-    # ('30336', False),
-    
-     # Housing Districts
-    #  ('HOUSE081', False),
-    #  ('HOUSE087', False),
-    #  ('1304000', False)
 ]
+
 
 # Amenity filterS
 AMENITY_TAGS = {
@@ -98,4 +82,4 @@ GIF_NUM_PAUSE_FRAMES = 15 # Number of repeat frames to show upon GIF completion
 CTY_KEY = 'Georgia'
 
 # Number of CPU's to use for multiprocessing
-N_JOBS = -1 # maximum
+N_JOBS = 24 # maximum
