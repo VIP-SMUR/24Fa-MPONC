@@ -1,9 +1,10 @@
-from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS
+from helper import gdf_cache_filenames, graph_file, GIFS_DIR, FIGURES_DIR, T_MAX_L, used_IDS, OSMNX_CACHE_DIR
 from config import ID_LIST, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData
 from download_extract import download_and_extract_all
-from gdf_handler import load_gdf, create_gdf, gdfs
-from graph_handler import load_graph, create_graph, save_graph, create_all_graphs
-from amtdens_distances import compute_amts_dens, cached_centroid_distances
+from gdf_handler import load_gdf, create_gdf
+from graph_handler import load_graph, create_graph, save_graph
+from amt_densities import compute_amts_dens
+from centroid_distances import cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
 from gif import process_pdfs_to_gifs
@@ -106,23 +107,23 @@ def main():
     
     graph_start_time = time.time()
     print("Generating graph from OSMnx...")
-    
-    # If exists
+
+    # Check if the combined graph file exists
     if Path(graph_file).exists(): 
         g, saved_IDS = load_graph(graph_file)
         
-        # Check if ID's have changed
+        # Check if region IDs have changed
         if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
-            create_all_graphs(gdfs) # Generate county graphs separately to cache
             g = create_graph(gdf)
-            save_graph(g, used_IDS, graph_file)
+            save_graph(g, graph_file)
+        else:
+            print(f"Loaded existing graph from {graph_file}")
             
     else: 
-        # Create new
-        create_all_graphs(gdfs)
+        # Create and save a new combined graph
         g = create_graph(gdf)
-        save_graph(g, used_IDS, graph_file)
+        save_graph(g, graph_file)
         
     graph_end_time = time.time()    
     print(f"Graph generation complete after {graph_end_time - graph_start_time:.2f} seconds\n")
@@ -133,7 +134,7 @@ def main():
     centroid_start_time = time.time()
     print("Initializing centroids...")
     
-    centroids = create_centroids(gdf, ID_LIST)
+    centroids = create_centroids(gdf)
         
     centroid_end_time = time.time()
     print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds\n")
@@ -228,11 +229,8 @@ if __name__ == "__main__":
 
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
-#TODO: low priority: centroid distance = avg shortest path between every node in a region 
-#TODO: only use regions in fulton and other county
-    # Fetch all geometries within Fulton and Dekalb
+#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
+#TODO: convert used_IDS and saved_IDS to sets initially
+#TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
     # Initialize list in config including regions tomark "BELTLINE"
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
-        
-#TODO: convert used_IDS and saved_IDS to sets initially
-#TODO: print out all multipolygons

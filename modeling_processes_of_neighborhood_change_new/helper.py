@@ -5,18 +5,18 @@ import os
 import numpy as np
 import osmnx as ox
 
-# Constants:
+""" Constants """
 EPSILON = 1e-3
 TAU = 0.5  # Inequality factor in Lorentz curve
 
-# Create T_MAX_L from T_MAX_RANGE and BENCHMARK_INTERVALS
+""" Create T_MAX_L from T_MAX_RANGE and BENCHMARK_INTERVALS """
 num_benchmarks = int(T_MAX_RANGE/BENCHMARK_INTERVALS)
 T_MAX_L = np.linspace(BENCHMARK_INTERVALS, T_MAX_RANGE, num_benchmarks, dtype=int)
 
-# Create list of used ID's
+""" Create list of used ID's """
 used_IDS = [ID for ID, _ in ID_LIST]
 
-# Directories
+""" Directories """
 BASE_DIR = Path.cwd()
 CACHE_DIR = Path("cache")
 DATA_DIR = Path("data")
@@ -31,20 +31,19 @@ GIFS_DIR = Path('figures/gifs')
 for directory in [GIFS_DIR, LAYER_CACHE_DIR, GDF_CACHE_DIR, CACHE_DIR, DATA_DIR, FIGURES_DIR, AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR, OSMNX_CACHE_DIR, FIGURE_PKL_CACHE_DIR]:
     os.makedirs(directory, exist_ok=True)
     
-# OSMNX cache directory
-osmnx_cache_dir = os.path.join('cache', 'osmnx_cache')
-ox.settings.cache_folder = osmnx_cache_dir  # Set OSMnx cache directory
+""" Set OSMNX cache location """
+ox.settings.cache_folder = OSMNX_CACHE_DIR    # Set OSMnx cache directory
 
-# Name of pickled graph file
+""" Name of pickled graph file """
 graph_file = CACHE_DIR / f"graph.pkl"
 
-# Dictionaries to store generated variables
+""" Dictionaries to store generated variables """
 zip_filenames = {}
 extracted_names = {}
 shapefile_names = {}
 gdf_cache_filenames = {}
 
-# Loop through num_layers
+""" Loop through num_layers """
 for i in range(1, len(ZIP_URLS) + 1):
     # Generate variable names
     zip_filenames[i] = f"layer_{i}.zip"

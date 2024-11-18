@@ -1,41 +1,47 @@
 # graph_handler
 
-from config import N_JOBS
 import osmnx as ox
 import networkx as nx
 import pickle
-from joblib import Parallel, delayed
+from pathlib import Path
+from helper import used_IDS, graph_file
 
 # =========================
 # GRAPH FILE INITIALIZATION
 # =========================
 
-# Use multiprocessing to create graphs of districts independelty (for caching)
-def create_all_graphs(gdfs):
-    g_list = Parallel(n_jobs=N_JOBS, backend='loky')(
-        delayed(create_graph)(gdf) for gdf in gdfs
-    )
-
 def create_graph(gdf):
-    shape = gdf.geometry.unary_union
+    """ Initialize graph from Geodataframe"""
+    # Combine all shapes
+    combined_gdf = gdf.unary_union
     
-    # Generate graph
-    g = ox.graph_from_polygon(shape, network_type='drive', simplify=True)  # Roadmap of simulation region (networkx.MultiDiGraph)
-    g = g.subgraph(max(nx.strongly_connected_components(g), key=len)).copy()  # Ensures all nodes are connected
-    g = nx.convert_node_labels_to_integers(g)  # Converts nodes to integers
-
+    # Generate the graph from the combined geometry
+    g = ox.graph_from_polygon(combined_gdf, network_type='drive', simplify=True
+    )
+    # Ensure the graph is strongly connected
+    if not nx.is_strongly_connected(g):
+        print("Graph is not strongly connected. Extracting the largest strongly connected component.")
+        g = g.subgraph(
+            max(nx.strongly_connected_components(g), key=len)
+        ).copy()
+    
+    # Convert node labels to integers
+    g = nx.convert_node_labels_to_integers(g)
     return g
-    
-def save_graph(g, used_IDS, file_path):
-    with open(file_path, 'wb') as file:
-        pickle.dump({'graph': g, 'ID': used_IDS}, file)
-    print(f"Graph saved to cache: '{file_path}'.\n")
 
-def load_graph(file_path):
-    
+def save_graph(g, file_path=graph_file):
+    """ Save graph to cache """
+    with open(file_path, 'wb') as file:
+        # You can store additional metadata if needed
+        pickle.dump({'graph': g, 'IDs': used_IDS}, file)
+    print(f"Combined graph saved to '{file_path}'.")
+
+def load_graph(file_path=graph_file):
+    """ Load graph from cache """
+    file_path = Path(file_path)
     with open(file_path, 'rb') as file:
         data = pickle.load(file)
     g = data['graph']
-    saved_IDs = data['ID']
+    saved_IDs = data.get('IDs', [])
     print(f"Loading graph from: '{file_path}'...\n")
     return g, saved_IDs

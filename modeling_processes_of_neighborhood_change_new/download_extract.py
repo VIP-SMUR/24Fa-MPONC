@@ -10,8 +10,35 @@ from helper import LAYER_CACHE_DIR, zip_filenames, extracted_names
 # DOWNLOAD AND EXTRACT ZIP
 # ========================
 
-# Download
+def download_and_extract_all():
+    """ Main function - download and extract all """
+    shapefile_paths = {}
+    for i in range(1, len(ZIP_URLS) +1):
+        url = ZIP_URLS[i -1]
+        filename = zip_filenames[i]
+        extracted_name = extracted_names[i]
+
+        # Download
+        file_path = download_file(url, filename)
+        if not file_path:
+            continue  # Skip if download failed
+
+        # Extract
+        extract_path = extract_file(file_path, extracted_name)
+        if not extract_path:
+            continue  # Skip if extraction failed
+
+        # Find the shapefile name
+        shapefile_path = find_shapefile(extract_path)
+        if shapefile_path:
+            shapefile_paths[i] = shapefile_path
+        else:
+            print(f"No shapefile found in '{filename}'.")
+
+    return shapefile_paths
+
 def download_file(url, filename, cache_dir=LAYER_CACHE_DIR):
+    """ Helper function - Download ZIP shapefiles from hyperlink URL's in config.py """
     file_path = cache_dir / filename
 
     # Check if ZIP file already exists
@@ -51,6 +78,7 @@ def download_file(url, filename, cache_dir=LAYER_CACHE_DIR):
 
 # Extract
 def extract_file(file_path, extracted_name, cache_dir=LAYER_CACHE_DIR):
+    """ Helper function - Extract ZIP shapefiles """
     extract_path = cache_dir / extracted_name
 
     # Check if the file is a valid ZIP archive
@@ -79,32 +107,7 @@ def extract_file(file_path, extracted_name, cache_dir=LAYER_CACHE_DIR):
 
 # Helper function to find shapefile in extracted folder
 def find_shapefile(extract_path):
+    """ Helper function - Locate .shp in extracted shapefile folder """
     shapefiles = list(extract_path.rglob("*.shp"))
     if shapefiles:
         return shapefiles[0]  # Return the first shapefile found
-
-def download_and_extract_all():
-    shapefile_paths = {}
-    for i in range(1, len(ZIP_URLS) +1):
-        url = ZIP_URLS[i -1]
-        filename = zip_filenames[i]
-        extracted_name = extracted_names[i]
-
-        # Download
-        file_path = download_file(url, filename)
-        if not file_path:
-            continue  # Skip if download failed
-
-        # Extract
-        extract_path = extract_file(file_path, extracted_name)
-        if not extract_path:
-            continue  # Skip if extraction failed
-
-        # Find the shapefile name
-        shapefile_path = find_shapefile(extract_path)
-        if shapefile_path:
-            shapefile_paths[i] = shapefile_path
-        else:
-            print(f"No shapefile found in '{filename}'.")
-
-    return shapefile_paths

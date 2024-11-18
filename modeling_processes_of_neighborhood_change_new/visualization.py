@@ -1,6 +1,6 @@
 # visualization.py
 
-from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS
+from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS, DPI
 from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR
 import matplotlib.pyplot as plt
 import time
@@ -21,7 +21,8 @@ import pickle
 # =============================
 
 def plot_city(rho, alpha, t_max, centroids, g, gdf):
-    # Graph title, file name, and file path
+    """ Main plot function """
+    # Define graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
     pickle_filename = f"{figkey}.pkl"
     pickle_path = FIGURE_PKL_CACHE_DIR / pickle_filename
@@ -41,6 +42,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
         # 'Avg Endowment' from csv to gdf
         gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
     
+        # Plot with Matplotlib
         if PLOT_LIBRARY == 1:
             plot_matplotlib(
                 centroids=centroids, 
@@ -49,6 +51,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
                 graph=g,
                 gdf=gdf,
                 )
+        # Plot with Folium
         else:
             gdf = gdf.to_crs(epsg=32616)
             plot_folium(
@@ -65,7 +68,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
 # ================
 # MATPLOTLIB GRAPH
 # ================
-
+""" Define global settings for matplotlib graphs for consistency """
 # Global setup for colors and colormap
 cmap_base = plt.get_cmap('YlOrRd')
 fixed_colors = [cmap_base(i / (COLORBAR_NUM_INTERVALS - 1)) for i in range(COLORBAR_NUM_INTERVALS)]
@@ -81,6 +84,7 @@ global_sm.set_array([])  # Fix color scale
 
 
 def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
+    """ Matplotlib plotting function """
     start_time = time.time()
     
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -109,7 +113,7 @@ def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
     ax.set_title(f"City Visualization: {figkey}", fontsize=14)
 
     plt.tight_layout()
-    plt.savefig(f'./figures/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight')
+    plt.savefig(f'./figures/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight', dpi=DPI)
     plt.close()
     
     # Save graph to 'figures' folder
@@ -122,6 +126,7 @@ def plot_matplotlib(centroids, city, figkey='city', graph=None, gdf=None):
 # FOLIUM GRAPH
 # ============
 def plot_folium(centroids, city, figkey='city', graph=None, gdf = None):
+    """ Folium plotting function """
     start_time = time.time()
             
     # Center the map

@@ -1,26 +1,29 @@
 #centroids.py
 
-def create_centroids(gdf, ID_LIST):
-    # Initialize centroids array
-    # tuple format: (longitude, latitude, region_name, is_beltline, ID)
+import tqdm
+
+def create_centroids(gdf):
+    """ Initialize centroids based on rows in Geodataframe"""
     centroids = []
     
-    # Initialize centroids
-    for ID, is_beltline in ID_LIST[:]:
-        # Fetch ID instance from gdf
-        gdf_sub = gdf[gdf['ID'] == ID]
+    for _, row in tqdm.tqdm(gdf.iterrows(), total=len(gdf), desc="Regions"):
+        # Retrieve attributes
+        ID = row['ID']
         
-        if gdf_sub.empty:
+        is_beltline = row['Beltline']
+        
+        name = row['Name']
+        
+        geometry = row['geometry']
+        centroid = geometry.centroid
+        
+        centroids.append((centroid.x, centroid.y, name, is_beltline, ID))
+        
+        if geometry.is_empty or geometry is None:
             print(f"No geometries found for ID '{ID}'. Skipping centroid creation for this ID.")
             continue  # Skip to the next ID
-
-        # Combined geometry of all geometries in gdf_sub
-        combined_geometry = gdf_sub.geometry.unary_union
-
-        # Initialize centroid with coordinates
-        centroid = combined_geometry.centroid
-        centroids.append((centroid.x, centroid.y, gdf_sub['Name'].iloc[0], is_beltline, ID))
         
-        print(f'Centroid: {ID}\n')
+    len_centroids = len(centroids)
+    print(f'{len_centroids} centroids were created.')
         
     return centroids

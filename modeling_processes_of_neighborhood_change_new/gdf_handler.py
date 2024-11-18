@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 # GDF FILE INITIALIZATION
 # =======================
 
-# load from cache
 def load_gdf(cache_files):
+    """ Load each layer's Geodataframe from cache"""
     gdfs = []
     for i in cache_files:
         cache_file = cache_files[i]
@@ -22,65 +22,56 @@ def load_gdf(cache_files):
     # Combine all gdfs:
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
-    combined_gdf = combined_gdf.to_crs(epsg=4326)
-    
-    # Create gdf consisting only of regions in ID_LIST
-    combined_gdf = combined_gdf[combined_gdf['ID'].isin(used_IDS)].reset_index(drop=True)
-    
     return combined_gdf
 
-gdfs = []
 # create new gdf
 def create_gdf(shapefile_paths, cache_files):
+    """ Create and modify each layer's Geodataframe, then combine """
+    gdfs = []
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
         
-        # If cached:
+        # Load if cached:
         if cache_file.exists():
             gdf = gpd.read_file(cache_file)
             
-        # Fetch and manipulate individual GDF's:    
+        # Fetch and manipulate:    
         else:
             print(f"Creating GDF file for Layer {i}...")
             gdf = gpd.read_file(shapefile_path)
             
             # Rename identifier column to 'ID'
-            gdf = rename_ID_column(gdf, i)
+            gdf = rename_ID_Name_columns(gdf, i)
             
-            # TODO
-            # Obtain larger target geometries and find contained geometries:
-            for target_region_ID, _ in ID_LIST:
-                target_geometry = gdf[gdf['ID'] == target_region_ID]['geometry'].unary_union
-                
-                # Obtain all geometries within, excluding actual target geometry
-                contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_region_ID)]
-                print(f"ID {target_region_ID} contains {len(contained_geometries_gdf)} geometries.") 
+            # Create SQKM column
+            gdf = create_Sqkm_column(gdf)
+            
+            gdf = create_Beltline_column(gdf)
+            
+            # Obtain all geometries within target geometry
+            gdf = within_gdf(gdf)
+            
+            # Set CRS
+            gdf = gdf.to_crs(epsg=4326)
             
             # Save to cache
             print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
             gdf.to_file(cache_file, driver='GPKG')
+        
+        gdfs.append(gdf)  
             
-            # Define CRS
-            contained_geometries_gdf = contained_geometries_gdf.to_crs(epsg=4326)
-            
-            # Store manipulated GDF's
-            gdfs.append(contained_geometries_gdf)  
-    
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
-
-    # Set CRS
-    combined_gdf = combined_gdf.to_crs(epsg=4326)
     
-    combined_gdf = create_SQKM_column(combined_gdf)
-    
+    # Print GDF information
     geometry_counts = combined_gdf.geometry.geom_type.value_counts()
     print(geometry_counts)
     
     return combined_gdf
 
-def rename_ID_column(gdf, layer_index):
+def rename_ID_Name_columns(gdf, layer_index):
+    """ Helper function to rename 'identifier' column """
     identifier_column = IDENTIFIER_COLUMNS.get(layer_index)
     name_column = NAME_COLUMNS.get(layer_index)
     if identifier_column != 'ID':
@@ -89,13 +80,39 @@ def rename_ID_column(gdf, layer_index):
         gdf = gdf.rename(columns={name_column: 'Name'})
     return gdf
 
-def create_SQKM_column(gdf):
+# Create 'Sqkm' area column helper function
+def create_Sqkm_column(gdf):
+    """ Helper function to create 'Sqkm' column """
     gdf = gdf.to_crs(epsg=32616)  # Update CRS for area calculations
     gdf['Sqkm'] = gdf['geometry'].area / 1e+6 
     gdf = gdf.to_crs(epsg=4326)
     return gdf
 
+# TODO
+def create_Beltline_column(gdf):
+    """ Helper function to create 'Beltline' column """
+    gdf['Beltline'] = 1
+    return gdf
+
+def within_gdf(gdf):
+    """ Helper function to filter Geodataframe for regions within our target region"""
+    contained_geometries = []
+    # Obtain larger target geometries and find contained geometries:
+    for target_ID, _ in ID_LIST:
+        # Establish target geometry
+        target_geometry = gdf[gdf['ID'] == target_ID]['geometry'].unary_union
+        
+        # Obtain all geometries within target geometry (excluding target geometry)
+        contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_ID)]
+        print(f"ID {target_ID} contains {len(contained_geometries_gdf)} geometries.")
+        
+        contained_geometries.append(contained_geometries_gdf)
+        
+    filtered_gdf = gpd.GeoDataFrame(pd.concat(contained_geometries, ignore_index=True), crs=gdf.crs)
+    return filtered_gdf
+    
 def print_overlaps(gdf):
+    """ Helper function to print overlapping regions - OUTDATED, FUNCTIONALITY QUESTIONABLE """
     combined_gdf = gdf
     # Filter out 'Atlanta' polygon
     combined_gdf = combined_gdf[combined_gdf['ID'] != '1304000']

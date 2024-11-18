@@ -9,7 +9,7 @@ from joblib import Parallel, delayed
 
 # Convert pdfs to images
 def pdf_to_images(pdf_path):
-    """Converts a PDF to a list of PIL Image objects."""
+    """ Converts a PDF to a list of PIL Image objects """
     doc = fitz.open(pdf_path)
     images = []
     for page_num in range(doc.page_count):
@@ -20,7 +20,7 @@ def pdf_to_images(pdf_path):
     return images
 
 def images_to_gif(images, output_path, duration, num_pause_frames):
-    """Creates a GIF from a list of PIL Image objects."""
+    """ Creates a GIF from a list of PIL Image objects """
 
     pause_frame = images[-1].copy()
     images = images + [pause_frame] * num_pause_frames
@@ -36,6 +36,7 @@ def images_to_gif(images, output_path, duration, num_pause_frames):
 
 # Create correct GIF's based on file names
 def create_gif(key, file_tuples, duration, num_pause_frames, output_directory):
+    """ Helper function for multiprocessing - groups by filename pattern and creates GIFs """
     # Sort by NUM
     file_tuples.sort()
     pdf_files = [filepath for _, filepath in file_tuples]
@@ -57,7 +58,7 @@ def create_gif(key, file_tuples, duration, num_pause_frames, output_directory):
         
 # Multiprocessing based on image groupings
 def process_pdfs_to_gifs(pdf_directory, output_directory, duration, num_pause_frames):
-    """Processes all PDFs in a directory, groups by filename pattern, and creates GIFs."""
+    """ Processes all PDFs in a directory, call create_gif for multiprocessing """
     # Dictionary to group files
     groups = defaultdict(list)
     for filename in os.listdir(pdf_directory):

@@ -34,16 +34,6 @@ NAME_COLUMNS = {
 # ID's:
 ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
-    ('BELTLINE01', True),
-    ('BELTLINE02', True),
-    ('BELTLINE03', True),
-    ('BELTLINE04', True),
-    ('BELTLINE05', True),
-    ('BELTLINE06', True),
-    ('BELTLINE07', True),
-    ('BELTLINE08', True),
-    ('BELTLINE09', True),
-    ('BELTLINE10', True),
     ('13121', True) #Fulton County
     #('13089', True), #Dekalb County
     
@@ -90,18 +80,19 @@ T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
 BENCHMARK_INTERVALS = 10 # [1000] Intervals at which to assign benchmark timesteps
 NUM_AGENTS = 150    # Number of agents
 
-# Graph Visualization Settings
-COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
-
-# GIF Settings
-GIF_FRAME_DURATION = 200 # Millseconds
-GIF_NUM_PAUSE_FRAMES = 8 # Number of repeat frames to show upon GIF completion
-
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
+
+# Graph Visualization Settings
+COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
+DPI = 2400 # DPI resolution of MatPlotLib graphs
+
+# GIF Settings
+GIF_FRAME_DURATION = 200 # Millseconds
+GIF_NUM_PAUSE_FRAMES = 8 # Number of repeat frames to show upon GIF completion
 
 # City Key (name)
 CTY_KEY = 'Georgia'
