@@ -34,8 +34,8 @@ NAME_COLUMNS = {
 # ID's:
 ID_LIST = [
     # ARC BELTLINE GEOGRAPHIC BOUNDARIES
-    ('13121', True), #Fulton County
-    ('13089', True) #Dekalb County
+    ('13121', True) #Fulton County
+    #,('13089', True) #Dekalb County
     
     # # ZCTA
     # ('30331', False),
@@ -78,7 +78,7 @@ RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
 T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
 BENCHMARK_INTERVALS = 10 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 150    # Number of agents
+NUM_AGENTS = 500    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?

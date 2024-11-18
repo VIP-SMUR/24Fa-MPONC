@@ -203,6 +203,7 @@ def main():
     print("Generating graph from OSMnx...")
 
     if Path(graph_file).exists():
+        g, saved_IDS = load_graph(graph_file)
         if set(saved_IDS) != set(used_IDS):
             print("Regions have changed. Recreating the graph...")
             g = create_graph(gdf)
@@ -319,6 +320,7 @@ if __name__ == "__main__":
 
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 
+#TODO: reset GDF every time id_list changes
 #TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: convert used_IDS and saved_IDS to sets initially
 #TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
