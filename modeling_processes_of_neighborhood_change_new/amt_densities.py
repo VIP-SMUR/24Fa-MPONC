@@ -56,7 +56,7 @@ def compute_amts_dens(gdf, tags):
     amts_dens = np.zeros(len(gdf))
     amenities_counts = np.zeros(len(gdf))
     areas_sqkm = gdf['Sqkm'].values
-    region_names = gdf['Name'].values
+    region_names = gdf['Simulation_Name'].values
 
     print("Fetching amenities per region...")
 

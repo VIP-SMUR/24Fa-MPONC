@@ -5,6 +5,7 @@ import networkx as nx
 import pickle
 from pathlib import Path
 from helper import GRAPH_FILE
+from shapely.geometry import Polygon, MultiPolygon, GeometryCollection
 
 # =========================
 # GRAPH FILE INITIALIZATION

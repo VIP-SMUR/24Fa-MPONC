@@ -4,30 +4,26 @@
 '""""""""""""""""""" LAYER CONFIGURATION """""""""""""""""""'
 
 '''
-1. Original geographic
-2. Zip codes
-3. Housing districts
+1. GA Census tracts [2020]
+2. US Nationwide Counties [2020]
+3. 
 '''
+
 ZIP_URLS = [
-"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS_2022_Geographic_boundaries/FeatureServer/replicafilescache/ACS_2022_Geographic_boundaries_-7361254879251475346.zip"
-#,
-#"https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Demographic Population GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Demographic Population GeoSplitJoined_-5541227124544312025.zip"
-#,
-# "https://services1.arcgis.com/Ug5xGQbHsD8zuZzM/arcgis/rest/services/ACS 2022 Econ WorkerType GeoSplitJoined/FeatureServer/replicafilescache/ACS 2022 Econ WorkerType GeoSplitJoined_2117979253204255635.zip"
+"https://www2.census.gov/geo/tiger/TIGER2020/TRACT/tl_2020_13_tract.zip"
+,"https://www2.census.gov/geo/tiger/TIGER2020/COUNTY/tl_2020_us_county.zip"
 ]
 
-# Name of 'ID'' columns for respective shapefiles
+# Name of 'ID' columns for respective shapefiles, to be renamed to 'Simulation_ID'
 IDENTIFIER_COLUMNS = {
     1: 'GEOID',
-#    2: 'GEOID',
-#    3: 'GEOID'
+    2: 'GEOID',
 }
 
-# Name of 'Name' columns for respective shapefiles
+# Name of 'Name' columns for respective shapefiles, to be renamed to 'Simulation_Name'
 NAME_COLUMNS = {
-    1: 'Name',
-#    2: 'NAME',
-#    3: 'NAME'
+    1: 'NAMELSAD',
+    2: 'NAMELSAD'
 }
 
 '""""""""""""""""""" LAYER CONFIGURATION """""""""""""""""""'

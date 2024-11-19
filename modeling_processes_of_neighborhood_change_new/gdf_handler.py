@@ -2,7 +2,7 @@
 
 import geopandas as gpd
 import pandas as pd
-from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
+from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST, viewData
 
 # =======================
 # GDF FILE INITIALIZATION
@@ -38,9 +38,6 @@ def create_gdf(shapefile_paths, cache_files):
         # Rename identifier column to 'ID'
         gdf = rename_ID_Name_columns(gdf, i)
         
-        # Filter for geometries within target geometry
-        gdf = within_gdf(gdf)
-        
         # Create SQKM column
         gdf = create_Sqkm_column(gdf)
         
@@ -50,17 +47,29 @@ def create_gdf(shapefile_paths, cache_files):
         gdf = gdf.to_crs(epsg=4326)
         
         # Save to cache
-        print(f"Combined GeoDataFrame saved to '{cache_file}'.\n")
+        print(f"Individual GeoDataFrame saved to '{cache_file}'.")
         gdf.to_file(cache_file, driver='GPKG')
         
+        gdf_geom_counts = gdf.geometry.geom_type.value_counts()
+        print(gdf_geom_counts)
+        print()
+        
         gdfs.append(gdf)  
+        
+        if viewData:
+            print(gdf)
             
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
+    combined_gdf = within_gdf(combined_gdf)
+    
     # Print GDF information
-    geometry_counts = combined_gdf.geometry.geom_type.value_counts()
-    print(geometry_counts)
+    if viewData:
+        geometry_counts = combined_gdf.geometry.geom_type.value_counts()
+        print("Combined GeoDataFrame:")
+        print(geometry_counts)
+        print(combined_gdf)
     
     return combined_gdf
 
@@ -69,9 +78,9 @@ def rename_ID_Name_columns(gdf, layer_index):
     identifier_column = IDENTIFIER_COLUMNS.get(layer_index)
     name_column = NAME_COLUMNS.get(layer_index)
     if identifier_column != 'ID':
-        gdf = gdf.rename(columns={identifier_column: 'ID'})
+        gdf = gdf.rename(columns={identifier_column: 'Simulation_ID'})
     if name_column != 'Name':
-        gdf = gdf.rename(columns={name_column: 'Name'})
+        gdf = gdf.rename(columns={name_column: 'Simulation_Name'})
     return gdf
 
 # Create 'Sqkm' area column helper function
@@ -94,10 +103,10 @@ def within_gdf(gdf):
     # Obtain larger target geometries and find contained geometries:
     for target_ID, _ in ID_LIST:
         # Establish target geometry
-        target_geometry = gdf[gdf['ID'] == target_ID]['geometry'].unary_union
+        target_geometry = gdf[gdf['Simulation_ID'] == target_ID]['geometry'].unary_union
         
         # Obtain all geometries within target geometry (excluding target geometry)
-        contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['ID'] != target_ID)]
+        contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['Simulation_ID'] != target_ID)]
         print(f"ID {target_ID} contains {len(contained_geometries_gdf)} geometries.")
         
         contained_geometries.append(contained_geometries_gdf)
@@ -118,8 +127,6 @@ def fill_gaps(gdf):
 def print_overlaps(gdf):
     """ Helper function to print overlapping regions - OUTDATED, FUNCTIONALITY QUESTIONABLE """
     combined_gdf = gdf
-    # Filter out 'Atlanta' polygon
-    combined_gdf = combined_gdf[combined_gdf['ID'] != '1304000']
     
     # Check for overlaps
     overlaps = gpd.sjoin(combined_gdf, combined_gdf, predicate='overlaps', how='inner')

@@ -1,7 +1,7 @@
 from collections import defaultdict
 
 from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
-from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, viewData, ID_LIST
+from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, viewData
 from download_extract import download_and_extract_all
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
@@ -17,6 +17,8 @@ from itertools import product
 from joblib import Parallel, delayed
 import numpy as np
 import time
+import matplotlib.pyplot as plt
+import matplotlib
 
 # =========================
 # FOUR STEP MODEL FUNCTIONS
@@ -189,6 +191,8 @@ def main():
     # =======================
 
     gdf_start_time = time.time()
+    print("Processing Geodataframe(s)...")    
+        
         
     # Create or load GDF
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
@@ -198,18 +202,20 @@ def main():
         else:
             gdf = load_gdf(gdf_cache_filenames)
     else:
-        gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
         print(f"Processing Geodataframe ...")  
-    
-    # Display the GeoDataFrame
-    if viewData:
-        print(gdf)
+        gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
         
     # Check if geometries are valid 
     if not gdf.is_valid.all():
         gdf['geometry'] = gdf['geometry'].buffer(0)
         if not gdf.is_valid.all():
             raise ValueError("Some geometries are invalid.")
+
+    #FIXME [Debugging purposes]: view graph of geodataframe:
+    # matplotlib.use('TkAgg')
+    # gdf.plot()
+    # plt.show()
+    # matplotlib.use('Agg')
 
     gdf_end_time = time.time()
     print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")
@@ -334,15 +340,13 @@ def main():
 if __name__ == "__main__":
     main()
 
-# MUST get done:
-#TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
-    # Initialize list in config including regions tomark "BELTLINE"
-        # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
+#TO-DO list:
+#TODO: Implement census tract shapefile
+#   - TODO: Overlay with county shapefile 
+#TODO: Initialize "is_beltline" using Carlos's script
+#TODO: Replace Lorentz curve with actual distribution (2010)
+#   - Array of avg income of each census tract, Array of population of each census tract
         
-""" Matthew's TODO's: """
-#TODO: Fill in gaps with polygons from other layers (all non-overlapping polygons in layers 2+)
-        
-""" Devam's TODO's: """
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 #TODO: Separate 4-step-model into its own .py file
 
