@@ -2,11 +2,6 @@ import pickle
 from helper import SAVED_IDS_FILE
 from pathlib import Path
 #saved_IDS.py
-    
-""" Save current ID's to SAVED_IDS_DIR """
-
-
-""" Compare current ID's to saved_IDS """
 
 def save_current_IDS(id_list, file_path=SAVED_IDS_FILE):
     """ Save current ID's to cache """

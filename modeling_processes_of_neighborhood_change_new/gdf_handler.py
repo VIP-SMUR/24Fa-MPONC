@@ -104,7 +104,17 @@ def within_gdf(gdf):
         
     filtered_gdf = gpd.GeoDataFrame(pd.concat(contained_geometries, ignore_index=True), crs=gdf.crs)
     return filtered_gdf
+   
+#TODO: 
+def remove_overlaps(gdf):
+    """ Helper function to only include regions not containing others """
+    return gdf
     
+#TODO:
+def fill_gaps(gdf):
+    """ Helper function to fill in empty spaces with polygons from shapefiles 2+ """
+    return gdf
+
 def print_overlaps(gdf):
     """ Helper function to print overlapping regions - OUTDATED, FUNCTIONALITY QUESTIONABLE """
     combined_gdf = gdf
