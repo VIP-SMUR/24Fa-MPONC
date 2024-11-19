@@ -338,16 +338,19 @@ if __name__ == "__main__":
 #TODO: Decide how to define "is_beltline" parameter (currently all regions are set to 'is_beltline == 1')
     # Initialize list in config including regions tomark "BELTLINE"
         # Automatically assign "BELTLINE" to region ID's titled "BELTLINE0X"
+        
+""" Matthew's TODO's: """
+#TODO: Fill in gaps with polygons from other layers (all non-overlapping polygons in layers 2+)
+        
+""" Devam's TODO's: """
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 #TODO: Separate 4-step-model into its own .py file
 
-# Quality of life:
-#TODO: cache individual centroid distances
-#TODO: make GIF speed dynamic
-#TODO: optimize handling of used_IDS and saved_IDS
-
-# Next semester:
+""" Spring 2025 TODO's: """
 #TODO: check if gif already exists before creating (cached)
 #TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
-#TODO: Fill in gaps with polygons from other layers (all non-overlapping polygons in layers 2+)
 #TODO: Add weights to amenities for amenity score calculation
+
+""" Quality of Life: """
+#TODO: cache individual centroid distances
+#TODO: make GIF speed dynamic based on configuration
