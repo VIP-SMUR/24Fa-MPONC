@@ -131,24 +131,18 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
 def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
     """ Folium plotting function """
     start_time = time.time()
-            
+    
     # Center the map
     center_lat = np.mean(city.lat_array)
     center_lon = np.mean(city.lon_array)
-    
+
     # Initialize folium graph
     m = folium.Map(location=[center_lat, center_lon], zoom_start=12)
-    
+
     # Define LinearColormap for folium
-    boundaries = np.linspace(0, 1, COLORBAR_NUM_INTERVALS + 1)
-    folium_colormap = StepColormap(
-        colors=fixed_colors, 
-        vmin=0, 
-        vmax=1, 
-        index=boundaries,  # Use the same boundaries
-        caption="Average Wealth"
-    )
-    
+    folium_colormap = linear.YlOrRd_09.scale(0, 1)
+    folium_colormap.caption = 'Average Wealth'
+
     # Customize GDF layer
     def style_function(feature):
         avg_endowment = feature['properties']['Avg Endowment Normalized']
@@ -158,17 +152,17 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
             'weight': 1,
             'fillOpacity': 0.4 if avg_endowment is not None else 0,
     }
-        
+
     # Add GDF layer
     folium.GeoJson(
         data=gdf,
         name='GDF Layer',
         style_function=style_function
     ).add_to(m)
-    
+
     # Add colormap
     folium_colormap.add_to(m)
-    
+
     # Initialize MarkerCluster
     marker_cluster = MarkerCluster().add_to(m)
     
@@ -176,22 +170,22 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
     
     # Add centroids as CircleMarker with beltline coloring
     for i, (lat, lon) in enumerate(zip(city.lat_array, city.lon_array)):
+        
+        #[ATTRIBUTES]
+        
+        # beltline status 
         beltline_status = city.beltline_array[i]
         color = 'red' if beltline_status else 'black'
-
-        #[ATTRIBUTES]
         # name
         name = city.name_array[i]
         # pop
         inhabitants = len(city.inh_array[i])
         # amenity density
         amenity_density = city.amts_dens[i]
-        
         # num amenities
         area = gdf.loc[gdf['ID'] == city.id_array[i], 'Sqkm'].values
         area = area[0]
         num_amenities = amenity_density * area
-        
         # avg endowment
         if inhabitants > 0: # Latest population > 0
             avg_endowment = gdf.loc[gdf['ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
@@ -204,17 +198,16 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
         popup_text = f"""
             <div style="font-size: 14px; line-height: 1.6; max-width: 200px;">
                 <strong>{name}</strong><br><br>
-                <strong>Amenities:</strong> {num_amenities:.0f}
+                <strong>ID: </strong> {city.id_array[i]}<br>
+                <strong>Amenities:</strong> {num_amenities:.0f}<br>
                 <strong>Amt density:</strong> {amenity_density:.1f}/sqkm<br>
                 <strong>Population:</strong> {inhabitants}<br>
                 <strong>Wealth:</strong> {avg_endowment:.2f}
             </div>
         """
-
-    for i, (lat, lon, popup_text) in enumerate(zip(city.lat_array, city.lon_array, popup_texts)):
-        beltline_status = city.beltline_array[i]
-        color = 'red' if beltline_status else 'black'
-
+        
+        popup_texts.append(popup_text)
+        
         CircleMarker(
             location=[lat, lon],
             color=color,
@@ -245,7 +238,3 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
 
     # Save Folium map.osm as HTML
     m.save(f"./figures/{figkey}_folium.html")
-    
-    end_time = time.time()
-    FOLIUM_DIR = Path(FIGURES_DIR) / f"{figkey}_folium.html"
-    print(f"Plotted and saved {FOLIUM_DIR.name} [{end_time - start_time:.2f} s]")

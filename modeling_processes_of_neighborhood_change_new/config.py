@@ -60,19 +60,19 @@ AMENITY_TAGS = {
 # Simulation Parameters
 RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 200 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 5000    # Number of agents
+T_MAX_RANGE = 2 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 1 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 1    # Number of agents
 
 # Flags
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+PLOT_LIBRARY = 0        # 1 for matplotlib, else for Folium
 viewData = True         # View amenity density and region distance?
 
 # Graph Visualization Settings
 COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
-DPI = 2400 # DPI resolution of MatPlotLib graphs
+DPI = 9600 # DPI resolution of MatPlotLib graphs
 
 # GIF Settings
 GIF_FRAME_DURATION = 100 # Millseconds

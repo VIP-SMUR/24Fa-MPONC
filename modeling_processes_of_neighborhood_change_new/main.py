@@ -325,12 +325,15 @@ if __name__ == "__main__":
 #TODO: reset GDF every time id_list changes
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 #TODO: Separate 4-step-model into its own .py file
+#TODO: fix folium visualization (no clickable pop-ups)
 
 # Quality of life:
+#TODO: cache individual centroid distances
 #TODO: make GIF speed dynamic
-#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: optimize handling of used_IDS and saved_IDS
 
 # Next semester:
+#TODO: check if gif already exists before creating (cached)
+#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: Fill in gaps with polygons from other layers (all non-overlapping polygons in layers 2+)
 #TODO: Add weights to amenities for amenity score calculation
