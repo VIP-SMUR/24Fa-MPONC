@@ -10,6 +10,7 @@ from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST
 
 def load_gdf(cache_files):
     """ Load each layer's Geodataframe from cache"""
+    # Load if cached:
     gdfs = []
     for i in cache_files:
         cache_file = cache_files[i]
@@ -30,32 +31,27 @@ def create_gdf(shapefile_paths, cache_files):
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
         
-        # Load if cached:
-        if cache_file.exists():
-            gdf = gpd.read_file(cache_file)
-            
         # Fetch and manipulate:    
-        else:
-            print(f"Creating GDF file for Layer {i}...")
-            gdf = gpd.read_file(shapefile_path)
-            
-            # Rename identifier column to 'ID'
-            gdf = rename_ID_Name_columns(gdf, i)
-            
-            # Filter for geometries within target geometry
-            gdf = within_gdf(gdf)
-            
-            # Create SQKM column
-            gdf = create_Sqkm_column(gdf)
-            
-            gdf = create_Beltline_column(gdf)
-            
-            # Set CRS
-            gdf = gdf.to_crs(epsg=4326)
-            
-            # Save to cache
-            print(f"Saving processed GeoDataFrame to '{cache_file}'...\n")
-            gdf.to_file(cache_file, driver='GPKG')
+        print(f"Creating GDF file for Layer {i}...")
+        gdf = gpd.read_file(shapefile_path)
+        
+        # Rename identifier column to 'ID'
+        gdf = rename_ID_Name_columns(gdf, i)
+        
+        # Filter for geometries within target geometry
+        gdf = within_gdf(gdf)
+        
+        # Create SQKM column
+        gdf = create_Sqkm_column(gdf)
+        
+        gdf = create_Beltline_column(gdf)
+        
+        # Set CRS
+        gdf = gdf.to_crs(epsg=4326)
+        
+        # Save to cache
+        print(f"Combined GeoDataFrame saved to '{cache_file}'.\n")
+        gdf.to_file(cache_file, driver='GPKG')
         
         gdfs.append(gdf)  
             

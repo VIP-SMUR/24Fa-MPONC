@@ -180,6 +180,9 @@ def main():
             regen_gdf_and_graph = False
     
     save_current_IDS(ID_LIST, SAVED_IDS_FILE)
+    
+    if regen_gdf_and_graph:
+        print("Regions have changed. Creating new Geodataframe and OSMNX Graph.\n")
         
     # =======================
     # GDF FILE INITIALIZATION
@@ -190,14 +193,13 @@ def main():
     # Create or load GDF
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
         if regen_gdf_and_graph:
-            print("Regions have changed. Recreating the Geodataframe...")
+            print(f"Processing Geodataframe ...")  
             gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
         else:
             gdf = load_gdf(gdf_cache_filenames)
-            print(f"Loaded existing Geodataframe from cache.")
     else:
-        gdf = gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
-        print(f"Loaded existing Geodataframe from cache.")  
+        gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        print(f"Processing Geodataframe ...")  
     
     # Display the GeoDataFrame
     if viewData:
@@ -221,7 +223,6 @@ def main():
 
     if Path(GRAPH_FILE).exists():
         if regen_gdf_and_graph:
-            print("Regions have changed. Recreating the graph...")
             g = create_graph(gdf)
             save_graph(g, GRAPH_FILE)
         else:
