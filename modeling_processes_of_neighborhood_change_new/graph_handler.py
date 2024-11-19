@@ -4,7 +4,7 @@ import osmnx as ox
 import networkx as nx
 import pickle
 from pathlib import Path
-from helper import used_IDS, graph_file
+from helper import GRAPH_FILE
 
 # =========================
 # GRAPH FILE INITIALIZATION
@@ -29,18 +29,14 @@ def create_graph(gdf):
     g = nx.convert_node_labels_to_integers(g)
     return g
 
-def save_graph(g, file_path=graph_file):
+def save_graph(g, file_path=GRAPH_FILE):
     """ Save graph to cache """
     with open(file_path, 'wb') as file:
-        # You can store additional metadata if needed
-        pickle.dump({'graph': g, 'IDs': used_IDS}, file)
+        pickle.dump(g, file)
     print(f"Combined graph saved to '{file_path}'.")
 
-def load_graph(file_path=graph_file):
+def load_graph(file_path=GRAPH_FILE):
     """ Load graph from cache """
-    file_path = Path(file_path)
     with open(file_path, 'rb') as file:
-        data = pickle.load(file)
-    g = data['graph']
-    saved_IDs = data.get('IDs', [])
-    return g, saved_IDs
+        g = pickle.load(file)
+    return g

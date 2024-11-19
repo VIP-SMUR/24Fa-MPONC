@@ -24,7 +24,7 @@ def load_gdf(cache_files):
 
 # create new gdf
 def create_gdf(shapefile_paths, cache_files):
-    """ Create and modify each layer's Geodataframe, then combine """
+    """ Create and modify each layer's Geodataframe, then combine into one Combined Geodataframe """
     gdfs = []
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]

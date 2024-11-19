@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-from helper import EPSILON
+from config import EPSILON
 import numpy as np
 
 
