@@ -58,6 +58,7 @@ def create_gdf(shapefile_paths, cache_files):
         
         gdfs.append(gdf)  
         
+        # View individual GDF information
         if viewData:
             print(gdf)
             
@@ -66,7 +67,7 @@ def create_gdf(shapefile_paths, cache_files):
     
     combined_gdf = within_gdf(combined_gdf)
     
-    # Print GDF information
+    # View combined GDF information
     if viewData:
         geometry_counts = combined_gdf.geometry.geom_type.value_counts()
         print("Combined GeoDataFrame:")
@@ -115,37 +116,3 @@ def within_gdf(gdf):
         
     filtered_gdf = gpd.GeoDataFrame(pd.concat(contained_geometries, ignore_index=True), crs=gdf.crs)
     return filtered_gdf
-   
-#TODO: 
-def remove_overlaps(gdf):
-    """ Helper function to only include regions not containing others """
-    return gdf
-    
-#TODO:
-def fill_gaps(gdf):
-    """ Helper function to fill in empty spaces with polygons from shapefiles 2+ """
-    return gdf
-
-def print_overlaps(gdf):
-    """ Helper function to print overlapping regions - OUTDATED, FUNCTIONALITY QUESTIONABLE """
-    combined_gdf = gdf
-    
-    # Check for overlaps
-    overlaps = gpd.sjoin(combined_gdf, combined_gdf, predicate='overlaps', how='inner')
-    
-    # Ignore when comparing to itself
-    overlaps = overlaps[overlaps['ID_left'] != overlaps['ID_right']]
-    
-    # Unique pair identifier
-    overlaps['sorted_pair'] = overlaps.apply(lambda row: tuple(sorted([row['Name_left'], row['Name_right']])), axis=1)
-    # Filter out repeat checks by checking for unique pair identifier
-    overlaps = overlaps.drop_duplicates(subset='sorted_pair')
-    # Drop duplicate pairs based on the sorted pair identifier
-    overlaps = overlaps.drop_duplicates(subset='sorted_pair')
-
-    if not overlaps.empty:
-        print("Overlapping regions:")
-        print(overlaps[['Name_left', 'Name_right']])   
-        print()
-    else:
-        print("No overlaping regions found.")

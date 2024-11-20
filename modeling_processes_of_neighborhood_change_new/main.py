@@ -1,7 +1,6 @@
 # main.py
 
 from collections import defaultdict
-
 from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
 from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST
 from file_download_manager import download_and_extract_layers_all
@@ -217,10 +216,10 @@ def main():
             raise ValueError("Some geometries are invalid.")
 
     #FIXME [Debugging purposes]: view graph of geodataframe:
-    # matplotlib.use('TkAgg')
-    # gdf.plot()
-    # plt.show()
-    # matplotlib.use('Agg')
+    matplotlib.use('TkAgg')
+    gdf.plot()
+    plt.show()
+    matplotlib.use('Agg')
 
     gdf_end_time = time.time()
     print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")
@@ -346,18 +345,19 @@ if __name__ == "__main__":
     main()
 
 #TO-DO list:
+# MATTHEW'S #TODO's:
 #TODO: Transition to census tracts [DONE]
 #TODO: Replace Lorentz curve with actual distribution (2010) [DONE]
 #TODO: Initialize "is_beltline" using Carlos's script
-#TODO: Query from past OSMNX (talk to atharva, PEI)
 
-#TODO: Address funky data in Income/Population CSV's
+# DEVAM'S #TODO's:
 #TODO: Address "graph is not strongly connected"
-        
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 #TODO: Separate 4-step-model into its own .py file
+#TODO: Fix amenity queries
 
 """ Spring 2025 TODO's: """
+#TODO: Address funky data in 2010 Income/Population CSV's
 #TODO: check if gif already exists before creating (cached)
 #TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: Add weights to amenities for amenity score calculation
