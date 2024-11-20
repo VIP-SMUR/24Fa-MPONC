@@ -59,9 +59,9 @@ AMENITY_TAGS = {
 """ Simulation Parameters """
 RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 10000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 200 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 1000    # Number of agents
+T_MAX_RANGE = 10 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 1 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 1    # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 
@@ -77,10 +77,10 @@ DPI = 9600 # DPI resolution of MatPlotLib graphs
 
 """ GIF Settings """
 GIF_FRAME_DURATION = 100 # Millseconds
-GIF_NUM_PAUSE_FRAMES = 15 # Number of repeat frames to show upon GIF completion
+GIF_NUM_PAUSE_FRAMES = 10 # Number of repeat frames to show upon GIF completion
 
 """ Multiprocessing Settings - number of CPU's """
-N_JOBS = 24 # maximum
+N_JOBS = 24
 
 """ Geographic key (name) """
 CTY_KEY = 'Georgia'

@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import osmnx as ox
+from economic_distribution import incomes
 
 # ==========
 # CITY CLASS
@@ -11,7 +12,7 @@ import osmnx as ox
 class City:
     
     # CONSTRUCTOR
-    def __init__(self, centroids, g, amts_dens, centroid_distances, rho):
+    def __init__(self, centroids, g, amts_dens, centroid_distances, rho, geo_id_to_income):
         ''' Initialize a City instance '''
         self.rho = rho  # house capacity
         self.centroids = centroids  # centroids list
@@ -38,6 +39,9 @@ class City:
         # Amenity density and centroid distances
         self.amts_dens = amts_dens
         self.centroid_distances = centroid_distances
+        
+        # Map GEO_ID to income
+        self.geo_id_to_income = geo_id_to_income
 
     # Set agents and their endowments
     def set_agts(self, agts):
@@ -124,12 +128,17 @@ class City:
             
             # Amenity Density
             amenity_density = self.amts_dens[index]
+            
+            # Expected income (2010 median income data)
+            expected_income = self.geo_id_to_income.get(ID, "NA")
 
             data.append({
-                'ID': ID,
+                'Simulation_ID': ID,
                 'Centroid': centroid_name,
                 'Population': population,
-                'Avg Endowment Normalized': avg_endowment,
+                'Avg Income': avg_endowment,
+                'Expected Income': expected_income,
+                'Avg Endowment Normalized': normalized_avg_endowments[index],
                 'In Beltline': in_beltline,
                 'Amt Density': round(amenity_density, 2)
             })

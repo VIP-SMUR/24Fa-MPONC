@@ -31,7 +31,7 @@ class SimulationManager:
         agents = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)]
         return agents
 
-    def run_parallel_simulations(self, assigned_routes, endowments):
+    def run_parallel_simulations(self, assigned_routes, endowments, incomes):
         """Execute multiple simulations in parallel"""
         if not RUN_EXPERIMENTS:
             return
@@ -39,12 +39,12 @@ class SimulationManager:
         # Run parallel processing using all available CPUs
         Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(self.run_single_simulation)(
-                rho, alpha, assigned_routes, endowments
+                rho, alpha, assigned_routes, endowments, incomes
             )
             for rho, alpha in self.simulation_params
         )
 
-    def run_single_simulation(self, rho, alpha, assigned_routes, endowments):
+    def run_single_simulation(self, rho, alpha, assigned_routes, endowments, incomes):
         """Execute a single simulation with given parameters"""
         start_time = time.time()
         
@@ -53,7 +53,7 @@ class SimulationManager:
         np.random.seed(seed)
 
         # Step 1: Initialize city and agents
-        city = City(self.centroids, self.g, self.amts_dens, self.centroid_distances, rho=rho)
+        city = City(self.centroids, self.g, self.amts_dens, self.centroid_distances, rho=rho, incomes=incomes)
         agents = self.initialize_agents(city, alpha, endowments)
         city.set_agts(agents)
         city.update()
@@ -114,7 +114,7 @@ class SimulationManager:
         df_data.to_csv(csv_path, index=False)
 
 
-def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments):
+def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments, incomes):
     """Main entry point for running simulations"""
     manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
-    manager.run_parallel_simulations(assigned_routes, endowments)
+    manager.run_parallel_simulations(assigned_routes, endowments, incomes)

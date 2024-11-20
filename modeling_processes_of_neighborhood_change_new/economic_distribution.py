@@ -5,6 +5,8 @@ from config import NUM_AGENTS, ECONOMIC_URL, ECONOMIC_DATA_SKIP_ROWS, ECONOMIC_D
 from file_download_manager import download_and_extract_census_data
 import pandas as pd
 
+incomes = np.array([])
+
 def economic_distribution():
     # [INCOME]
     income_data = download_and_extract_census_data(ECONOMIC_URL, 'economic_data.zip', 'economic_data')
@@ -22,14 +24,22 @@ def economic_distribution():
     merged_df = merged_df.dropna(subset=[ECONOMIC_DATA_COL, POPULATION_DATA_COL])
     
     # Normalize Income / Compute probabilities
-    incomes = merged_df[ECONOMIC_DATA_COL]
-    populations = merged_df[POPULATION_DATA_COL]
+    incomes = merged_df[ECONOMIC_DATA_COL].values
+    populations = merged_df[POPULATION_DATA_COL].values
     probabilities = populations / populations.sum()
     
+    # Endowments array, length len(NUM_AGENTS)
     endowments = np.random.choice(incomes, size=NUM_AGENTS, p=probabilities)
     
-    print(incomes)
-    n = (len(incomes))
+    # Map GEO_ID to income
+    geo_id_to_income = pd.Series(
+        data=merged_df[ECONOMIC_DATA_COL].values,
+        index=merged_df['GEO_ID']
+    ).to_dict()
+    
+    print(f"Incomes:")
+    print(geo_id_to_income)
+    n = (len(geo_id_to_income))
     print(f"Number of tracts used for income distribution calculations: {n}\n")
 
-    return endowments
+    return endowments, geo_id_to_income
