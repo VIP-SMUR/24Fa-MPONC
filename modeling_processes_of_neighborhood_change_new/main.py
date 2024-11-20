@@ -1,8 +1,11 @@
+# main.py
+
 from collections import defaultdict
 
-from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
-from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, viewData
-from download_extract import download_and_extract_all
+from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
+from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST
+from file_download_manager import download_and_extract_layers_all
+from economic_distribution import economic_distribution
 from gdf_handler import load_gdf, create_gdf
 from graph_handler import load_graph, create_graph, save_graph
 from amt_densities import compute_amts_dens
@@ -170,7 +173,9 @@ def main():
     # DOWNLOAD AND EXTRACT ZIP
     # ========================
 
-    shapefile_paths = download_and_extract_all()
+    shapefile_paths = download_and_extract_layers_all()
+    
+    endowments = economic_distribution()
     
     # =============================
     # CHECK IF REGIONS HAVE CHANGED
@@ -301,7 +306,7 @@ def main():
     simulation_start_time = time.time()
     print("Simulating...")
 
-    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes)
+    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments)
 
     simulation_end_time = time.time()
     print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")
@@ -331,7 +336,7 @@ def main():
         gif_start_time = time.time()
         print("Creating GIF(s)...")
 
-        process_pdfs_to_gifs(FIGURES_DIR, GIFS_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
+        process_pdfs_to_gifs(FIGURES_DIR, GIFS_CACHE_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
 
         gif_end_time = time.time()
         print(f"Completed creating GIF's after {gif_end_time - gif_start_time:.2f} seconds.")
@@ -341,11 +346,12 @@ if __name__ == "__main__":
     main()
 
 #TO-DO list:
-#TODO: Implement census tract shapefile
-#   - TODO: Overlay with county shapefile 
+#TODO: Transition to census tracts [DONE]
+#TODO: Replace Lorentz curve with actual distribution (2010) [DONE]
 #TODO: Initialize "is_beltline" using Carlos's script
-#TODO: Replace Lorentz curve with actual distribution (2010)
-#   - Array of avg income of each census tract, Array of population of each census tract
+
+#TODO: Address funky data in Income/Population CSV's
+#TODO: Address "graph is not strongly connected"
         
 #TODO: make random, make thresholds for car ownership, integrate demographic data with prices.
 #TODO: Separate 4-step-model into its own .py file

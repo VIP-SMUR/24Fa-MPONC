@@ -1,6 +1,6 @@
 # simulation.py
 
-from config import RHO_L, ALPHA_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, N_JOBS, TAU
+from config import RHO_L, ALPHA_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, N_JOBS
 from helper import DATA_DIR, FIGURE_PKL_CACHE_DIR, T_MAX_L
 from Agent import Agent
 from City import City
@@ -9,7 +9,6 @@ from joblib import Parallel, delayed
 import numpy as np
 import pickle
 import time
-
 
 class SimulationManager:
     """Manages the execution of multiple simulation runs"""
@@ -23,16 +22,16 @@ class SimulationManager:
         self.t_max = max(T_MAX_L)
         self.benchmarks = sorted(T_MAX_L)
 
-    def initialize_agents(self, city, alpha):
+    def initialize_agents(self, city, alpha, endowments):
         """Step 1: Initialize agents with sampling distribution"""
-        # Generate agent endowments using Lorentz curve
-        agt_dows = np.diff([1 - (1 - x) ** TAU for x in np.linspace(0, 1, NUM_AGENTS + 1)])
+        # Generate agent endowments using economic_distribution.py
+        agt_dows = endowments
 
         # Create agents with initial sampling distributions
         agents = [Agent(i, dow, city, alpha=alpha) for i, dow in enumerate(agt_dows)]
         return agents
 
-    def run_parallel_simulations(self, assigned_routes):
+    def run_parallel_simulations(self, assigned_routes, endowments):
         """Execute multiple simulations in parallel"""
         if not RUN_EXPERIMENTS:
             return
@@ -40,12 +39,12 @@ class SimulationManager:
         # Run parallel processing using all available CPUs
         Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(self.run_single_simulation)(
-                rho, alpha, assigned_routes
+                rho, alpha, assigned_routes, endowments
             )
             for rho, alpha in self.simulation_params
         )
 
-    def run_single_simulation(self, rho, alpha, assigned_routes):
+    def run_single_simulation(self, rho, alpha, assigned_routes, endowments):
         """Execute a single simulation with given parameters"""
         start_time = time.time()
         
@@ -55,7 +54,7 @@ class SimulationManager:
 
         # Step 1: Initialize city and agents
         city = City(self.centroids, self.g, self.amts_dens, self.centroid_distances, rho=rho)
-        agents = self.initialize_agents(city, alpha)
+        agents = self.initialize_agents(city, alpha, endowments)
         city.set_agts(agents)
         city.update()
 
@@ -115,7 +114,7 @@ class SimulationManager:
         df_data.to_csv(csv_path, index=False)
 
 
-def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes):
+def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments):
     """Main entry point for running simulations"""
     manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
-    manager.run_parallel_simulations(assigned_routes)
+    manager.run_parallel_simulations(assigned_routes, endowments)

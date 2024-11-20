@@ -21,6 +21,8 @@ def load_gdf(cache_files):
     # Combine all gdfs:
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
+    combined_gdf = within_gdf(combined_gdf)
+    
     return combined_gdf
 
 # create new gdf

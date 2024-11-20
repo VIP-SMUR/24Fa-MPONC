@@ -6,7 +6,7 @@ import numpy as np
 class Agent:
     def __init__(self, i, dow, city, alpha=0.5, car_ownership_rate=0.7):
         self.i = i  # Agent identifier
-        self.dow = dow  # Day of week
+        self.dow = dow  # Endowment
         self.city = city  # City object
         self.alpha = alpha  # Weight parameter for cost calculation
 
