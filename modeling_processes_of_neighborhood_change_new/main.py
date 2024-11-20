@@ -357,10 +357,11 @@ if __name__ == "__main__":
 #TODO: Fix amenity queries
 
 """ Spring 2025 TODO's: """
-#TODO: Address funky data in 2010 Income/Population CSV's
-#TODO: check if gif already exists before creating (cached)
-#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: Add weights to amenities for amenity score calculation
+#TODO: Address funky data in 2010 Income/Population CSV's
+#TODO: Address funky amenity countes
+#TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
+#TODO: check if gif already exists before creating (cached)
 
 """ Quality of Life: """
 #TODO: cache individual centroid distances

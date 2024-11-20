@@ -22,12 +22,13 @@ def economic_distribution():
     merged_df = merged_df.dropna(subset=[ECONOMIC_DATA_COL, POPULATION_DATA_COL])
     
     # Normalize Income / Compute probabilities
-    incomes = merged_df[ECONOMIC_DATA_COL] / merged_df[ECONOMIC_DATA_COL].max()
+    incomes = merged_df[ECONOMIC_DATA_COL]
     populations = merged_df[POPULATION_DATA_COL]
     probabilities = populations / populations.sum()
     
     endowments = np.random.choice(incomes, size=NUM_AGENTS, p=probabilities)
     
+    print(incomes)
     n = (len(incomes))
     print(f"Number of tracts used for income distribution calculations: {n}\n")
 

@@ -11,20 +11,18 @@ import osmnx as ox
 class City:
     
     # CONSTRUCTOR
-    def __init__(self, centroids, g, amts_dens, centroid_distances, rho=2):  # default rho (house capacity) == 2
-        '''
-        Initialize a City instance.
-        '''
+    def __init__(self, centroids, g, amts_dens, centroid_distances, rho):
+        ''' Initialize a City instance '''
         self.rho = rho  # house capacity
         self.centroids = centroids  # centroids list
-        self.g = g  # OSMnx map.osm
+        self.g = g  # OSM graph
         self.n = len(centroids)
         
         # STORE ATTRIBUTES OF ALL CENTROIDS 
         self.lon_array = np.array([lon for lon, _, _, _, _ in centroids])  # Longitude
         self.lat_array = np.array([lat for _, lat, _, _, _ in centroids])  # Latitude
         self.name_array = [name for _, _, name, _, _ in centroids]  # Centroid region name
-        self.beltline_array = np.array([beltline for _, _, _, beltline, _ in centroids], dtype=bool).astype(float)  # In Beltline?
+        self.in_beltline_array = np.array([in_beltline for _, _, _, in_beltline, _ in centroids], dtype=bool).astype(float)  # In Beltline?
         self.id_array = self.id_array = [id for _, _, _, _, id in centroids]  # ID
         
         self.inh_array = [set() for _ in range(self.n)]  # Array of sets - each set contains Agent inhabitants
@@ -48,17 +46,17 @@ class City:
 
     # Update each node (cmt score, population)
     def update(self):   
-        for ID in range(self.n):  # For each centroid
-            inhabitants = self.inh_array[ID]
+        for index in range(self.n):  # For each centroid
+            inhabitants = self.inh_array[index] # Centroid inhabitants
             pop = len(inhabitants)
             
             # Update population history
-            self.pop_hist[ID].append(pop)
+            self.pop_hist[index].append(pop)
             
             if pop > 0:  # Inhabited
                 # UPDATE COMMUNITY SCORE (avg inhabitant dows, weighted by distance to other centroids)
                 inhabitant_dows = np.array([a.dow for a in inhabitants])  # Array of endowments of node's inhabitants
-                distances = self.centroid_distances[ID, [a.u for a in inhabitants]]
+                distances = self.centroid_distances[index, [a.u for a in inhabitants]]
                 weights = (1 - distances) ** 2
                 
                 # Update Community history (average endowment)
@@ -66,19 +64,19 @@ class City:
                 
                 # Establish endowment threshold
                 if pop < self.rho:
-                    self.dow_thr_array[ID] = 0.0
+                    self.dow_thr_array[index] = 0.0
                 else:
-                    self.dow_thr_array[ID] = np.partition(inhabitant_dows, -self.rho)[-self.rho]
-                self.upk_array[ID] = True
+                    self.dow_thr_array[index] = np.partition(inhabitant_dows, -self.rho)[-self.rho]
+                self.upk_array[index] = True
                 
             else:  # If uninhabited
-                self.dow_thr_array[ID] = 0.0
-                self.upk_array[ID] = False
+                self.dow_thr_array[index] = 0.0
+                self.upk_array[index] = False
                 cmt = 0.0
 
             # Update Community history and Community Score (average endowment)
-            self.cmt_hist[ID].append(cmt)
-            self.cmt_array[ID] = cmt
+            self.cmt_hist[index].append(cmt)
+            self.cmt_array[index] = cmt
 
     # =====================
     # SAVE DATA TO CSV FILE
@@ -107,11 +105,8 @@ class City:
         min_val = avg_endowments.min()
         max_val = avg_endowments.max()
         
-        # Avoid division by 0
-        if max_val > min_val:
-            normalized_avg_endowments = (avg_endowments - min_val) / (max_val - min_val)
-        else:
-            normalized_avg_endowments = np.zeros_like(avg_endowments)
+        # Normalize endowments
+        normalized_avg_endowments = (avg_endowments - min_val) / (max_val - min_val)
         
         for index in range(self.n):
             # ID
@@ -126,7 +121,7 @@ class City:
             avg_endowment = normalized_avg_endowments[index]
                 
             # In Beltline?
-            in_beltline = self.beltline_array[index]
+            in_beltline = self.in_beltline_array[index]
             
             # Amenity Density
             amenity_density = self.amts_dens[index]

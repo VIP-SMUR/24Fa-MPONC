@@ -37,8 +37,8 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
         df_data = city.get_data()
         
         # Set index
-        gdf.set_index('simulation_ID', inplace=True)
-        df_data.set_index('simulation_ID', inplace=True)
+        gdf.set_index('Simulation_ID', inplace=True)
+        df_data.set_index('Simulation_ID', inplace=True)
         
         # 'Avg Endowment' from csv to gdf
         gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
@@ -183,12 +183,12 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
         # amenity density
         amenity_density = city.amts_dens[i]
         # num amenities
-        area = gdf.loc[gdf['simulation_ID'] == city.id_array[i], 'Sqkm'].values
+        area = gdf.loc[gdf['Simulation_ID'] == city.id_array[i], 'Sqkm'].values
         area = area[0]
         num_amenities = amenity_density * area
         # avg endowment
         if inhabitants > 0: # Latest population > 0
-            avg_endowment = gdf.loc[gdf['simulation_ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
+            avg_endowment = gdf.loc[gdf['Simulation_ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
             avg_endowment = avg_endowment[0] if len(avg_endowment) > 0 else 0.0
             avg_endowment = round(avg_endowment, 2)
         else:
