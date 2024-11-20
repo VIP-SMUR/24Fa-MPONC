@@ -215,11 +215,12 @@ def main():
         if not gdf.is_valid.all():
             raise ValueError("Some geometries are invalid.")
 
-    #FIXME [Debugging purposes]: view graph of geodataframe:
-    matplotlib.use('TkAgg')
-    gdf.plot()
-    plt.show()
-    matplotlib.use('Agg')
+    # [VIEW GRAPH]
+    # *freezes code - re-run simulation with this commented out to proceed*
+    # matplotlib.use('TkAgg')
+    # gdf.plot()
+    # plt.show()
+    # matplotlib.use('Agg')
 
     gdf_end_time = time.time()
     print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")

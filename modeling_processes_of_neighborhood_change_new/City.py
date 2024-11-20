@@ -95,8 +95,7 @@ class City:
             population = len(self.inh_array[index])
             # Average Endowment
             if population > 0:
-                avg_endowment = 100 * (np.mean([agent.dow for agent in self.inh_array[index]]))
-                avg_endowment = round(avg_endowment, 2)
+                avg_endowment = (np.mean([agent.dow for agent in self.inh_array[index]]))
             else:
                 avg_endowment = 0.0
             avg_endowments[index] = avg_endowment
