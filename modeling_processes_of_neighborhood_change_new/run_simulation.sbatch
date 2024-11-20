@@ -4,27 +4,25 @@
 #SBATCH --error=neighborhood_simulation_error.txt    # Standard error log
 #SBATCH --ntasks=1                    # Number of tasks (usually 1 for sequential jobs)
 #SBATCH --cpus-per-task=10            # Number of CPU cores per task
-#SBATCH --time=04:00:00               # Time limit (HH:MM:SS)
-#SBATCH --mem=4G                     # Memory per node (adjust as necessary)
+#SBATCH --time=16:00:00               # Time limit (HH:MM:SS)
+#SBATCH --mem=8G                     # Memory per node (adjust as necessary)
 #SBATCH --mail-type=BEGIN,END,FAIL    # Mail events (BEGIN, END, FAIL)
-#SBATCH --mail-user=zjiang402@gatech.edu    # Email address for notifications
+#SBATCH --mail-user=mlim70@gatech.edu    # Email address for notifications
 
 # ========================
 # LOAD MODULES AND ENVIRONMENTS
 # ========================
 
 # Load the Anaconda module
-module load anaconda3
 
 # Activate the Conda environment
-source activate neighborhood_env
 
 # ========================
 # NAVIGATE TO PROJECT DIRECTORY
 # ========================
 
 # Replace the path below with the absolute path to your project directory
-cd /home/hice1/mlim70/24Fa-MPONC
+cd /home/hice1/mlim70/24Fa-MPONC/modeling_processes_of_neighborhood_change
 
 # ========================
 # EXECUTE THE SIMULATION SCRIPT

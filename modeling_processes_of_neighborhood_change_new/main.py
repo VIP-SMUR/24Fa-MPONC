@@ -349,6 +349,7 @@ if __name__ == "__main__":
 #TODO: Transition to census tracts [DONE]
 #TODO: Replace Lorentz curve with actual distribution (2010) [DONE]
 #TODO: Initialize "is_beltline" using Carlos's script
+#TODO: Query from past OSMNX (talk to atharva, PEI)
 
 #TODO: Address funky data in Income/Population CSV's
 #TODO: Address "graph is not strongly connected"
