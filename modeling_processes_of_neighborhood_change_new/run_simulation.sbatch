@@ -22,7 +22,7 @@
 # ========================
 
 # Replace the path below with the absolute path to your project directory
-cd /home/hice1/mlim70/24Fa-MPONC/modeling_processes_of_neighborhood_change
+cd /home/hice1/mlim70/24Fa-MPONC/modeling_processes_of_neighborhood_change_new
 
 # ========================
 # EXECUTE THE SIMULATION SCRIPT
