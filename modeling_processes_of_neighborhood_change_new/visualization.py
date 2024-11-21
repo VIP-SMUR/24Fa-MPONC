@@ -98,7 +98,7 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
     gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=discrete_cmap, alpha=0.6, edgecolor='black', legend=False)
 
     # Plot centroids locations (this comes after the graph to make sure they are visible on top)
-    colors = np.where(city.beltline_array, 'palegreen', 'white')
+    colors = np.where(city.in_beltline_array, 'palegreen', 'white')
     ax.scatter(city.lon_array, city.lat_array, color=colors, s=120, alpha=0.8, edgecolor='black', linewidth=0.5)
 
     # Display inhabitant populations at each node:
@@ -174,7 +174,7 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
         #[ATTRIBUTES]
         
         # beltline status 
-        beltline_status = city.beltline_array[i]
+        beltline_status = city.in_beltline_array[i]
         color = 'red' if beltline_status else 'black'
         # name
         name = city.name_array[i]

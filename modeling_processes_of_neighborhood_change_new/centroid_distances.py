@@ -29,7 +29,7 @@ def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
     print(f"Number of centroids: {len(centroids)}")
 
     if os.path.exists(cache_path):
-        print("Loading cached centroid distances...")
+        print("Loading cached centroid distances.")
         distance_matrix = np.load(cache_path)
     else:
         distance_matrix = compute_centroid_distances(centroids, g)

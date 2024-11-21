@@ -31,7 +31,7 @@ def generate_trips(centroids, amts_dens, base_trips=100):
     Estimate trip generation based on amenity scores.
 
     Parameters:
-    centroids (list): List of (lon, lat, region_name, is_beltline, geoid)
+    centroids (list): List of (lon, lat, region_name, in_beltline, geoid)
     amts_dens (list): List of amenity scores for each zone
     base_trips (int): Base number of trips to scale by amenity scores
 
@@ -43,7 +43,7 @@ def generate_trips(centroids, amts_dens, base_trips=100):
     total_amenity_score = sum(amts_dens)
     amenity_probabilities = [score / total_amenity_score for score in amts_dens]
 
-    for idx, (lon, lat, region_name, is_beltline, geoid) in enumerate(centroids):
+    for idx, (lon, lat, region_name, in_beltline, geoid) in enumerate(centroids):
         # Generate trips based on amenity score probability
         trip_counts[geoid] = np.random.poisson(lam=base_trips * amenity_probabilities[idx])
 
@@ -56,7 +56,7 @@ def distribute_trips(trip_counts, centroids, amts_dens, centroid_distances):
 
     Parameters:
     trip_counts (dict): Dictionary of trips generated from each origin zone
-    centroids (list): List of centroid data (lon, lat, region_name, is_beltline, geoid)
+    centroids (list): List of centroid data (lon, lat, region_name, in_beltline, geoid)
     amts_dens (list): List of amenity scores for each zone
     centroid_distances (dict): Dictionary of distances between centroids
 
@@ -223,7 +223,7 @@ def main():
     # matplotlib.use('Agg')
 
     gdf_end_time = time.time()
-    print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds\n")
+    print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds.\n")
 
     # =========================
     # GRAPH FILE INITIALIZATION
@@ -244,7 +244,7 @@ def main():
         save_graph(g, GRAPH_FILE)
 
     graph_end_time = time.time()
-    print(f"Graph generation complete after {graph_end_time - graph_start_time:.2f} seconds\n")
+    print(f"Graph generation complete after {graph_end_time - graph_start_time:.2f} seconds.\n")
 
     # ================================
     # CENTROID INITIALIZATION FROM IDS
@@ -255,7 +255,7 @@ def main():
     centroids = create_centroids(gdf)
 
     centroid_end_time = time.time()
-    print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds\n")
+    print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds.\n")
 
     # =========================
     # COMPUTE AMENITY DENSITIES
@@ -266,7 +266,7 @@ def main():
     amts_dens = compute_amts_dens(gdf, AMENITY_TAGS)
 
     amts_dens_end_time = time.time()
-    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds\n")
+    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds.\n")
 
     # ==========================
     # COMPUTE CENTROID DISTANCES
@@ -277,7 +277,7 @@ def main():
     centroid_distances = cached_centroid_distances(centroids, g)
 
     distances_end_time = time.time()
-    print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds\n")
+    print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds.\n")
 
     # ========================
     # RUN TRANSPORTATION MODEL
@@ -298,7 +298,7 @@ def main():
     assigned_routes = route_assignment(split_distribution, g)
 
     transport_end_time = time.time()
-    print(f"Completed transportation model after {transport_end_time - transport_start_time:.2f} seconds\n")
+    print(f"Completed transportation model after {transport_end_time - transport_start_time:.2f} seconds.\n")
 
     # ==============
     # RUN SIMULATION

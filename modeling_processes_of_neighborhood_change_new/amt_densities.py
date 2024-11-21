@@ -58,7 +58,7 @@ def compute_amts_dens(gdf, tags):
     areas_sqkm = gdf['Sqkm'].values
     region_names = gdf['Simulation_Name'].values
 
-    print("Fetching amenities per region...")
+    print("Fetching amenities per region.")
 
     # Prepare arguments for parallel processing
     process_args = [(idx, row, tags) for idx, row in gdf.iterrows()]
