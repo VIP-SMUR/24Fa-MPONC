@@ -174,7 +174,7 @@ def main():
 
     shapefile_paths = download_and_extract_layers_all()
     
-    endowments, incomes = economic_distribution()
+    endowments, geo_id_to_income = economic_distribution()
     
     # =============================
     # CHECK IF REGIONS HAVE CHANGED
@@ -306,7 +306,7 @@ def main():
     simulation_start_time = time.time()
     print("Simulating...")
 
-    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments, incomes)
+    run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes, endowments, geo_id_to_income)
 
     simulation_end_time = time.time()
     print(f"Completed simulation(s) after {simulation_end_time - simulation_start_time:.2f} seconds.\n")

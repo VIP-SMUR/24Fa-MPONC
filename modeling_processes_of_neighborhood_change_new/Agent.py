@@ -94,7 +94,7 @@ class Agent:
         community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))
         accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])
         upkeep = self.city.upk_array[u]
-        beltline = self.city.beltline_array[u]
+        beltline = self.city.in_beltline_array[u]
 
         # Mode-specific adjustments
         mode_factor = 1.5 if self.mode == 'transit' else 1.0
