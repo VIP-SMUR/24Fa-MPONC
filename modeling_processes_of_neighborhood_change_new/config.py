@@ -22,7 +22,7 @@ NAME_COLUMNS = {
 # [DATA USED TO INITIALIZE AGENT ENDOWMENTS]
 
 # MEDIAN INCOME IN THE PAST 12 MONTHS (IN 2010 INFLATION-ADJUSTED DOLLARS) 
-ECONOMIC_URL = "https://data.census.gov/api/access/table/download?download_id=f4ebf7c857fa2337000748667aecef9143984bdab57c6acf6c1ed9a7ddc7179c"
+ECONOMIC_URL = "https://data.census.gov/api/access/table/download?download_id=6fad78b0ac510efbe0f426059c1394dfc06eb60dc6feabc66622be2b05a0048c"
 ECONOMIC_DATA_SKIP_ROWS = [1]
 ECONOMIC_DATA_COL = "S1903_C02_001E" # Name of 'Income' data column
 
