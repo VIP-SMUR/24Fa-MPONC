@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
-from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST
+from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, T_MAX_RANGE
 from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
 from gdf_handler import load_gdf, create_gdf
@@ -14,6 +14,7 @@ from visualization import plot_city
 from gif import process_pdfs_to_gifs
 from centroids import create_centroids
 from save_IDS import save_current_IDS, load_previous_IDS
+from calibration import calibrate
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -25,6 +26,8 @@ import matplotlib
 # =========================
 # FOUR STEP MODEL FUNCTIONS
 # =========================
+
+OVERALL_START_TIME = time.time()
 
 def generate_trips(centroids, amts_dens, base_trips=100):
     """
@@ -219,8 +222,8 @@ def main():
         gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames)
         
     print(f"GDF contains {num_geometries} regions")
-    for i in range(1, len(num_geometries_individual)):
-        print(f"GDF {i} contains {num_geometries_individual[i-1]} geometries.")
+    for i in range(len(num_geometries_individual)):
+        print(f"GDF {i+1} contains {num_geometries_individual[i]} geometries.")
         
     # Check if geometries are valid 
     if not gdf.is_valid.all():
@@ -354,6 +357,15 @@ def main():
         gif_end_time = time.time()
         print(f"Completed creating GIF's after {gif_end_time - gif_start_time:.2f} seconds.")
 
+    # =============================================================
+    # ACQUIRE CALIBRATION METRIC (EXPECTED MINUS SIMULATED INCOMES)
+    # =============================================================
+    for rho, alpha in list(product(RHO_L, ALPHA_L)):
+        figkey, cal_metric = calibrate(rho, alpha)
+        print(f"Total difference for simulation {figkey} is {cal_metric}")
+        
+    OVERALL_END_TIME = time.time()
+    print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME}s]")
 
 if __name__ == "__main__":
     main()
