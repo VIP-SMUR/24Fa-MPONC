@@ -57,11 +57,11 @@ AMENITY_TAGS = {
 }
 
 """ Simulation Parameters """
-RHO_L = [8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [ 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 200 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 1000    # Number of agents
+RHO_L = [2]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_RANGE = 2 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 1 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 1    # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 

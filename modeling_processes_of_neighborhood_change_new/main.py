@@ -223,7 +223,7 @@ def main():
         
     print(f"GDF contains {num_geometries} regions")
     for i in range(len(num_geometries_individual)):
-        print(f"GDF {i+1} contains {num_geometries_individual[i]} geometries.")
+        print(f"Region {i+1} contains {num_geometries_individual[i]} geometries.")
         
     # Check if geometries are valid 
     if not gdf.is_valid.all():
