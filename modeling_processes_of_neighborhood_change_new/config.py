@@ -66,7 +66,7 @@ NUM_AGENTS = 1000    # Number of agents
 EPSILON = 1e-3 # Rate of learning
 
 """ Flags """
-RUN_EXPERIMENTS = False  # RUN SIMULATION?
+RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = False         # View GDF's, ameniti counts, ?
