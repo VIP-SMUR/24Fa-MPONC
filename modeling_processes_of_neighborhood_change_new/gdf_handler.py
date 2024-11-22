@@ -58,7 +58,7 @@ def create_gdf(shapefile_paths, cache_files):
         
         gdfs.append(gdf)  
         
-        num_geometries.append()
+        num_geometries.append(len(gdf))
         
         # View individual GDF information
         if viewData:
