@@ -57,11 +57,11 @@ AMENITY_TAGS = {
 }
 
 """ Simulation Parameters """
-RHO_L = [4]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 10 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 1 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 1    # Number of agents
+RHO_L = [8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [ 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 200 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 1000    # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 
@@ -69,7 +69,7 @@ EPSILON = 1e-3 # Rate of learning
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
-viewData = False         # View amenity density and region distance?
+viewData = False         # View GDF's, ameniti counts, ?
 
 """ Visualization Settings """
 COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization
@@ -80,7 +80,7 @@ GIF_FRAME_DURATION = 100 # Millseconds
 GIF_NUM_PAUSE_FRAMES = 10 # Number of repeat frames to show upon GIF completion
 
 """ Multiprocessing Settings - number of CPU's """
-N_JOBS = 24
+N_JOBS = -1
 
 """ Geographic key (name) """
 CTY_KEY = 'Georgia'

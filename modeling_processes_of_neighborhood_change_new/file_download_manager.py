@@ -94,7 +94,7 @@ def extract_zip_file(file_path, extract_filename, cache_dir):
 
     # Check if extraction folder already exists
     if extract_path.exists():
-        print(f"Extraction folder '{extract_filename}' already exists. Skipping extraction.\n")
+        print(f"Extraction folder '{extract_filename}' already exists. Skipping extraction.")
         return extract_path
     else:
         with zipfile.ZipFile(file_path, 'r') as zip_ref:

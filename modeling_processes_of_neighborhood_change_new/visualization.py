@@ -1,7 +1,9 @@
 # visualization.py
 
 from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS, DPI
-from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR
+from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR, GRAPH_FILE, gdf_cache_filenames
+from gdf_handler import load_gdf
+from graph_handler import load_graph
 import matplotlib.pyplot as plt
 import time
 import folium
@@ -20,13 +22,17 @@ import pickle
 # VISUALIZATION EXECUTION LOGIC
 # =============================
 
-def plot_city(rho, alpha, t_max, centroids, g, gdf):
+def plot_city(rho, alpha, t_max, centroids):
     """ Main plot function """
     # Define graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
     title = f"Timestep: {t_max}"
     pickle_filename = f"{figkey}.pkl"
     pickle_path = FIGURE_PKL_CACHE_DIR / pickle_filename
+    
+    # Don't pass large items as parameters - avoid pickling issues during multiprocessing (too big)
+    g = load_graph(GRAPH_FILE)
+    gdf, _, _ = load_gdf(gdf_cache_filenames)
     
     # Graphing logic
     if pickle_path.exists():
@@ -40,7 +46,7 @@ def plot_city(rho, alpha, t_max, centroids, g, gdf):
         gdf.set_index('Simulation_ID', inplace=True)
         df_data.set_index('Simulation_ID', inplace=True)
         
-        # 'Avg Endowment' from csv to gdf
+        # Join 'Avg Endowment' from csv to gdf
         gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
     
         # Plot with Matplotlib

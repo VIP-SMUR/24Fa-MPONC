@@ -14,21 +14,21 @@ def load_gdf(cache_files):
     gdfs = []
     for i in cache_files:
         cache_file = cache_files[i]
-        print(f"Loading GeoDataFrame from '{cache_file}...'")
         gdf = gpd.read_file(cache_file)
         gdfs.append(gdf)
         
     # Combine all gdfs:
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
-    combined_gdf = within_gdf(combined_gdf)
+    combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
     
-    return combined_gdf
+    return combined_gdf, num_geometries, num_geometries_individual
 
 # create new gdf
 def create_gdf(shapefile_paths, cache_files):
     """ Create and modify each layer's Geodataframe, then combine into one Combined Geodataframe """
     gdfs = []
+    num_geometries = []
     for i in shapefile_paths:
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
@@ -58,6 +58,8 @@ def create_gdf(shapefile_paths, cache_files):
         
         gdfs.append(gdf)  
         
+        num_geometries.append()
+        
         # View individual GDF information
         if viewData:
             print(gdf)
@@ -65,7 +67,7 @@ def create_gdf(shapefile_paths, cache_files):
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     
-    combined_gdf = within_gdf(combined_gdf)
+    combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
     
     # View combined GDF information
     if viewData:
@@ -74,7 +76,7 @@ def create_gdf(shapefile_paths, cache_files):
         print(geometry_counts)
         print(combined_gdf)
     
-    return combined_gdf
+    return combined_gdf, num_geometries, num_geometries_individual
 
 def rename_ID_Name_columns(gdf, layer_index):
     """ Helper function to rename 'identifier' column """
@@ -103,16 +105,21 @@ def create_Beltline_column(gdf):
 def within_gdf(gdf):
     """ Helper function to filter Geodataframe for regions within our target region"""
     contained_geometries = []
+    num_geometries_individual = []
+    
     # Obtain larger target geometries and find contained geometries:
     for target_ID, _ in ID_LIST:
         # Establish target geometry
         target_geometry = gdf[gdf['Simulation_ID'] == target_ID]['geometry'].unary_union
         
         # Obtain all geometries within target geometry (excluding target geometry)
-        contained_geometries_gdf = gdf[gdf.within(target_geometry) & (gdf['Simulation_ID'] != target_ID)]
-        print(f"ID {target_ID} contains {len(contained_geometries_gdf)} geometries.")
+        contained_geometries_individual = gdf[gdf.within(target_geometry) & (gdf['Simulation_ID'] != target_ID)]
+        num_geometries_individual.append(len(contained_geometries_individual))
         
-        contained_geometries.append(contained_geometries_gdf)
+        contained_geometries.append(contained_geometries_individual)
         
     filtered_gdf = gpd.GeoDataFrame(pd.concat(contained_geometries, ignore_index=True), crs=gdf.crs)
-    return filtered_gdf
+    
+    num_geometries = len(contained_geometries)
+    
+    return filtered_gdf, num_geometries, num_geometries_individual

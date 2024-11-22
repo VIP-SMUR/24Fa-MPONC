@@ -7,7 +7,7 @@ def save_current_IDS(id_list, file_path=SAVED_IDS_FILE):
     """ Save current ID's to cache """
     with open(file_path, 'wb') as file:
         pickle.dump(id_list, file)
-    print(f"Current ID's saved to '{file_path}'.\n")
+    print(f"Current ID's saved.\n")
 
 def load_previous_IDS(file_path=SAVED_IDS_FILE):
     """ Load previous ID's from cache """

@@ -36,8 +36,5 @@ def economic_distribution():
         data=merged_df[ECONOMIC_DATA_COL].values,
         index=merged_df['GEO_ID']
     ).to_dict()
-    
-    n = (len(geo_id_to_income))
-    print(f"Number of tracts used to calculate endowment distribution: {n}\n")
 
     return endowments, geo_id_to_income

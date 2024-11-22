@@ -13,7 +13,7 @@ from simulation import run_simulation
 from visualization import plot_city
 from gif import process_pdfs_to_gifs
 from centroids import create_centroids
-from saved_IDS import save_current_IDS, load_previous_IDS
+from save_IDS import save_current_IDS, load_previous_IDS
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -172,14 +172,23 @@ def main():
     # DOWNLOAD AND EXTRACT ZIP
     # ========================
 
+    print("Processing Shapfiles and Census data...")
+    file_start_time = time.time()    
+
     shapefile_paths = download_and_extract_layers_all()
     
     endowments, geo_id_to_income = economic_distribution()
+    n = ((len(geo_id_to_income)))
+    print(f"\nNumber of tracts used to calculate endowment distribution: {n}\n")
+    
+    file_end_time = time.time()
+    
     
     # =============================
     # CHECK IF REGIONS HAVE CHANGED
     # =============================
     regen_gdf_and_graph = True
+    
     if Path(SAVED_IDS_FILE).exists():
         saved_IDS = load_previous_IDS(SAVED_IDS_FILE)
         if set(saved_IDS) == set(ID_LIST):
@@ -188,7 +197,7 @@ def main():
     save_current_IDS(ID_LIST, SAVED_IDS_FILE)
     
     if regen_gdf_and_graph:
-        print("Regions have changed. Creating new Geodataframe and OSMNX Graph.\n")
+        print("Regions have changed. Saving ID's and recreating Geodataframe and Graph.\n")
         
     # =======================
     # GDF FILE INITIALIZATION
@@ -202,12 +211,16 @@ def main():
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
         if regen_gdf_and_graph:
             print(f"Processing Geodataframe ...")  
-            gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+            gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames)
         else:
-            gdf = load_gdf(gdf_cache_filenames)
+            gdf, num_geometries, num_geometries_individual = load_gdf(gdf_cache_filenames)
     else:
         print(f"Processing Geodataframe ...")  
-        gdf = create_gdf(shapefile_paths, gdf_cache_filenames)
+        gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames)
+        
+    print(f"GDF contains {num_geometries} regions")
+    for i in range(1, len(num_geometries_individual)):
+        print(f"GDF {i} contains {num_geometries_individual[i-1]} geometries.")
         
     # Check if geometries are valid 
     if not gdf.is_valid.all():
@@ -238,7 +251,7 @@ def main():
             save_graph(g, GRAPH_FILE)
         else:
             g = load_graph(GRAPH_FILE)
-            print(f"Loaded existing graph from {GRAPH_FILE}")
+            print(f"Loaded existing graph from {GRAPH_FILE}.")
     else:
         g = create_graph(gdf)
         save_graph(g, GRAPH_FILE)
@@ -266,7 +279,7 @@ def main():
     amts_dens = compute_amts_dens(gdf, AMENITY_TAGS)
 
     amts_dens_end_time = time.time()
-    print(f"Completed amenity density calculations after {amts_dens_end_time - amts_dens_start_time:.2f} seconds.\n")
+    print(f"Completed amenity density initialization after {amts_dens_end_time - amts_dens_start_time:.2f} seconds.\n")
 
     # ==========================
     # COMPUTE CENTROID DISTANCES
@@ -277,7 +290,7 @@ def main():
     centroid_distances = cached_centroid_distances(centroids, g)
 
     distances_end_time = time.time()
-    print(f"Completed distance calculations after {distances_end_time - distances_start_time:.2f} seconds.\n")
+    print(f"Completed distance initialization after {distances_end_time - distances_start_time:.2f} seconds.\n")
 
     # ========================
     # RUN TRANSPORTATION MODEL
@@ -322,7 +335,7 @@ def main():
 
         Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(plot_city)(
-                rho, alpha, t_max, centroids, g, gdf
+                rho, alpha, t_max, centroids
             )
             for rho, alpha, t_max in simulation_params
         )
@@ -359,6 +372,7 @@ if __name__ == "__main__":
 
 """ Spring 2025 TODO's: """
 #TODO: Add weights to amenities for amenity score calculation
+#TODO: Address approach of: loading GDF and GRAPH from cache for every simulation iteration, instead of passing as parameter
 #TODO: Address funky data in 2010 Income/Population CSV's
 #TODO: Address funky amenity countes
 #TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
