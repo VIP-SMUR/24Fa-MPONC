@@ -61,15 +61,15 @@ AMENITY_TAGS = {
 """ Simulation Parameters """
 RHO_L = [2]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
 ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 2 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 1 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 1    # Number of agents
+T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 50 # [1000] Intervals at which to assign benchmark timesteps
+NUM_AGENTS = 100    # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 
 """ Flags """
-RUN_EXPERIMENTS = True  # RUN SIMULATION?
-PLOT_CITIES = True      # PLOT SIMULATION?
+RUN_EXPERIMENTS = False  # RUN SIMULATION?
+PLOT_CITIES = False      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
 viewData = False        # View GDF info + more?
 viewAmenityData = False # View amenity counts?

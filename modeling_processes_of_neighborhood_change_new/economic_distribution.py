@@ -15,7 +15,7 @@ def economic_distribution():
     population_data = download_and_extract_census_data(POPULATION_URL, 'population_data.zip', 'population_data')
     population_df = pd.read_csv(population_data, skiprows=POPULATION_DATA_SKIP_ROWS, header=0)
     
-    # [MARK INVALID ENTRIES WITH NaN]
+    # [MARK INVALID ENTRIES WITH NaN] - translate income value 'strings' to numeric (float/int); handle errors by turning them into NaN
     income_df[ECONOMIC_DATA_COL] = pd.to_numeric(income_df[ECONOMIC_DATA_COL], errors='coerce')
     population_df[POPULATION_DATA_COL] = pd.to_numeric(population_df[POPULATION_DATA_COL], errors='coerce')
     

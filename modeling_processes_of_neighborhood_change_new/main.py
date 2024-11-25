@@ -370,7 +370,7 @@ def main():
     # ACQUIRE CALIBRATION METRIC (EXPECTED MINUS SIMULATED INCOMES)
     # =============================================================
     for rho, alpha in list(product(RHO_L, ALPHA_L)):
-        figkey, cal_metric = calibrate(rho, alpha)
+        figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
         print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
         
     OVERALL_END_TIME = time.time()
