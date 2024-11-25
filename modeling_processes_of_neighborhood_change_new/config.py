@@ -39,6 +39,8 @@ ID_LIST = [
     ,('13089', True) #Dekalb County
 ]
 
+""" ID's of all 'Beltline' relations from Open Street Map """
+RELATION_IDS = [8408433, 13048389]
 
 """ Amenity filters """
 AMENITY_TAGS = {
@@ -69,7 +71,8 @@ EPSILON = 1e-3 # Rate of learning
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
-viewData = False         # View GDF's, ameniti counts, ?
+viewData = False        # View GDF info + more?
+viewAmenityData = False # View amenity counts?
 
 """ Visualization Settings """
 COLORBAR_NUM_INTERVALS = 20 # Number of distinct colors to show in visualization

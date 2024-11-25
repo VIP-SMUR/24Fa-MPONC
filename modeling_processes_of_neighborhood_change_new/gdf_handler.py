@@ -3,12 +3,13 @@
 import geopandas as gpd
 import pandas as pd
 from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST, viewData
+from in_beltline import check_in_beltline
 
 # =======================
 # GDF FILE INITIALIZATION
 # =======================
 
-def load_gdf(cache_files):
+def load_gdf(cache_files, beltline_geom):
     """ Load each layer's Geodataframe from cache"""
     # Load if cached:
     gdfs = []
@@ -22,10 +23,12 @@ def load_gdf(cache_files):
     
     combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
     
+    combined_gdf = create_Beltline_column(combined_gdf, beltline_geom)
+    
     return combined_gdf, num_geometries, num_geometries_individual
 
 # create new gdf
-def create_gdf(shapefile_paths, cache_files):
+def create_gdf(shapefile_paths, cache_files, beltline_geom):
     """ Create and modify each layer's Geodataframe, then combine into one Combined Geodataframe """
     gdfs = []
     num_geometries = []
@@ -33,7 +36,6 @@ def create_gdf(shapefile_paths, cache_files):
         shapefile_path = shapefile_paths[i]
         cache_file = cache_files[i]
         
-        # Fetch and manipulate:    
         print(f"Creating GDF file for Layer {i}...")
         gdf = gpd.read_file(shapefile_path)
         
@@ -43,8 +45,6 @@ def create_gdf(shapefile_paths, cache_files):
         # Create SQKM column
         gdf = create_Sqkm_column(gdf)
         
-        gdf = create_Beltline_column(gdf)
-        
         # Set CRS
         gdf = gdf.to_crs(epsg=4326)
         
@@ -52,9 +52,10 @@ def create_gdf(shapefile_paths, cache_files):
         print(f"Individual GeoDataFrame saved to '{cache_file}'.")
         gdf.to_file(cache_file, driver='GPKG')
         
-        gdf_geom_counts = gdf.geometry.geom_type.value_counts()
-        print(gdf_geom_counts)
-        print()
+        if viewData:
+            gdf_geom_counts = gdf.geometry.geom_type.value_counts()
+            print(gdf_geom_counts)
+            print()
         
         gdfs.append(gdf)  
         
@@ -69,6 +70,8 @@ def create_gdf(shapefile_paths, cache_files):
     
     combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
     
+    combined_gdf = create_Beltline_column(combined_gdf, beltline_geom)
+    
     # View combined GDF information
     if viewData:
         geometry_counts = combined_gdf.geometry.geom_type.value_counts()
@@ -82,9 +85,9 @@ def rename_ID_Name_columns(gdf, layer_index):
     """ Helper function to rename 'identifier' column """
     identifier_column = IDENTIFIER_COLUMNS.get(layer_index)
     name_column = NAME_COLUMNS.get(layer_index)
-    if identifier_column != 'ID':
+    if identifier_column != 'Simulation_ID':
         gdf = gdf.rename(columns={identifier_column: 'Simulation_ID'})
-    if name_column != 'Name':
+    if name_column != 'Simulation_Name':
         gdf = gdf.rename(columns={name_column: 'Simulation_Name'})
     return gdf
 
@@ -97,9 +100,10 @@ def create_Sqkm_column(gdf):
     return gdf
 
 # TODO
-def create_Beltline_column(gdf):
+def create_Beltline_column(gdf, beltline_geom):
     """ Helper function to create 'Beltline' column """
-    gdf['Beltline'] = 1
+    print("Updating 'in_beltline' attribute...")
+    gdf['Beltline'] = gdf['geometry'].apply(lambda poly: check_in_beltline(poly, beltline_geom))
     return gdf
 
 def within_gdf(gdf):

@@ -22,7 +22,7 @@ import pickle
 # VISUALIZATION EXECUTION LOGIC
 # =============================
 
-def plot_city(rho, alpha, t_max, centroids):
+def plot_city(rho, alpha, t_max, centroids, beltline_geom):
     """ Main plot function """
     # Define graph title, file name, and file path
     figkey = f"{CTY_KEY}_{rho}_{alpha}_{NUM_AGENTS}_{t_max}"
@@ -32,7 +32,7 @@ def plot_city(rho, alpha, t_max, centroids):
     
     # Don't pass large items as parameters - avoid pickling issues during multiprocessing (too big)
     g = load_graph(GRAPH_FILE)
-    gdf, _, _ = load_gdf(gdf_cache_filenames)
+    gdf, _, _ = load_gdf(gdf_cache_filenames, beltline_geom)
     
     # Graphing logic
     if pickle_path.exists():

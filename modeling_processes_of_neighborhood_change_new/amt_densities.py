@@ -1,7 +1,7 @@
 # amtsdens_distances.py
 from multiprocessing import Pool, cpu_count
 
-from config import viewData
+from config import viewAmenityData
 from helper import AMTS_DENS_CACHE_DIR
 import os
 import osmnx as ox
@@ -86,7 +86,7 @@ def compute_amts_dens(gdf, tags):
         amts_dens /= amts_dens.max()
 
     # View Data?
-    if viewData:
+    if viewAmenityData:
         output_lines = [
             f"{name:<40} {area:>12.2f} {amt:>10}" for name, area, amt in zip(region_names, areas_sqkm, amenities_counts)
         ]

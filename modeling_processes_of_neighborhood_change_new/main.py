@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
-from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, T_MAX_RANGE
+from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, RELATION_IDS, viewData
 from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
 from gdf_handler import load_gdf, create_gdf
@@ -15,6 +15,7 @@ from gif import process_pdfs_to_gifs
 from centroids import create_centroids
 from save_IDS import save_current_IDS, load_previous_IDS
 from calibration import calibrate
+from in_beltline import fetch_beltline_nodes
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -181,10 +182,13 @@ def main():
     shapefile_paths = download_and_extract_layers_all()
     
     endowments, geo_id_to_income = economic_distribution()
+    
     n = ((len(geo_id_to_income)))
     print(f"\nNumber of tracts used to calculate endowment distribution: {n}\n")
     
     file_end_time = time.time()
+    
+    print(f"File download and extraction complete after {file_end_time - file_start_time:.2f} seconds.\n")
     
     
     # =============================
@@ -208,18 +212,19 @@ def main():
 
     gdf_start_time = time.time()
     print("Processing Geodataframe(s)...")    
-        
+    
+    beltline_geom = fetch_beltline_nodes(RELATION_IDS)
+    if beltline_geom is None:
+        print("Failed to fetch BeltLine geometries.")
         
     # Create or load GDF
     if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
         if regen_gdf_and_graph:
-            print(f"Processing Geodataframe ...")  
-            gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames)
+            gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames, beltline_geom)
         else:
-            gdf, num_geometries, num_geometries_individual = load_gdf(gdf_cache_filenames)
+            gdf, num_geometries, num_geometries_individual = load_gdf(gdf_cache_filenames, beltline_geom)
     else:
-        print(f"Processing Geodataframe ...")  
-        gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames)
+        gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames, beltline_geom)
         
     print(f"GDF contains {num_geometries} regions")
     for i in range(len(num_geometries_individual)):
@@ -230,9 +235,13 @@ def main():
         gdf['geometry'] = gdf['geometry'].buffer(0)
         if not gdf.is_valid.all():
             raise ValueError("Some geometries are invalid.")
+    
+    if viewData:
+        print(gdf.columns)
 
     # [VIEW GRAPH]
     # *freezes code - re-run simulation with this commented out to proceed*
+    
     # matplotlib.use('TkAgg')
     # gdf.plot()
     # plt.show()
@@ -338,7 +347,7 @@ def main():
 
         Parallel(n_jobs=N_JOBS, backend='loky')(
             delayed(plot_city)(
-                rho, alpha, t_max, centroids
+                rho, alpha, t_max, centroids, beltline_geom
             )
             for rho, alpha, t_max in simulation_params
         )
@@ -362,7 +371,7 @@ def main():
     # =============================================================
     for rho, alpha in list(product(RHO_L, ALPHA_L)):
         figkey, cal_metric = calibrate(rho, alpha)
-        print(f"Total difference for simulation {figkey} is {cal_metric}")
+        print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
         
     OVERALL_END_TIME = time.time()
     print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME}s]")
@@ -374,7 +383,7 @@ if __name__ == "__main__":
 # MATTHEW'S #TODO's:
 #TODO: Transition to census tracts [DONE]
 #TODO: Replace Lorentz curve with actual distribution (2010) [DONE]
-#TODO: Initialize "is_beltline" using Carlos's script
+#TODO: Initialize "is_beltline" using Carlos's script [DONE]
 
 # DEVAM'S #TODO's:
 #TODO: Address "graph is not strongly connected"
@@ -386,7 +395,8 @@ if __name__ == "__main__":
 #TODO: Add weights to amenities for amenity score calculation
 #TODO: Address approach of: loading GDF and GRAPH from cache for every simulation iteration, instead of passing as parameter
 #TODO: Address funky data in 2010 Income/Population CSV's
-#TODO: Address funky amenity countes
+#TODO: Address funky amenity counts
+#TODO: Address: Is there a change in census tract partitions from 2010-2024?
 #TODO: centroid distance = avg of: shortest paths between every node in a region A to every node in region B
 #TODO: check if gif already exists before creating (cached)
 

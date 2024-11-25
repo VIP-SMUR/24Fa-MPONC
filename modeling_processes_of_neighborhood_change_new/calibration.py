@@ -1,6 +1,6 @@
 # calibration.py
 
-from config import CTY_KEY, NUM_AGENTS, T_MAX_RANGE
+from config import CTY_KEY, NUM_AGENTS, T_MAX_RANGE, viewData
 from helper import FIGURE_PKL_CACHE_DIR
 import pickle
 
@@ -20,8 +20,20 @@ def calibrate(rho, alpha):
     df_data = city.get_data()
     
     df_data.set_index('Simulation_ID', inplace=True)
-    simulated_income = df_data['Expected Income']
-    expected_income = df_data['Avg Income']
+    
+    # Remove all rows where "Expected Income" == "NA" (data not provided in Income CSV from Census website)
+    df_data = df_data[df_data['Expected Income'] != "NA"]
+    
+    simulated_income = df_data['Avg Income']
+    expected_income = df_data['Expected Income']
+    
+    print(f"Number of rows in DataFrame: {df_data.shape[0]}")
+    
+    print(expected_income.head())
+    print(expected_income.dtypes)
+
+    print(simulated_income.head())
+    print(simulated_income.dtypes)
     
     tot_difference = (expected_income - simulated_income).abs().sum()
     
