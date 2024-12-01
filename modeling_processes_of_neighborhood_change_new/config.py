@@ -22,12 +22,14 @@ NAME_COLUMNS = {
 # [DATA USED TO INITIALIZE AGENT ENDOWMENTS]
 
 # MEDIAN INCOME IN THE PAST 12 MONTHS (IN 2010 INFLATION-ADJUSTED DOLLARS) 
+# https://data.census.gov/table/ACSST5Y2010.S1903?q=s1903%202010&g=050XX00US13089$1400000,13121$1400000
 ECONOMIC_URL = "https://data.census.gov/api/access/table/download?download_id=6fad78b0ac510efbe0f426059c1394dfc06eb60dc6feabc66622be2b05a0048c"
 ECONOMIC_DATA_SKIP_ROWS = [1]
 ECONOMIC_DATA_COL = "S1903_C02_001E" # Name of 'Income' data column
 
 # TOTAL POPULATION
-POPULATION_URL = "https://data.census.gov/api/access/table/download?download_id=1cc6f201844c171e3f9f3a99d8a571de3232c8a360010f81ce8c98c076b797e0" 
+# https://data.census.gov/table/ACSDT5Y2022.B01003?q=B01003&g=050XX00US13089$1400000,13121$1400000
+POPULATION_URL = "https://data.census.gov/api/access/table/download?download_id=4633c4c26713411721d6ab3ea6301d2048efb597bbd910dfc5783a9be347b400" 
 POPULATION_DATA_SKIP_ROWS = [1, 2]
 POPULATION_DATA_COL = "B01003_001E" # Name of 'Population' data column
 
@@ -59,10 +61,10 @@ AMENITY_TAGS = {
 }
 
 """ Simulation Parameters """
-RHO_L = [2]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 100 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 10 # [1000] Intervals at which to assign benchmark timesteps
+RHO_L = [1, 2, 4, 8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
+ALPHA_L = [0.25, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
+T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
+BENCHMARK_INTERVALS = 400 # [1000] Intervals at which to assign benchmark timesteps
 NUM_AGENTS = 100    # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
