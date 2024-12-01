@@ -1,4 +1,3 @@
-from multiprocessing import Pool, cpu_count
 from config import viewAmenityData
 from helper import AMTS_DENS_CACHE_DIR
 import os
@@ -6,10 +5,10 @@ import osmnx as ox
 import numpy as np
 import pickle
 import hashlib
-from tqdm import tqdm
 import time
 import random
 from requests.exceptions import RequestException
+from tqdm import tqdm
 
 
 def _hash(*args, **kwargs):
@@ -64,20 +63,17 @@ def fetch_amenities(region_idx, region_polygon, tags, cache_dir=AMTS_DENS_CACHE_
             return 0
 
 
-def process_single_region(args):
-    """Helper function to process a single region for multiprocessing"""
-    try:
-        idx, row, tags = args
-        region_polygon = row['geometry']
-        amenities_count = fetch_amenities(idx, region_polygon, tags)
-        return idx, amenities_count
-    except Exception as e:
-        print(f"Error processing region {idx}: {str(e)}")
-        return idx, 0
+def compute_amts_dens(gdf, tags):
+    """
+    Fetch and compute amenity densities from OSMNX with sequential processing
 
+    Args:
+    - gdf: GeoDataFrame containing regions
+    - tags: OSM tags to search for amenities
 
-def compute_amts_dens(gdf, tags, batch_size=10):
-    """Fetch and compute amenity densities from OSMNX with batched processing"""
+    Returns:
+    - Normalized amenity densities per region
+    """
     amts_dens = np.zeros(len(gdf))
     amenities_counts = np.zeros(len(gdf))
     areas_sqkm = gdf['Sqkm'].values
@@ -85,32 +81,20 @@ def compute_amts_dens(gdf, tags, batch_size=10):
 
     print("Fetching amenities per region")
 
-    # Prepare arguments for parallel processing
-    process_args = [(idx, row, tags) for idx, row in gdf.iterrows()]
+    # Sequential processing with progress bar
+    for idx, row in tqdm(gdf.iterrows(), total=len(gdf), desc="Processing Regions"):
+        try:
+            region_polygon = row['geometry']
+            amenities_count = fetch_amenities(idx, region_polygon, tags)
 
-    # Process regions in smaller batches to prevent overwhelming the API
-    n_processes = min(4, cpu_count() - 1)  # Limit to max 4 processes
-    results = []
-
-    for i in range(0, len(process_args), batch_size):
-        batch = process_args[i:i + batch_size]
-        with Pool(processes=n_processes) as pool:
-            batch_results = list(tqdm(
-                pool.imap(process_single_region, batch),
-                total=len(batch),
-                desc=f"Batch {i // batch_size + 1}/{len(process_args) // batch_size + 1}"
-            ))
-            results.extend(batch_results)
-
-        # Add small delay between batches
-        time.sleep(1)
-
-    # Process results
-    for idx, amenities_count in results:
-        amenities_counts[idx] = amenities_count
-        if areas_sqkm[idx] > 0:
-            amts_dens[idx] = amenities_count / areas_sqkm[idx]
-        else:
+            amenities_counts[idx] = amenities_count
+            if areas_sqkm[idx] > 0:
+                amts_dens[idx] = amenities_count / areas_sqkm[idx]
+            else:
+                amts_dens[idx] = 0
+        except Exception as e:
+            print(f"Error processing region {idx}: {str(e)}")
+            amenities_counts[idx] = 0
             amts_dens[idx] = 0
 
     # Normalize densities
