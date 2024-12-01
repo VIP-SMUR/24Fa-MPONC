@@ -1,6 +1,6 @@
 # visualization.py
 
-from config import PLOT_LIBRARY, CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS, DPI
+from config import CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS, DPI, T_MAX_RANGE, PLOT_FOLIUM
 from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR, GRAPH_FILE, gdf_cache_filenames
 from gdf_handler import load_gdf
 from graph_handler import load_graph
@@ -50,17 +50,16 @@ def plot_city(rho, alpha, t_max, centroids, beltline_geom):
         gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
     
         # Plot with Matplotlib
-        if PLOT_LIBRARY == 1:
-            plot_matplotlib(
-                centroids=centroids, 
-                city=city, 
-                title=title,
-                figkey=figkey, 
-                graph=g,
-                gdf=gdf,
-                )
-        # Plot with Folium
-        else:
+        plot_matplotlib(
+            centroids=centroids, 
+            city=city, 
+            title=title,
+            figkey=figkey, 
+            graph=g,
+            gdf=gdf,
+            )
+        if PLOT_FOLIUM == True and t_max == T_MAX_RANGE:
+            # Plot with Folium
             gdf = gdf.to_crs(epsg=32616)
             plot_folium(
                 centroids=centroids, 

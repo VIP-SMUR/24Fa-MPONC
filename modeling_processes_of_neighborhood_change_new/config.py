@@ -72,7 +72,7 @@ EPSILON = 1e-3 # Rate of learning
 """ Flags """
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_LIBRARY = 1        # 1 for matplotlib, else for Folium
+PLOT_FOLIUM = False        # 1 for matplotlib, else for Folium
 viewData = False        # View GDF info + more?
 viewAmenityData = False # View amenity counts?
 
@@ -82,7 +82,7 @@ DPI = 9600 # DPI resolution of MatPlotLib graphs
 
 """ GIF Settings """
 GIF_FRAME_DURATION = 100 # Millseconds
-GIF_NUM_PAUSE_FRAMES = 10 # Number of repeat frames to show upon GIF completion
+GIF_NUM_PAUSE_FRAMES = 15 # Number of repeat frames to show upon GIF completion
 
 """ Multiprocessing Settings - number of CPU's """
 N_JOBS = -1

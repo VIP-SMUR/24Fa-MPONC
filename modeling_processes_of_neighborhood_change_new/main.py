@@ -239,6 +239,7 @@ if __name__ == "__main__":
 #TODO: Investigate "not strongly connected graph" - what does this mean? [!!!]
     # - Is there a disconnect between the two counties
 #TODO: Investigate funky amenity counts [!!!]
+#TODO: open economic/population links before attempting download
 
 """ Enhancement """
 #TODO: Add weights to amenity types
