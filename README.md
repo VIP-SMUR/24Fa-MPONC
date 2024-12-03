@@ -77,8 +77,8 @@ For our modal split, we assume that the car ownership rate is 0.7, and that the 
 Through this process, we were able to have a methodical way of distributing the agents across Atlanta based on area factors such as amenity density.
 
 ## Strengths and Weaknesses
-# Strengths
+### Strengths
 Our approach is very modularized. For instance, the four-step model created can be used in any other simulation of any other region. It simply needs lists of agents, a NetworkX graph, and other generalized parameters to operate. Furthermore, Our approach is backed by established human behavior approaches (no-regret dynamics), utilizes a distribution system that is also established (four-step model). We are able to produce dynamic visuals (GIFs).
 
-# Weaknesses
+### Weaknesses
 Our approach is only limited to the 2010 Census data for “training purposes.” This may cause our model to overfit and be unable to reliably extrapolate to 2022 Census Data. Additionally, it is very time-consuming to run the simulation, as 37 minutes are currently needed to generate centroids. We aimed to solve this issue with multithreading, but API calls caused this to fail (we kept running into buffering issues). Our simulation also assumes that there is no immigration/emigration in Atlanta, as we have a set, fixed number of agents. We also limit transportation choices to cars and public transportation, even though there are other mediums. 
