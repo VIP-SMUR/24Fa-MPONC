@@ -1,6 +1,8 @@
 # four_step_model.py
 
 from collections import defaultdict
+
+import networkx as nx
 import numpy as np
 
 
@@ -122,25 +124,39 @@ def modal_split(trip_distribution, car_ownership_rate=0.7):
 
 def route_assignment(split_distribution, g):
     """
-    Assign routes based on the network.
+    Assign routes based on the shortest path in the network.
 
     Parameters:
     split_distribution (dict): Nested dictionary of trips split by mode
-    g (networkx.Graph): Transportation network graph
+    g (networkx.Graph): Transportation network graph with edge weights representing distance
 
     Returns:
-    dict: Dictionary of assigned routes with volumes
+    dict: Dictionary of assigned routes with volumes and paths
     """
-    assigned_routes = defaultdict(float)
+    assigned_routes = defaultdict(lambda: {'volume': 0, 'path': None})
 
     for origin in split_distribution:
         for destination in split_distribution[origin]:
             for mode, trips in split_distribution[origin][destination].items():
                 if trips > 0:
-                    # For now, just store the total volume between O-D pairs
-                    # TODO: Implement actual route assignment using shortest paths
-                    route_key = (origin, destination, mode)
-                    assigned_routes[route_key] += trips
+                    # Find the shortest path for this O-D pair
+                    try:
+                        # Assumes edge weights represent distance
+                        shortest_path = nx.shortest_path(g, origin, destination, weight='distance')
+
+                        # Create a route key that includes origin, destination, and mode
+                        route_key = (origin, destination, mode)
+
+                        # Update assigned routes with volume and path
+                        assigned_routes[route_key]['volume'] += trips
+                        assigned_routes[route_key]['path'] = shortest_path
+
+                    except nx.NetworkXNoPath:
+                        # Handle cases where no path exists between origin and destination
+                        print(f"No path found between {origin} and {destination}")
+                    except nx.NodeNotFound:
+                        # Handle cases where origin or destination nodes are not in the graph
+                        print(f"Node not found for route from {origin} to {destination}")
 
     return dict(assigned_routes)
 
