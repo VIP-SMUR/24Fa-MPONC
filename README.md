@@ -145,9 +145,9 @@ In **configuration.py** - bike trail and railroad OpenStreetMap ID's:
 
 Bike Trail                 |  Railroad
 :-------------------------:|:-------------------------:
-![image](https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1))   |  ![image](https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121)
+<img src=https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1 width="400"/>   |  <img src=https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121 width="400"/>
 
-<img src=https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf width="300"/>
+<img src=https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf width="400"/>
 
 
 ## Strengths and Weaknesses
