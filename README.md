@@ -106,8 +106,9 @@ Our code also outputs a CSV file containing all the simulated data at every sing
 This GIF shows the behavior of 1,000 agents up to 20,000 timesteps, frames being captured every 400 timesteps. Rho=1, alpha=0.25.
 ![Georgia_1_0 25_1000](https://github.com/user-attachments/assets/0bb37051-1701-436b-afd3-de92eea845d5)
 
-#### Configuration.py
+#### Configuration
 In **configuration.py**, the user can specify various settings of the simulation. Changing graph settings is a matter of changing the hyperlinks in **configuration.py**.
+
 **Simulation settings:** 
 * Total timesteps run in the simulation
 * Timestep interval at which to capture the GIF's frames
@@ -138,7 +139,8 @@ Then, any region containing segments of these trails would automatically be mark
 * *Note: our current code only works if these trails are labelled as "Relations" in OpenStreetMap*
         * *TODO: make this dynamic*
 
-In **configuration.py**:
+In **configuration.py** - bike trail and railroad OpenStreetMap ID's:
+
 ![image](https://github.com/user-attachments/assets/bef11cd0-ba21-450f-ab3b-7d81b650688e)
 
 Bike Trail                 |  Railroad
@@ -146,7 +148,7 @@ Bike Trail                 |  Railroad
 ![image](https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1))   |  ![image](https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121)
 
 
-![image](https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf | width=100)
+![image](https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf) | width=100
 
 
 ## Strengths and Weaknesses
