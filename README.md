@@ -98,8 +98,8 @@ Example of simulating a different geographic region [close-up of Atlanta beltlin
 Our code outputs a GIF to visualize agent behavior over time. Each circle represents the centroid of a census tract - green signifying those 'in the Atlanta Beltline' - and the encircled number is the agent population.
 Our code also outputs a CSV file containing all the simulated data at every single timestep.
 
-* *Data contained in CSV's: Census tract name, agent population, raw average income, average income reported by census, normalized average incomes, and amenity density.
-* * *TODO: Include raw amenity counts, census tract geographic area (sqkm).*
+* *Data contained in CSV's: Census tract name, agent population, raw average income, average income reported by census, normalized average incomes, and amenity density.*
+        * *TODO: Include raw amenity counts, census tract geographic area (sqkm).*
 * *Note: 'Timestep' refers to a single instance agent action (relocation); 20,000 timesteps mean the agent's relocate 20,000 times.*
 
 #### GIF
@@ -108,7 +108,7 @@ This GIF shows the behavior of 1,000 agents up to 20,000 timesteps, frames being
 
 #### Configuration.py
 In **configuration.py**, the user can specify various settings of the simulation. Changing graph settings is a matter of changing the hyperlinks in **configuration.py**.
-**Simulation parameters:** 
+**Simulation settings:** 
 * Total timesteps run in the simulation
 * Timestep interval at which to capture the GIF's frames
 * Number of agents
@@ -117,10 +117,13 @@ In **configuration.py**, the user can specify various settings of the simulation
 * Regions to simulate
 * Economic distribution data
 * Regions to mark as 'in the Atlanta Beltline'
+
+Simulation and graph settings:
 ![image](https://github.com/user-attachments/assets/beb16d76-38b4-410c-85cb-dc922fe924e7)
 ![image](https://github.com/user-attachments/assets/ae233654-75dc-4472-b5d1-b637ff252c82)
 
 ### Runtimes
+(1000 agents, 530 census tracts)
 Run on a laptop,
 Fetching amenities from OpenStreetMap via OSMnx: ~37 minutes
 Computing centroid distances: ~18 minutes
@@ -133,16 +136,17 @@ We automate the process of labelling certain regions as 'in the Atlanta Beltline
 Then, any region containing segments of these trails would automatically be marked as "In the Atlanta Beltline". 
 
 * *Note: our current code only works if these trails are labelled as "Relations" in OpenStreetMap*
-* * *TODO: make this dynamic*
+        * *TODO: make this dynamic*
 
 In **configuration.py**:
 ![image](https://github.com/user-attachments/assets/bef11cd0-ba21-450f-ab3b-7d81b650688e)
 
 Bike Trail                 |  Railroad
 :-------------------------:|:-------------------------:
-![](https://...Dark.png)   |  ![](https://...Ocean.png)
+![image](https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1))   |  ![image](https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121)
 
-![image](https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf)
+
+![image](https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf | width=100)
 
 
 ## Strengths and Weaknesses
