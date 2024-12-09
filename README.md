@@ -120,7 +120,9 @@ In **configuration.py**, the user can specify various settings of the simulation
 * Regions to mark as 'in the Atlanta Beltline'
 
 Simulation and graph settings:
+
 ![image](https://github.com/user-attachments/assets/beb16d76-38b4-410c-85cb-dc922fe924e7)
+
 ![image](https://github.com/user-attachments/assets/ae233654-75dc-4472-b5d1-b637ff252c82)
 
 ### Runtimes
