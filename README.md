@@ -147,8 +147,7 @@ Bike Trail                 |  Railroad
 :-------------------------:|:-------------------------:
 ![image](https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1))   |  ![image](https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121)
 
-
-![image](https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf =250x250)
+<img src=https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf width="300"/>
 
 
 ## Strengths and Weaknesses
