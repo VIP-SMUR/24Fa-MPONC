@@ -14,7 +14,7 @@ Modeling Processes of Neighborhood Change
 
 :   !!! abstract
 
-        abstract goes here
+        This research project simulates the impact of the Atlanta Beltline on neighborhood gentrification using game theory and no-regret dynamics. The simulation models agent movement across census tracts, with agents seeking to minimize costs based on factors like amenity density. The methodology incorporates the four-step model for trip generation and leverages US Census data for population and income distributions. Census tract regions are mapped using TIGER/Line shapefiles, while the Beltline area is defined using OpenStreetMap data. The simulation outputs include dynamic visualizations and CSV data tracking population and income changes across census tracts, providing insights into urban development patterns.
 
 
 
