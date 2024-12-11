@@ -81,16 +81,15 @@ Additionally, each 'agent' has a unique wealth attribute as one of the factors i
 * *Note: For the median income and population tables, the hyperlinks in the code won't be 'activated', or functional, until a request is made directly on the Census website - navigate to those links and use the 'Download' button for the appropriate graphs, then run the code; no other action needed. [Fix incoming]*
 
 ### TIGER/Line Geodatabases shapefiles:
-![394020815-33f8e895-4e59-420c-96c7-d83cf9c69178](https://github.com/user-attachments/assets/30a21af3-fa8a-40a1-9335-7cc4b7812d0c)
+![Alt text](./Figures/ZIP_URLs.png)
 
 ### Income distribution tables:
-![image](https://github.com/user-attachments/assets/28d80cd9-3e67-451f-a37d-4aaf1c0ff2e7)
+![Alt text](./Figures/Databases.png)
 
 ### [Example] Simulating a different geographic region (close-up of Atlanta):
-![394651579-c5d902aa-f2bc-4f4a-bd74-aab6434d44e9](https://github.com/user-attachments/assets/d2cc6318-17f3-4e1f-8c85-75da55c6051f)
+![Alt text](./Figures/OldZipURL.png)
 
-![AtlantaBeltlineCloseupGraph](https://github.com/user-attachments/assets/6941d0a4-803e-4651-9d53-ab715740cf77)
-
+![Alt text](./Figures/AtlantaBeltlineCloseupGraph.png)
 
 
 ## Project status
@@ -104,7 +103,7 @@ Our code also outputs a CSV file containing all the simulated data at every indi
 
 #### GIF
 This GIF shows the behavior of 1,000 agents up to 20,000 timesteps, frames being captured every 400 timesteps. Rho=1, alpha=0.25.
-![SimulationGIF](https://github.com/user-attachments/assets/dd8067e8-0483-4da6-9b89-81750bab01f0)
+![Alt text](./Figures/SimulationGIF.gif)
 
 #### Configuration
 In **configuration.py**, the user can specify various settings of the simulation. Changing graph settings is a matter of changing the hyperlinks in **configuration.py**.
@@ -121,9 +120,9 @@ In **configuration.py**, the user can specify various settings of the simulation
 
 Simulation and graph settings:
 
-![image](https://github.com/user-attachments/assets/beb16d76-38b4-410c-85cb-dc922fe924e7)
+![Alt text](./Figures/Parameters.png)
 
-![image](https://github.com/user-attachments/assets/ae233654-75dc-4472-b5d1-b637ff252c82)
+![Alt text](./Figures/IDList.png)
 
 ### Runtimes
 (1000 agents, 530 census tracts)
@@ -145,15 +144,15 @@ Then, any region containing segments of these trails would automatically be mark
 
 In **configuration.py** - bike trail and railroad OpenStreetMap ID's:
 
-![image](https://github.com/user-attachments/assets/bef11cd0-ba21-450f-ab3b-7d81b650688e)
+![Alt text](./Figures/RelationIDs.png)
 
 Bike Trail                 |  Railroad
 :-------------------------:|:-------------------------:
-<img src=https://github.com/user-attachments/assets/8f692216-771d-4f2e-b88e-7e282c595fc1 width="400"/>   |  <img src=https://github.com/user-attachments/assets/7477fa8d-6e14-4a14-8558-678b3f8f7121 width="400"/>
+<img src="./Figures/BeltlineBikeTrail.png" width="300">   |  <img src="./Figures/BeltlineRailroad.png" width="300">
 
 Compare with Atlanta Beltline geography:
 
-<img src=https://https://github.com/user-attachments/assets/72900654-0414-4431-8fd2-b5c3a8de944f width="400"/>
+<img src="./Figures/AtlantaBeltlineVisual.jpg" width="300">
 
 
 ## Strengths and Weaknesses
