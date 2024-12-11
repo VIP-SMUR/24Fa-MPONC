@@ -132,7 +132,7 @@ Fetching amenities from OpenStreetMap via OSMnx: ~37 minutes
 Computing centroid distances: ~18 minutes
 Simulation (x8): ~45 minutes
 GIF creation (x1), 50 frames: ~19 min
-* *Everything except the actual Simulation and the GIF creation is cached, so those runtimes are negligible in subsequent runs*
+* *Everything except 'Simulation' and 'GIF creation' is cached, making their runtimes negligible in subsequent runs*
 
 ## Atlanta Beltline in our Simulation
 We automate the process of labelling certain regions as 'in the Atlanta Beltline' by using commuting paths from OpenStreetMap that correspond to the Atlanta Beltline - namely, a bike trail and a railway. To experiment with a different beltline, such as a beltline that spanned across Atlanta horizontally, or simply expanded north by x miles, we would acquire the OpenStreetMap ID's of existing paths (bike trails, walking paths, roads, etc.) corresponding to our desired Beltline, and paste these into **configuration.py**. Alternatively, we can create a such path ourselves in OpenStreetMap.
