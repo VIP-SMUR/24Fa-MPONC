@@ -75,10 +75,11 @@ For our modal split, we assume that the car ownership rate is 0.7, and that the 
 Through this process, we were able to have a methodical way of distributing the agents across Atlanta based on area factors such as amenity density.
 
 ## Census-based approach
-A key part of our approach is that it utilizes data from the US census; namely, the graphical regions our agents inhabit correspond directly to US census tracts. Consequently, our simulation produces economic and population data for individual census tracts, which we can then compare to live census data. Since the US Census TIGER/Line Geodatabases contain publicly downloadable shapefiles of all the geographic regions it reports on, our simulation can likewise operate with any other census-reported region, not just census tracts, including zip codes, housing districts, school districts, etc. 
+Our project utilizes data from the US census wherever possible. Notably, the graphical regions our agents inhabit correspond directly to US census tracts. Consequently, we can compare the economic and population data obtained from our simulation to actual census data for each census tract. Furthermore, since the US Census TIGER/Line Geodatabases contain publicly available shapefiles of all geographic regions it reports on, our simulation can likewise operate utilizing any other census-reported regions, including zip codes, housing districts, school districts, etc. 
 
-Additionally, each 'agent' has a unique wealth attribute as one of the factors influencing decision-making. Instead of assigning these wealths arbitrarily, we create this distribution of wealth using census population and median income data, so that our agents are representative of actual Fultona and Dekalb county resident demographics. Namely, we use the following tables from the Census website: "[S1903 | Median Income In The Past 12 Months (In 2010 Inflation-adjusted Dollars) - ACS 5-Year Estimates Subject Tables](https://data.census.gov/table/ACSST5Y2010.S1903?q=s1903%202010&g=050XX00US13089$1400000,13121$1400000)" and "[B01003 | Total Population - 2010: ACS 5-Year Estimates Detailed Tables](https://data.census.gov/table/ACSDT5Y2022.B01003?q=B01003&g=050XX00US13089$1400000,13121$1400000)". By changing the hyperlinks in our code, our simulation can run with different distributions; for example, those from different years.
-* *Note: For the median income and population tables, the hyperlinks in the code won't be 'activated' until a request is made directly on the Census website - navigate to those links and use the 'Download' button for the appropriate graphs; no other action needed (Fix incoming)*
+Additionally, each 'agent' has a unique wealth attribute as one of the factors influencing decision-making. Instead of assigning these wealths arbitrarily, we create this distribution of wealth using census population and median income data, so that our agents are representative of actual Fulton and Dekalb county resident demographics. Namely, we use the following tables from the Census website: "[S1903 | Median Income In The Past 12 Months (In 2010 Inflation-adjusted Dollars) - ACS 5-Year Estimates Subject Tables](https://data.census.gov/table/ACSST5Y2010.S1903?q=s1903%202010&g=050XX00US13089$1400000,13121$1400000)" and "[B01003 | Total Population - 2010: ACS 5-Year Estimates Detailed Tables](https://data.census.gov/table/ACSDT5Y2022.B01003?q=B01003&g=050XX00US13089$1400000,13121$1400000)". By changing the hyperlinks in our code, our simulation can run with different distributions; for example, those from different years.
+* *Note: For the median income and population tables, the hyperlinks in the code won't be 'activated', or functional, until a request is made directly on the Census website - navigate to those links and use the 'Download' button for the appropriate graphs, then run the code; no other action needed.*
+        * *TODO: Fix this*
 
 TIGER/Line Geodatabases shapefiles:
 ![image](https://github.com/user-attachments/assets/33f8e895-4e59-420c-96c7-d83cf9c69178)
@@ -93,12 +94,12 @@ Example of simulating a different geographic region [close-up of Atlanta beltlin
 
 ## Project status
 ### Outputs & configuration
-Our code outputs a GIF to visualize agent behavior over time. Each circle represents the centroid of a census tract - green signifying those 'in the Atlanta Beltline' - and the encircled number is the agent population.
-Our code also outputs a CSV file containing all the simulated data at every single timestep.
+Our code outputs a GIF to visualize agent behavior over time. Each circle represents the centroid of a census tract - green signifying those in the Atlanta Beltline - and the encircled number is the agent population.
+Our code also outputs a CSV file containing all the simulated data at every individual timestep.
 
 * *Data contained in CSV's: Census tract name, agent population, raw average income, average income reported by census, normalized average incomes, and amenity density.*
         * *TODO: Include raw amenity counts, census tract geographic area (sqkm).*
-* *Note: 'Timestep' refers to a single instance agent action (relocation); 20,000 timesteps mean the agent's relocate 20,000 times.*
+* *Note: 'Timestep' refers to a single instance agent action (relocation); 20,000 timesteps mean the agents relocate a total of 20,000 times during the simulation.*
 
 #### GIF
 This GIF shows the behavior of 1,000 agents up to 20,000 timesteps, frames being captured every 400 timesteps. Rho=1, alpha=0.25.
