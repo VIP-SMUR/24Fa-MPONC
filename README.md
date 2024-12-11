@@ -89,7 +89,7 @@ Additionally, each 'agent' has a unique wealth attribute as one of the factors i
 ### [Example] Simulating a different geographic region (close-up of Atlanta):
 ![image](https://github.com/user-attachments/assets/c5d902aa-f2bc-4f4a-bd74-aab6434d44e9)
 
-![image](https://github.com/user-attachments/assets/0ba8680c-d1c0-4bfd-8eaa-169e966240e0)
+![AtlantaBeltlineCloseupGraph](https://github.com/user-attachments/assets/6941d0a4-803e-4651-9d53-ab715740cf77)
 
 
 
@@ -153,7 +153,7 @@ Bike Trail                 |  Railroad
 
 Compare with Atlanta Beltline geography:
 
-<img src=https://https://github.com/user-attachments/assets/44253f10-2a9e-4527-8657-d67de25136c0 width="400"/>
+![atlanta_beltline_tad](https://github.com/user-attachments/assets/bc8a0d7c-fc36-4c56-b589-ad5b97bf8d1e)
 
 
 ## Strengths and Weaknesses
