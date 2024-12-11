@@ -49,7 +49,17 @@ python main.py
 </a>
 
 ## Intro and Description
-This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)" We did so by considering the movement of agents that aim to reduce a cost function that is dependent on various factors, including number of amenities, upkeep, and other factors. 
+This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize the idea of no-regret dynamics:
+
+- People are looked at as agents that incur a cost based on every action they take.
+- All agents take actions at the same time. 
+- The process is repeated multiple times until an equilibrium is reached. 
+
+For each time step the following happens:
+- The agent adopts a probability distribution
+- The agent enacts a random action based on the probability distribution.
+- Other agents or “adversaries” also take actions and the cost of their actions is revealed to the agent. 
+- The agent incurs a cost based on the actions of other agents and their actions. 
 
 
 ## The Four-Step Model
