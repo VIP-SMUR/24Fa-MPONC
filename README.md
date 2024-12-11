@@ -104,7 +104,7 @@ Our code also outputs a CSV file containing all the simulated data at every indi
 
 #### GIF
 This GIF shows the behavior of 1,000 agents up to 20,000 timesteps, frames being captured every 400 timesteps. Rho=1, alpha=0.25.
-![Georgia_1_0 25_1000](https://github.com/user-attachments/assets/0bb37051-1701-436b-afd3-de92eea845d5)
+![SimulationGIF](https://github.com/user-attachments/assets/dd8067e8-0483-4da6-9b89-81750bab01f0)
 
 #### Configuration
 In **configuration.py**, the user can specify various settings of the simulation. Changing graph settings is a matter of changing the hyperlinks in **configuration.py**.
