@@ -73,6 +73,8 @@ With the idea of no-regret dynamics comes a cost function. In the reference pape
 3. Community Ties
 4. Dwelling Abandonment/Upkeep
 
+With all of this in mind we decided to utilize Atlanta, and more specifically the Atlanta Beltline, as our case study for this semester. Having this as our case study means we have updated our factors that go into consideration when computing the cost function. We have included a component that states whether or not the region being looked at is in the beltline, and a factor that takes into account the agent's distance from centroids and what mode of transportation they use. We have also implemented the four step model which is used by planners to know how much people travel between locations. 
+
 ## The Four-Step Model
 Given that the agents move across various subregions of the Atlanta area in our simulation, one of the critical steps of the simulation is figuring out what subregion the agents go to. To do this in a way that accurately represents real-world distributions, we turned to the four-step model, a common trip generation algorithm: 
 
