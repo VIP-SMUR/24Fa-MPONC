@@ -87,8 +87,10 @@ Income distribution tables:
 ![image](https://github.com/user-attachments/assets/28d80cd9-3e67-451f-a37d-4aaf1c0ff2e7)
 
 Example of simulating a different geographic region [close-up of Atlanta beltline area]:
-![image](https://github.com/user-attachments/assets/0ba8680c-d1c0-4bfd-8eaa-169e966240e0)
 ![image](https://github.com/user-attachments/assets/0c8d82fc-7977-4dac-a02a-6cecb64f7991)
+
+![image](https://github.com/user-attachments/assets/0ba8680c-d1c0-4bfd-8eaa-169e966240e0)
+
 
 
 ## Project status
