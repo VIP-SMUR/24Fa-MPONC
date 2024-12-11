@@ -79,7 +79,6 @@ Our project utilizes data from the US census wherever possible. Notably, the gra
 
 Additionally, each 'agent' has a unique wealth attribute as one of the factors influencing decision-making. Instead of assigning these wealths arbitrarily, we create this distribution of wealth using census population and median income data, so that our agents are representative of actual Fulton and Dekalb county resident demographics. Namely, we use the following tables from the Census website: "[S1903 | Median Income In The Past 12 Months (In 2010 Inflation-adjusted Dollars) - ACS 5-Year Estimates Subject Tables](https://data.census.gov/table/ACSST5Y2010.S1903?q=s1903%202010&g=050XX00US13089$1400000,13121$1400000)" and "[B01003 | Total Population - 2010: ACS 5-Year Estimates Detailed Tables](https://data.census.gov/table/ACSDT5Y2022.B01003?q=B01003&g=050XX00US13089$1400000,13121$1400000)". By changing the hyperlinks in our code, our simulation can run with different distributions; for example, those from different years.
 * *Note: For the median income and population tables, the hyperlinks in the code won't be 'activated', or functional, until a request is made directly on the Census website - navigate to those links and use the 'Download' button for the appropriate graphs, then run the code; no other action needed.*
-
         * *TODO: Fix this*
 
 TIGER/Line Geodatabases shapefiles:
