@@ -153,7 +153,7 @@ Bike Trail                 |  Railroad
 
 Compare with Atlanta Beltline geography:
 
-<img src=https://github.com/user-attachments/assets/be9bb85e-05c8-423e-94d2-0f02e97b33cf width="400"/>
+<img src=https://https://github.com/user-attachments/assets/44253f10-2a9e-4527-8657-d67de25136c0 width="400"/>
 
 
 ## Strengths and Weaknesses
