@@ -49,7 +49,12 @@ python main.py
 </a>
 
 ## Intro and Description
-This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize the idea of no-regret dynamics:
+This project is based on the reference paper created by Dr. Martinez which aimed to address the following: 
+- How does the creation of new infrastructure, mainly transportation infrastructure, affect the demographical makeup of neighborhoods surrounding those structure?
+- Does the creation of these infrastructure actually benefit everyone? Is it fair?
+- How can we predict what will happen to surrouning communities before these structures are built?
+
+The main problem Dr.Martinez wanted to address here was the problem surrounding multiple large cities: Gentrification. This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize the idea of game theory and no-regret dynamics:
 
 - People are looked at as agents that incur a cost based on every action they take.
 - All agents take actions at the same time. 
@@ -59,8 +64,14 @@ For each time step the following happens:
 - The agent adopts a probability distribution
 - The agent enacts a random action based on the probability distribution.
 - Other agents or “adversaries” also take actions and the cost of their actions is revealed to the agent. 
-- The agent incurs a cost based on the actions of other agents and their actions. 
+- The agent incurs a cost based on the actions of other agents and their actions.
 
+With the idea of no-regret dynamics comes a cost function. In the reference paper Dr.Martinez creates a cost function based on four components, aiming to predict how residents interact with the following:
+
+1. Housing affordability
+2. Amenity Access
+3. Community Ties
+4. Dwelling Abandonment/Upkeep
 
 ## The Four-Step Model
 Given that the agents move across various subregions of the Atlanta area in our simulation, one of the critical steps of the simulation is figuring out what subregion the agents go to. To do this in a way that accurately represents real-world distributions, we turned to the four-step model, a common trip generation algorithm: 
