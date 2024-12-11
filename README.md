@@ -87,7 +87,7 @@ Additionally, each 'agent' has a unique wealth attribute as one of the factors i
 ![image](https://github.com/user-attachments/assets/28d80cd9-3e67-451f-a37d-4aaf1c0ff2e7)
 
 ### Example of simulating a different geographic region [close-up of Atlanta beltline area]:
-<img src=https://github.com/user-attachments/assets/0c8d82fc-7977-4dac-a02a-6cecb64f7991 width="800"/>
+![image](https://github.com/user-attachments/assets/c5d902aa-f2bc-4f4a-bd74-aab6434d44e9)
 
 ![image](https://github.com/user-attachments/assets/0ba8680c-d1c0-4bfd-8eaa-169e966240e0)
 
