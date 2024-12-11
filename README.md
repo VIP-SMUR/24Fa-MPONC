@@ -81,7 +81,7 @@ Additionally, each 'agent' has a unique wealth attribute as one of the factors i
 * *Note: For the median income and population tables, the hyperlinks in the code won't be 'activated', or functional, until a request is made directly on the Census website - navigate to those links and use the 'Download' button for the appropriate graphs, then run the code; no other action needed. [Fix incoming]*
 
 ### TIGER/Line Geodatabases shapefiles:
-![image](https://github.com/user-attachments/assets/33f8e895-4e59-420c-96c7-d83cf9c69178)
+![394020815-33f8e895-4e59-420c-96c7-d83cf9c69178](https://github.com/user-attachments/assets/30a21af3-fa8a-40a1-9335-7cc4b7812d0c)
 
 ### Income distribution tables:
 ![image](https://github.com/user-attachments/assets/28d80cd9-3e67-451f-a37d-4aaf1c0ff2e7)
