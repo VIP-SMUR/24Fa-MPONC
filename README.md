@@ -87,7 +87,7 @@ We decided to apply the above to Atlanta and the Atlanta Beltline, as our case s
 ## The Four-Step Model
 Given that the agents move across various subregions of the Atlanta area in our simulation, one of the critical steps of the simulation is figuring out what subregion the agents go to. To do this in a way that accurately represents real-world distributions, we turned to the four-step model, a common trip generation algorithm: 
 
-<img width="758" alt="Screenshot 2024-12-03 at 2 19 28 PM" src="https://github.com/user-attachments/assets/fc8916ff-ec4b-41e5-ad1c-c1d37fbbd40c">
+<img width="758" alt="Screenshot 2024-12-03 at 2 19 28 PM" src="./Figures/FourStepModel.png">
 
 The model has four components:
 
