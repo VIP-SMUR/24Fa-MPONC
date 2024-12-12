@@ -78,7 +78,7 @@ Our current cost function takes into account a region's affordability, site upke
 
 #### Amenities (OpenStreetMap labels):
 
-<img src="./Figures/AmenityTags.png" width="300">
+<img src="./Figures/AmenityTags.png" width="500">
 
 
 ### Case study
