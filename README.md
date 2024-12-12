@@ -49,31 +49,39 @@ python main.py
 </a>
 
 ## Intro and Description
-This project is based on the reference paper created by Dr. Martinez which aimed to address the following: 
-- How does the creation of new infrastructure, mainly transportation infrastructure, affect the demographical makeup of neighborhoods surrounding those structure?
-- Does the creation of these infrastructure actually benefit everyone? Is it fair?
-- How can we predict what will happen to surrouning communities before these structures are built?
+This project is based on the reference paper created by Dr. Martinez and Dr. Zhao, which aims to address the following: 
+- How does the layout of transportation infrastructure affect the demographics of nearby neighborhoods?
+- Does the creation of these infrastructure actually benefit everyone equally; is it fair?
+- Can we predict the effects on surrounding communities before these structures are actually built?
 
-The main problem Dr.Martinez wanted to address here was the problem surrounding multiple large cities: Gentrification. This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize the idea of game theory and no-regret dynamics:
+These questions are primarily motivated by the issue of gentrification, an issue prevalent in many major cities. This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize our approach with no-regret dynamics:
 
-- People are looked at as agents that incur a cost based on every action they take.
-- All agents take actions at the same time. 
-- The process is repeated multiple times until an equilibrium is reached. 
+- People, or 'agents', randomly move from region to region. Depending the region's attributes, a **'cost'** value is assigned to each action.
+          - 'Cost' is a function of centroid proximity, number of amenities, average income, mode of transportation, and more.
+- The higher the cost, the less likely an agent is to visit that centroid in the future.
+- This process is repeated until the probability distribution of visting centroids converges - an equilibrium is reached, and further actions make no difference. 
 
-For each time step the following happens:
-- The agent adopts a probability distribution
-- The agent enacts a random action based on the probability distribution.
-- Other agents or “adversaries” also take actions and the cost of their actions is revealed to the agent. 
-- The agent incurs a cost based on the actions of other agents and their actions.
+### Cost Function
+Our current cost function takes into account a region's affordability, site upkeep, access to the Atlanta Beltline, location, community ties, and access to desirable amenities:
+'''cost = 1 - (affordability * upkeep * beltline * location_cost * community_cost * accessibility)'''
 
-With the idea of no-regret dynamics comes a cost function. In the reference paper Dr.Martinez creates a cost function based on four components, aiming to predict how residents interact with the following:
+*- Affordability [0 or 1]: Affordability score is [0] if 'unaffordable'; a region is 'unaffordable' if its housing capacity has been reached AND all of its inhabitants have a higher income than an Agent.*
+*- Upkeep [0 or 1]: Upkeep score is [1] if the population is not zero.*
+*- Access to Beltline [0 or 1]: Beltline score is [1] if the region contains part of the Atlanta Beltline.*
+*- Location [0.0 to 1.0]: Location score is a function of* region proximity *and an Agent's* mode choice *(car vs. transit)*.
+        *- 'Transit' just adds a 1.5x multiplier to the raw distance cost*
+*- Community [0.0 to 1.0]: Community score is the similarity between a region's average income and an Agent's average income*
+*- Accessibility [0.0 to 1.0]: Accessibility score is the normalized amenity density of a region*
+        *- Considered amenities are derived from **[24Sp-Mobility-2]([url](https://vip-smur.github.io/24sp-mobility-2/))**, another Georgia Tech research team, in which they investigated which features of a city are most important to residents.*
+                *- We excluded certain amenities at our own discretion, such as 'shed', 'guardhouse', 'ferry_terminal', 'garages', and 'bridge' (labels as they appear on OpenStreetMap).*
 
-1. Housing affordability
-2. Amenity Access
-3. Community Ties
-4. Dwelling Abandonment/Upkeep
+#### Amenities (OpenStreetMap labels):
 
-With all of this in mind we decided to utilize Atlanta, and more specifically the Atlanta Beltline, as our case study for this semester. Having this as our case study means we have updated our factors that go into consideration when computing the cost function. We have included a component that states whether or not the region being looked at is in the beltline, and a factor that takes into account the agent's distance from centroids and what mode of transportation they use. We have also implemented the four step model which is used by planners to know how much people travel between locations. 
+<img src="./Figures/AmenityTags.png" width="300">
+
+
+### Case study
+We decided to apply the above to Atlanta, and the Atlanta Beltline, as our case study for this semester. Key changes we have made to accommodate this implementation include: Incorporating the **Four-Step Transportation Model**, to determine mode of transportation for our agents, and an "in Beltline" attribute so our agents can differentiate between regions containing the Atlanta Beltline, and those outside of it. 
 
 ## The Four-Step Model
 Given that the agents move across various subregions of the Atlanta area in our simulation, one of the critical steps of the simulation is figuring out what subregion the agents go to. To do this in a way that accurately represents real-world distributions, we turned to the four-step model, a common trip generation algorithm: 
