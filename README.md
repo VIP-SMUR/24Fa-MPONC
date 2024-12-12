@@ -57,6 +57,7 @@ This project is based on the reference paper created by Dr. Martinez and Dr. Zha
 These questions are primarily motivated by the issue of gentrification, an issue prevalent in many major cities. This semester, we utilized concepts in game theory, more specifically no-regret dynamics, in order to simulate the effects of the Atlanta Beltline on gentrification. Throughout this semester we followed the main ideas provided by this lecture from Stanford University: "[CS364A: Algorithmic Game Theory Lecture #17: No-Regret Dynamics](https://theory.stanford.edu/~tim/f13/l/l17.pdf)". To summarize our approach with no-regret dynamics:
 
 - People, or 'agents', randomly move from region to region. Depending the region's attributes, a **'cost'** value is assigned to each action.
+  
           - 'Cost' is a function of centroid proximity, number of amenities, average income, mode of transportation, and more.
 - The higher the cost, the less likely an agent is to visit that centroid in the future.
 - This process is repeated until the probability distribution of visting centroids converges - an equilibrium is reached, and further actions make no difference. 
