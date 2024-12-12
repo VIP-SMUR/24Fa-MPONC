@@ -98,7 +98,7 @@ The model has four components:
 
 Our approach closely follows these four components. We first generate trips by considering the amenity density of areas. We sum up all amenity densities, and divide each area's density by this sum to generate a probability. We then utilize a Poisson Distribution to generate the number of trips by multipling a base number of trips by the probability. We then consider trip distribution through a modified gravity model. The equation for our model is the following, given that we aim to go from area/region i to j:
 
-<img width="686" alt="Screenshot 2024-12-03 at 2 37 56 PM" src="https://github.com/user-attachments/assets/ad0e2d78-bd8f-46d4-b4a4-b19ad4e37912">
+<img width="686" alt="Screenshot 2024-12-03 at 2 37 56 PM" src="./Figures/GravityModel.png">
 
 We essentially multiply the total number of trips from area i to area j with the net amenity score for the destination j times transportation cost for that specific trip from area i to j, divided by the net amenity score for area j times the transportation cost from area i to j summed up over all destination j's. 
 
