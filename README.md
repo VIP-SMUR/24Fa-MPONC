@@ -157,7 +157,7 @@ Simulation and graph settings:
 ![Alt text](./Figures/IDList.png)
 
 ### Runtimes
-(1000 agents, 530 census tracts)
+>(1000 agents, 530 census tracts)
 
 Run on a laptop...
 
