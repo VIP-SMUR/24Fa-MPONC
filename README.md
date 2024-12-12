@@ -193,3 +193,6 @@ Our approach is very modularized. For instance, the four-step model created can 
 
 ### Weaknesses
 Our approach is only limited to the 2010 Census data for “training purposes.” This may cause our model to overfit and be unable to reliably extrapolate to 2022 Census Data. Additionally, it is very time-consuming to run the simulation, as 37 minutes are currently needed to generate centroids. We aimed to solve this issue with multithreading, but API calls caused this to fail (we kept running into buffering issues). Our simulation also assumes that there is no immigration/emigration in Atlanta, as we have a set, fixed number of agents. We also limit transportation choices to cars and public transportation, even though there are other mediums. 
+
+### Next Steps
+This coming Spring semester, we hope to make the GIFs more clearer (currently, there is a lot of regions and it is hard to read which regions the agents are in). We additionally want to add weights to certain amenities, as realistically, some amenities are more valuable than others in driving agent decisions (for example, schools may play a more important than bike stands in driving what regions agents go to). Additionally, this coming semester, we hope to get the necessary parameters from the 2010 data and try to reproduce the 2020 demographics. 
