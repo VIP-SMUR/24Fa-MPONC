@@ -76,13 +76,13 @@ Our current cost function takes into account a region's affordability, site upke
   - *Considered amenities are derived from **[24Sp-Mobility-2]([url](https://vip-smur.github.io/24sp-mobility-2/))**, another Georgia Tech research team, in which they investigated which features of a city are most important to residents.*
   - *We excluded certain amenities at our own discretion, such as 'shed', 'guardhouse', 'ferry_terminal', 'garages', and 'bridge' (labels as they appear on OpenStreetMap).*
 
-#### Amenities (OpenStreetMap labels):
+#### Implemented Amenities (OpenStreetMap labels):
 
 <img src="./Figures/AmenityTags.png" width="500">
 
 
 ### Case study
-We decided to apply the above to Atlanta, and the Atlanta Beltline, as our case study for this semester. Key changes we have made to accommodate this implementation include: Incorporating the **Four-Step Transportation Model**, to determine mode of transportation for our agents, and an "in Beltline" attribute so our agents can differentiate between regions containing the Atlanta Beltline, and those outside of it. 
+We decided to apply the above to Atlanta and the Atlanta Beltline, as our case study for this semester. Key changes we have made to accommodate this implementation include: Incorporating the **Four-Step Transportation Model**, to determine mode of transportation for our agents, and an "in Beltline" attribute so our agents can differentiate between regions containing the Atlanta Beltline, and those outside of it. 
 
 ## The Four-Step Model
 Given that the agents move across various subregions of the Atlanta area in our simulation, one of the critical steps of the simulation is figuring out what subregion the agents go to. To do this in a way that accurately represents real-world distributions, we turned to the four-step model, a common trip generation algorithm: 
