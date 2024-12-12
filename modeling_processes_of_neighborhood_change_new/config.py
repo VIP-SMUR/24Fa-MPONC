@@ -34,9 +34,8 @@ POPULATION_DATA_SKIP_ROWS = [1, 2]
 POPULATION_DATA_COL = "B01003_001E" # Name of 'Population' data column
 
 
-""" List of regions to simmulate """
+""" List of regions to simulate """
 ID_LIST = [
-    # ARC BELTLINE GEOGRAPHIC BOUNDARIES
     ('13121', True) #Fulton County  
     ,('13089', True) #Dekalb County
 ]
@@ -61,18 +60,18 @@ AMENITY_TAGS = {
 }
 
 """ Simulation Parameters """
-RHO_L = [1, 2, 4, 8]          # [1, 2, 4, 8] for each iteration (rho-house capacity)
-ALPHA_L = [0.25, 0.75]     # [0.25, 0.75] for each iteration (lambda - centroid proximity vs. community value)
-T_MAX_RANGE = 20000 # [20000] Range of T_MAX_L
-BENCHMARK_INTERVALS = 400 # [1000] Intervals at which to assign benchmark timesteps
-NUM_AGENTS = 100    # Number of agents
+RHO_L = [4] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
+ALPHA_L = [0.75] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
+T_MAX_RANGE = 20000 # Total timesteps                               [20000] 
+BENCHMARK_INTERVALS = 400 # Benchmark interval
+NUM_AGENTS = 1000 # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 
 """ Flags """
-RUN_EXPERIMENTS = True  # RUN SIMULATION?
+RUN_EXPERIMENTS = False  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_FOLIUM = False        # 1 for matplotlib, else for Folium
+PLOT_FOLIUM = False        # Create Folium graph of t_max?
 viewData = False        # View GDF info + more?
 viewAmenityData = False # View amenity counts?
 

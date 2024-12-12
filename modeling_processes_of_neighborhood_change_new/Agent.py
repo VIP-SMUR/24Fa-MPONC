@@ -89,16 +89,16 @@ class Agent:
     def calculateCost(self, u):
         """Step 3: Cost function with mode-specific adjustments"""
         # Base components
-        affordability = (self.dow >= self.city.dow_thr_array[u]).astype(float)
-        base_location_cost = self.city.centroid_distances[self.prev_u, u]
-        community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))
-        accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])
-        upkeep = self.city.upk_array[u]
-        beltline = self.city.in_beltline_array[u]
+        affordability = (self.dow >= self.city.dow_thr_array[u]).astype(float)          # Binary; 1 if the node is FULL && all inhabitants have an endowment greater than self.endowment
+        community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))# f(similarity of avg endowment to self.endowment)
+        accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])              # f(amenity density)
+        upkeep = self.city.upk_array[u]                                                 # Binary; 1 if no inhabitants
+        beltline = self.city.in_beltline_array[u]                                       # Binary; 1 if not in Beltline
 
         # Mode-specific adjustments
-        mode_factor = 1.5 if self.mode == 'transit' else 1.0
-        location_cost = base_location_cost * mode_factor
+        base_location_cost = self.city.centroid_distances[self.prev_u, u]               # Normalized distance
+        mode_factor = 1.5 if self.mode == 'transit' else 1.0                            # Mode of transport cost - x1.5 multiplier if public transit vs. personal car
+        location_cost = base_location_cost * mode_factor                                # f(distance, mode_cost)
 
         # Combine costs according to FSM and mode
         cost = 1 - (affordability * upkeep * beltline * location_cost * community_cost * accessibility)
