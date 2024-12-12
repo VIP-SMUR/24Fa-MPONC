@@ -11,9 +11,8 @@ import osmnx as ox
 
 class City:
 
-    # CONSTRUCTOR
     def __init__(self, centroids, g, amts_dens, centroid_distances, rho, geo_id_to_income):
-        ''' Initialize a City instance '''
+        """ Constructor """
         self.rho = rho  # house capacity
         self.centroids = centroids  # centroids list
         self.g = g  # OSM graph
@@ -45,39 +44,37 @@ class City:
         # Map GEO_ID to income
         self.geo_id_to_income = geo_id_to_income
 
-    # Set agents and their endowments
     def set_agts(self, agts):
+        """ Initialize agents and their endowments """
         self.agts = agts  # list of agents
         self.agt_dows = np.array([a.dow for a in self.agts])  # array of agent endowments
 
-    # Update each node (cmt score, population)
     def update(self):
+        """ Update each centroid's: Population, CMT score, UPK score """
         for index in range(self.n):  # For each centroid
             inhabitants = self.inh_array[index]  # Centroid inhabitants
             pop = len(inhabitants)
 
-            # Update population history
-            self.pop_hist[index].append(pop)
+            self.pop_hist[index].append(pop) # Update population history
 
             if pop > 0:  # Inhabited
-                # UPDATE COMMUNITY SCORE (avg inhabitant dows, weighted by distance to other centroids)
+                ''' Community Score ''' #(avg inhabitant dows, weighted by distance to other centroids) #TODO: check logic
                 inhabitant_dows = np.array([a.dow for a in inhabitants])  # Array of endowments of node's inhabitants
                 distances = self.centroid_distances[index, [a.u for a in inhabitants]]
                 weights = (1 - distances) ** 2
 
-                # Update Community history (average endowment)
-                cmt = np.average(inhabitant_dows, weights=weights)
+                cmt = np.average(inhabitant_dows, weights=weights) #Calculate
 
-                # Establish endowment threshold
+                ''' Upkeep score '''
                 if pop < self.rho:
                     self.dow_thr_array[index] = 0.0
                 else:
                     self.dow_thr_array[index] = np.partition(inhabitant_dows, -self.rho)[-self.rho]
-                self.upk_array[index] = True
-
+                self.upk_array[index] = 1.0
+                
             else:  # If uninhabited
                 self.dow_thr_array[index] = 0.0
-                self.upk_array[index] = False
+                self.upk_array[index] = 0.0
                 cmt = 0.0
 
             # Update Community history and Community Score (average endowment)

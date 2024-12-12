@@ -89,11 +89,11 @@ class Agent:
     def calculateCost(self, u):
         """Step 3: Cost function with mode-specific adjustments"""
         # Base components
-        affordability = (self.dow >= self.city.dow_thr_array[u]).astype(float)          # Binary; 1 if the node is FULL && all inhabitants have an endowment greater than self.endowment
-        community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))# f(similarity of avg endowment to self.endowment)
+        affordability = (self.dow >= self.city.dow_thr_array[u]).astype(float)          # Binary; 0 if (node is FULL) && (all inhabitants.endowment > self.endowment)
+        community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))# f(similarity of node.avg_endowment to self.endowment)
         accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])              # f(amenity density)
-        upkeep = self.city.upk_array[u]                                                 # Binary; 1 if no inhabitants
-        beltline = self.city.in_beltline_array[u]                                       # Binary; 1 if not in Beltline
+        upkeep = self.city.upk_array[u]                                                 # Binary; 0 if no inhabitants
+        beltline = self.city.in_beltline_array[u]                                       # Binary; 0 if not in Beltline
 
         # Mode-specific adjustments
         base_location_cost = self.city.centroid_distances[self.prev_u, u]               # Normalized distance
