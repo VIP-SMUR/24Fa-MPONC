@@ -66,13 +66,13 @@ Our current cost function takes into account a region's affordability, site upke
 
 > **cost = 1 - (affordability * upkeep * beltline * location_cost * community_cost * accessibility)**
 
-- *Affordability [0 or 1]: Affordability score is [0] if 'unaffordable'; a region is 'unaffordable' if its housing capacity has been reached AND all of its inhabitants have a higher income than an Agent.*
-- *Upkeep [0 or 1]: Upkeep score is [1] if the population is not zero.*
-- *Access to Beltline [0 or 1]: Beltline score is [1] if the region contains part of the Atlanta Beltline.*
-- *Location [0.0 to 1.0]: Location score is a function of* region proximity *and an Agent's* mode choice *(car vs. transit)*.
+- Affordability [0 or 1]: *Affordability score is [0] if 'unaffordable'; a region is 'unaffordable' if its housing capacity has been reached AND all of its inhabitants have a higher income than an Agent.*
+- Upkeep [0 or 1]: *Upkeep score is [1] if the population is not zero.*
+- Access to Beltline [0 or 1]: *Beltline score is [1] if the region contains part of the Atlanta Beltline.*
+- Location [0.0 to 1.0]: *Location score is a function of* region proximity *and an Agent's* mode choice *(car vs. transit)*.
         *- 'Transit' just adds a 1.5x multiplier to the raw distance cost*
-- *Community [0.0 to 1.0]: Community score is the similarity between a region's average income and an Agent's average income*
-- *Accessibility [0.0 to 1.0]: Accessibility score is the normalized amenity density of a region*
+- Community [0.0 to 1.0]: *Community score is the similarity between a region's average income and an Agent's average income*
+- Accessibility [0.0 to 1.0]: *Accessibility score is the normalized amenity density of a region*
   - *Considered amenities are derived from **[24Sp-Mobility-2]([url](https://vip-smur.github.io/24sp-mobility-2/))**, another Georgia Tech research team, in which they investigated which features of a city are most important to residents.*
   - *We excluded certain amenities at our own discretion, such as 'shed', 'guardhouse', 'ferry_terminal', 'garages', and 'bridge' (labels as they appear on OpenStreetMap).*
 
