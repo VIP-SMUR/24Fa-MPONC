@@ -1,3 +1,5 @@
+#gmns.py
+
 import osm2gmns as og
 
 # load network from osm file

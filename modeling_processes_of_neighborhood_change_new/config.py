@@ -69,7 +69,7 @@ NUM_AGENTS = 1000 # Number of agents
 EPSILON = 1e-3 # Rate of learning
 
 """ Flags """
-RUN_EXPERIMENTS = False  # RUN SIMULATION?
+RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_FOLIUM = False        # Create Folium graph of t_max?
 viewData = False        # View GDF info + more?
