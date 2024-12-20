@@ -73,7 +73,7 @@ Our current cost function takes into account a region's affordability, site upke
   - *'Transit' just adds a 1.5x multiplier to the raw distance cost.*
 - Community [0.0 to 1.0]: Community score is the similarity between a region's average income and an Agent's average income.
 - Accessibility [0.0 to 1.0]: Accessibility score is the normalized amenity density of a region.
-  - *Considered amenities are derived from **[24Sp-Mobility-2](https://vip-smur.github.io/24sp-mobility-2/)**, another Georgia Tech research team, in which they investigated which features of a city are most important to residents.*
+  - *Considered amenities are derived from **[24Sp-Mobility-Seg](https://vip-smur.github.io/24sp-mobility-seg/)**, another Georgia Tech research team, in which they investigated which features of a city are most important to residents.*
   - *We excluded certain amenities at our own discretion, such as 'shed', 'guardhouse', 'ferry_terminal', 'garages', and 'bridge' (labels as they appear on OpenStreetMap).*
 
 #### Implemented Amenities (OpenStreetMap labels):
