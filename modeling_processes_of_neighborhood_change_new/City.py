@@ -92,8 +92,8 @@ class City:
         - DataFrame: Data containing Centroid, Population, Avg Endowment, In Beltline, Amt Density.
         """
         data = []  # Array storing data for each centroid
+        
         avg_endowments = np.zeros(self.n)
-
         for index in range(self.n):
             population = len(self.inh_array[index])
             # Average Endowment

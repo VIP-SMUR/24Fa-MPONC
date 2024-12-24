@@ -1,9 +1,12 @@
 # config.py
 
 # Layer handling
+# https://www.census.gov/cgi-bin/geo/shapefiles/index.php
 ZIP_URLS = [
-"https://www2.census.gov/geo/tiger/TIGER2020/TRACT/tl_2020_13_tract.zip" # GA Census tracts [2020]
-,"https://www2.census.gov/geo/tiger/TIGER2020/COUNTY/tl_2020_us_county.zip" # US Nationwide Counties [2020]
+    "https://www2.census.gov/geo/tiger/TIGER2010/TRACT/2010/tl_2010_13_tract10.zip", # GA Census tracts [2010]
+    # "https://www2.census.gov/geo/tiger/TIGER2020/TRACT/tl_2020_13_tract.zip" # GA Census tracts [2020]
+    "www2.census.gov//geo//tiger//TIGER2010//COUNTY//2010//tl_2010_13_county10.zip" # GA Counties [2010]
+    #,"https://www2.census.gov/geo/tiger/TIGER2020/COUNTY/tl_2020_us_county.zip" # US Nationwide Counties [2020]
 ]
 
 # Name of 'ID' columns, to be renamed to 'Simulation_ID'
@@ -21,20 +24,26 @@ NAME_COLUMNS = {
 # Database to download data from: ACS 5-Year Estimates Detailed Tables - https://data.census.gov/advanced?g=040XX00US13
 # [DATA USED TO INITIALIZE AGENT ENDOWMENTS]
 
-# MEDIAN INCOME IN THE PAST 12 MONTHS (IN 2010 INFLATION-ADJUSTED DOLLARS) 
+# MEDIAN INCOME IN THE PAST 12 MONTHS (IN 2010 INFLATION-ADJUSTED DOLLARS)
 # https://data.census.gov/table/ACSST5Y2010.S1903?q=s1903%202010&g=050XX00US13089$1400000,13121$1400000
+# [349 regions]
 ECONOMIC_URL = "https://data.census.gov/api/access/table/download?download_id=6fad78b0ac510efbe0f426059c1394dfc06eb60dc6feabc66622be2b05a0048c"
 ECONOMIC_DATA_SKIP_ROWS = [1]
 ECONOMIC_DATA_COL = "S1903_C02_001E" # Name of 'Income' data column
+# "-" label indicates either:
+# 1) no sample observations or too few sample observations were available to compute an estimate
+# 2) a ratio of medians cannot be calculated because one or both of the median estimates falls in the lowest or upper interval of an open-ended distribution
 
 # TOTAL POPULATION
 # https://data.census.gov/table/ACSDT5Y2022.B01003?q=B01003&g=050XX00US13089$1400000,13121$1400000
+# [349 regions]
 POPULATION_URL = "https://data.census.gov/api/access/table/download?download_id=4633c4c26713411721d6ab3ea6301d2048efb597bbd910dfc5783a9be347b400" 
 POPULATION_DATA_SKIP_ROWS = [1, 2]
 POPULATION_DATA_COL = "B01003_001E" # Name of 'Population' data column
 
 
 """ List of regions to simulate """
+# County FIPS codes: https://www.census.gov/library/reference/code-lists/ansi/2010.html
 ID_LIST = [
     ('13121', True) #Fulton County  
     ,('13089', True) #Dekalb County
@@ -62,17 +71,17 @@ AMENITY_TAGS = {
 """ Simulation Parameters """
 RHO_L = [4] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
 ALPHA_L = [0.75] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
-T_MAX_RANGE = 20000 # Total timesteps                               [20000] 
-BENCHMARK_INTERVALS = 400 # Benchmark interval
-NUM_AGENTS = 1000 # Number of agents
+T_MAX_RANGE = 1 # Total timesteps                               [20000] 
+BENCHMARK_INTERVALS = 1 # Benchmark interval
+NUM_AGENTS = 5 # Number of agents
 
 EPSILON = 1e-3 # Rate of learning
 
 """ Flags """
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_FOLIUM = False        # Create Folium graph of t_max?
-viewData = False        # View GDF info + more?
+PLOT_FOLIUM = True        # Create Folium graph of t_max?
+viewData = True        # View GDF info + more?
 viewAmenityData = False # View amenity counts?
 
 """ Visualization Settings """

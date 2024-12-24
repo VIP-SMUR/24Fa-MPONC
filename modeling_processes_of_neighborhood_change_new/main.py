@@ -5,7 +5,7 @@ from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR,
 from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, RELATION_IDS, viewData
 from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
-from gdf_handler import load_gdf, create_gdf
+from gdf_handler import load_gdf, create_gdf, print_overlaps
 from graph_handler import load_graph, create_graph, save_graph
 from amt_densities import compute_amts_dens
 from centroid_distances import cached_centroid_distances
@@ -95,6 +95,9 @@ def main():
     if viewData:
         print(gdf.columns)
 
+    """ CHECK OVERLAPS """
+    print_overlaps(gdf)
+    
     # [VIEW GRAPH]
     # *freezes code - re-run simulation with this commented out to proceed*
     
@@ -222,12 +225,12 @@ def main():
     # =============================================================
     # ACQUIRE CALIBRATION METRIC (EXPECTED MINUS SIMULATED INCOMES)
     # =============================================================
-    for rho, alpha in list(product(RHO_L, ALPHA_L)):
-        figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
-        print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
+    # for rho, alpha in list(product(RHO_L, ALPHA_L)):
+    #     figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
+    #     print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
         
-    OVERALL_END_TIME = time.time()
-    print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
+    # OVERALL_END_TIME = time.time()
+    # print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
 
 if __name__ == "__main__":
     main()

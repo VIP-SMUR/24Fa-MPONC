@@ -127,3 +127,29 @@ def within_gdf(gdf):
     num_geometries = len(contained_geometries)
     
     return filtered_gdf, num_geometries, num_geometries_individual
+
+def print_overlaps(gdf):
+    # Join GDF with itself to compare the two...
+    overlaps = gpd.sjoin(gdf, gdf, how='inner', predicate='overlaps', lsuffix='left', rsuffix='right')
+    
+    # The left GDF's index is now overlaps.index; the right GDF's index is overlaps['index_right'].
+    # Remove self-comparisons by comparing the left index (overlaps.index) with 'index_right'
+    overlaps = overlaps[overlaps.index != overlaps['index_right']]
+
+    # Create a unique pair identifier based on the 'Simulation_ID's
+    overlaps['sorted_pair'] = overlaps.apply(
+        lambda row: tuple(sorted([row['Simulation_ID_left'], row['Simulation_ID_right']])), 
+        axis=1
+    )
+
+    # Remove duplicate pairs
+    overlaps = overlaps.drop_duplicates(subset='sorted_pair')
+
+    if not overlaps.empty:
+        print("Overlapping regions:")
+        print(overlaps[['Simulation_Name_left', 'Simulation_Name_right', 'Simulation_ID_left', 'Simulation_ID_right']])
+        print()
+    else:
+        print("No overlaps detected")
+
+

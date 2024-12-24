@@ -1,7 +1,7 @@
 # visualization.py
 
 from config import CTY_KEY, NUM_AGENTS, COLORBAR_NUM_INTERVALS, DPI, T_MAX_RANGE, PLOT_FOLIUM
-from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR, GRAPH_FILE, gdf_cache_filenames
+from helper import FIGURE_PKL_CACHE_DIR, FIGURES_DIR, GRAPH_FILE, gdf_cache_filenames, PLT_DIR, FOLIUM_DIR
 from gdf_handler import load_gdf
 from graph_handler import load_graph
 import matplotlib.pyplot as plt
@@ -13,7 +13,7 @@ from helper import FIGURES_DIR
 from folium import CircleMarker
 from folium.plugins import MarkerCluster
 from pathlib import Path
-from branca.colormap import linear, StepColormap
+from branca.colormap import linear
 import osmnx as ox
 import numpy as np
 import pickle
@@ -121,13 +121,14 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
     ax.set_title(f"{title}", fontsize=14)
 
     plt.tight_layout()
-    plt.savefig(f'./figures/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight', dpi=DPI)
+    plt.savefig(f'./figures/matplotlib/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight', dpi=DPI)
     plt.close()
     
-    # Save graph to 'figures' folder
-    PLT_DIR = Path(FIGURES_DIR) / f"{figkey}_matplotlib.pdf"
     end_time = time.time()
-    print(f"Plotted and saved {PLT_DIR.name} [{end_time - start_time:.2f} s]")
+    
+    # Save graph to 'figures/matplotlib' folder
+    DIR = Path(PLT_DIR) / f"{figkey}_matplotlib.pdf"
+    print(f"Plotted and saved {DIR.name} [{end_time - start_time:.2f} s]")
     
     
 # ============    
@@ -242,4 +243,10 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
     m.get_root().html.add_child(folium.Element(legend_html))
 
     # Save Folium map.osm as HTML
-    m.save(f"./figures/{figkey}_folium.html")
+    m.save(f"./figures/folium/{figkey}_folium.html")
+    
+    end_time = time.time()
+    
+    DIR = Path(FOLIUM_DIR) / f"{figkey}_matplotlib.pdf"
+    
+    print(f"Plotted and saved {DIR.name} [{end_time - start_time:.2f} s]")
