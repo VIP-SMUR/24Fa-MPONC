@@ -229,7 +229,7 @@ def main():
     #     figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
     #     print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
         
-    # OVERALL_END_TIME = time.time()
+    # OVERALL_END_T vIME = time.time()
     # print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
 
 if __name__ == "__main__":
@@ -237,23 +237,23 @@ if __name__ == "__main__":
 
 #TO-DO list:
 """ Functionality """
-#TODO: Fix income difference metric calculation
-#TODO: Investigate data discrepancy from 2010 income data (missing tracts - geographic location?)
-#TODO: Investigate "not strongly connected graph" - what does this mean? [!!!]
-    # - Is there a disconnect between the two counties
-#TODO: Investigate funky amenity counts [!!!]
+#TODO: Fix income difference metric calculation [!!!]
+#TODO: Investigate funky amenity counts [!!]
 #TODO: open economic/population links before attempting download
-#TODO: investigate gaps between counties in 2010 graph
+
+#TODO: Investigate "not strongly connected graph"
+    # No difference between graphs when extracting strongly connected component vs. not
 
 """ Enhancement """
 #TODO: Add weights to amenity types
 #TODO: Change centroid distance to be avg of: shortest paths between every node in a region A to every node in region B
+#TODO: Beltline attribute - every region within 5 miles, then decreasing over some distance
 
 """ Optimization """
+#TODO: check if gif already exists before re-creating it
 #TODO: Make amenity queries faster [!!!]
 #TODO: Address approach of: loading GDF and GRAPH from cache for every simulation iteration, instead of passing as parameter
 #TODO: Address: Creating 'Beltline' column every time a graph is generated [gdf_handler]
-#TODO: check if gif already exists before re-creating it
 #TODO: cache individual centroid distances [?]
 
 # Devam:

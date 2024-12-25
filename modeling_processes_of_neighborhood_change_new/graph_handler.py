@@ -17,6 +17,7 @@ def create_graph(gdf):
     # Generate the graph from the combined geometry
     g = ox.graph_from_polygon(combined_gdf, network_type='drive', simplify=True
     )
+    
     # Ensure the graph is strongly connected
     if not nx.is_strongly_connected(g):
         print("Graph is not strongly connected. Extracting the largest strongly connected component.")

@@ -69,8 +69,8 @@ AMENITY_TAGS = {
 }
 
 """ Simulation Parameters """
-RHO_L = [4] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
-ALPHA_L = [0.75] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
+RHO_L = [2] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
+ALPHA_L = [0.25] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
 T_MAX_RANGE = 1 # Total timesteps                               [20000] 
 BENCHMARK_INTERVALS = 1 # Benchmark interval
 NUM_AGENTS = 5 # Number of agents
