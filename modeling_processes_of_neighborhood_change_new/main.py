@@ -7,7 +7,7 @@ from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
 from gdf_handler import load_gdf, create_gdf, print_overlaps
 from graph_handler import load_graph, create_graph, save_graph
-from amt_densities import compute_amts_dens
+from amtdens_distances import compute_amts_dens
 from centroid_distances import cached_centroid_distances
 from simulation import run_simulation
 from visualization import plot_city
@@ -243,6 +243,7 @@ if __name__ == "__main__":
     # - Is there a disconnect between the two counties
 #TODO: Investigate funky amenity counts [!!!]
 #TODO: open economic/population links before attempting download
+#TODO: investigate gaps between counties in 2010 graph
 
 """ Enhancement """
 #TODO: Add weights to amenity types

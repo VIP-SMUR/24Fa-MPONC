@@ -85,6 +85,16 @@ def rename_ID_Name_columns(gdf, layer_index):
     """ Helper function to rename 'identifier' column """
     identifier_column = IDENTIFIER_COLUMNS.get(layer_index)
     name_column = NAME_COLUMNS.get(layer_index)
+    
+    # Check for 2010 name versions
+    if identifier_column not in gdf.columns:
+        if identifier_column + "10" in gdf.columns:
+            identifier_column = identifier_column + "10"
+    if name_column not in gdf.columns:
+        if name_column + "10" in gdf.columns:
+            name_column = name_column + "10"
+    
+    # Rename
     if identifier_column != 'Simulation_ID':
         gdf = gdf.rename(columns={identifier_column: 'Simulation_ID'})
     if name_column != 'Simulation_Name':

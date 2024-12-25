@@ -16,7 +16,7 @@ class City:
         self.rho = rho  # house capacity
         self.centroids = centroids  # centroids list
         self.g = g  # OSM graph
-        self.n = len(centroids)
+        self.n = len(centroids) # num centroids
 
         # STORE ATTRIBUTES OF ALL CENTROIDS
         self.lon_array = np.array([lon for lon, _, _, _, _ in centroids])  # Longitude

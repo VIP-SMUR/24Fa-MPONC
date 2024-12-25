@@ -5,7 +5,7 @@
 ZIP_URLS = [
     "https://www2.census.gov/geo/tiger/TIGER2010/TRACT/2010/tl_2010_13_tract10.zip", # GA Census tracts [2010]
     # "https://www2.census.gov/geo/tiger/TIGER2020/TRACT/tl_2020_13_tract.zip" # GA Census tracts [2020]
-    "www2.census.gov//geo//tiger//TIGER2010//COUNTY//2010//tl_2010_13_county10.zip" # GA Counties [2010]
+    "https://www2.census.gov/geo/tiger/TIGER2010/COUNTY/2010/tl_2010_13_county10.zip" # GA Counties [2010]
     #,"https://www2.census.gov/geo/tiger/TIGER2020/COUNTY/tl_2020_us_county.zip" # US Nationwide Counties [2020]
 ]
 

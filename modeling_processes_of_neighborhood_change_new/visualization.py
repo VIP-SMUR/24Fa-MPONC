@@ -247,6 +247,6 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
     
     end_time = time.time()
     
-    DIR = Path(FOLIUM_DIR) / f"{figkey}_matplotlib.pdf"
+    DIR = Path(FOLIUM_DIR) / f"{figkey}_folium.html"
     
     print(f"Plotted and saved {DIR.name} [{end_time - start_time:.2f} s]")

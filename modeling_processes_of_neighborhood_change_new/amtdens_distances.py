@@ -44,13 +44,11 @@ def fetch_amenities(region_idx, region_polygon, tags, cache_dir=AMTS_DENS_CACHE_
     return amenities_count
 
 def compute_amts_dens(gdf, tags):
-    # Exclude Atlanta City from amts density calculations
-    gdf = gdf[gdf['ID'] != '1304000'].reset_index(drop=True)
     
     amts_dens = np.zeros(len(gdf))
     amenities_counts = np.zeros(len(gdf))
     areas_sqkm = gdf['Sqkm'].values
-    region_names = gdf['Name'].values
+    region_names = gdf['Simulation_Name'].values
 
     print("Fetching amenities per region...")
 
@@ -94,7 +92,7 @@ def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
         distance_matrix = compute_centroid_distances(centroids, g)
         np.save(cache_path, distance_matrix)
         print(f"Centroid distances cached.")
-    
+     
     return distance_matrix
 
 # Multiprocessing: Num CPU's
