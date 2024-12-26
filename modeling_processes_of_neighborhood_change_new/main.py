@@ -247,7 +247,7 @@ if __name__ == "__main__":
 """ Enhancement """
 #TODO: Add weights to amenity types
 #TODO: Change centroid distance to be avg of: shortest paths between every node in a region A to every node in region B
-#TODO: Beltline attribute - every region within 5 miles, then decreasing over some distance
+#TODO: Beltline attribute -  Beltline attribute: 1 if less than 1km, until 5 km decreases linearly to 0
 
 """ Optimization """
 #TODO: check if gif already exists before re-creating it

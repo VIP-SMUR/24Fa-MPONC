@@ -8,7 +8,7 @@ def create_centroids(gdf):
     
     for _, row in tqdm.tqdm(gdf.iterrows(), total=len(gdf), desc="Regions"):
         # Retrieve attributes
-        ID = row['Simulation_ID']
+        ID = str(row['Simulation_ID'])
         
         in_beltline = row['Beltline']
         

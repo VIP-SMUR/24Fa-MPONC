@@ -32,9 +32,13 @@ def economic_distribution():
     endowments = np.random.choice(incomes, size=NUM_AGENTS, p=probabilities)
     
     # Map GEO_ID to income
+    #truncate ID's from income spreadsheet
+    truncated_geo_ids = merged_df['GEO_ID'].astype(str).str[9:]
+    #map
+    
     geo_id_to_income = pd.Series(
         data=merged_df[ECONOMIC_DATA_COL].values,
-        index=merged_df['GEO_ID']
+        index=truncated_geo_ids
     ).to_dict()
 
     return endowments, geo_id_to_income

@@ -93,7 +93,7 @@ class City:
         """
         data = []  # Array storing data for each centroid
         
-        avg_endowments = np.zeros(self.n)
+        avg_incomes = np.zeros(self.n)
         for index in range(self.n):
             population = len(self.inh_array[index])
             # Average Endowment
@@ -101,14 +101,14 @@ class City:
                 avg_endowment = (np.mean([agent.dow for agent in self.inh_array[index]]))
             else:
                 avg_endowment = 0.0
-            avg_endowments[index] = avg_endowment
+            avg_incomes[index] = avg_endowment
 
         # Normalize avg_endowments
-        min_val = avg_endowments.min()
-        max_val = avg_endowments.max()
+        min_val = avg_incomes.min()
+        max_val = avg_incomes.max()
 
         # Normalize endowments
-        normalized_avg_endowments = (avg_endowments - min_val) / (max_val - min_val)
+        normalized_avg_endowments = (avg_incomes - min_val) / (max_val - min_val)
 
         for index in range(self.n):
             # ID
@@ -119,6 +119,8 @@ class City:
 
             # Population
             population = len(self.inh_array[index])
+            
+            avg_income = avg_incomes[index]
 
             avg_endowment = normalized_avg_endowments[index]
 
@@ -129,15 +131,19 @@ class City:
             amenity_density = self.amts_dens[index]
 
             # Expected income (2010 median income data)
-            expected_income = self.geo_id_to_income.get(ID, "NA")
+            
+            if  ID in self.geo_id_to_income:
+                expected_income = self.geo_id_to_income[ID]
+            else:
+                expected_income = "NA"
 
             data.append({
                 'Simulation_ID': ID,
-                'Centroid': centroid_name,
+                'Centroid Name': centroid_name,
                 'Population': population,
-                'Avg Income': avg_endowment,
+                'Avg Income': avg_income,
                 'Expected Income': expected_income,
-                'Avg Endowment Normalized': normalized_avg_endowments[index],
+                'Avg Endowment': avg_endowment,
                 'In Beltline': in_beltline,
                 'Amt Density': round(amenity_density, 2)
             })

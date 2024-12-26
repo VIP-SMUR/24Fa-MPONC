@@ -47,7 +47,7 @@ def plot_city(rho, alpha, t_max, centroids, beltline_geom):
         df_data.set_index('Simulation_ID', inplace=True)
         
         # Join 'Avg Endowment' from csv to gdf
-        gdf = gdf.join(df_data['Avg Endowment Normalized'], how='left').reset_index()
+        gdf = gdf.join(df_data['Avg Endowment'], how='left').reset_index()
     
         # Plot with Matplotlib
         plot_matplotlib(
@@ -100,7 +100,7 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
     ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
 
     # Plot GDF layer (region boundaries)
-    gdf.plot(column='Avg Endowment Normalized', ax=ax, cmap=discrete_cmap, alpha=0.6, edgecolor='black', legend=False)
+    gdf.plot(column='Avg Endowment', ax=ax, cmap=discrete_cmap, alpha=0.6, edgecolor='black', legend=False)
 
     # Plot centroids locations (this comes after the graph to make sure they are visible on top)
     colors = np.where(city.in_beltline_array, 'palegreen', 'white')
@@ -151,7 +151,7 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
 
     # Customize GDF layer
     def style_function(feature):
-        avg_endowment = feature['properties']['Avg Endowment Normalized']
+        avg_endowment = feature['properties']['Avg Endowment']
         return {
             'fillColor': folium_colormap(avg_endowment) if avg_endowment is not None else 'transparent',
             'color': 'black',
@@ -194,7 +194,7 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
         num_amenities = amenity_density * area
         # avg endowment
         if inhabitants > 0: # Latest population > 0
-            avg_endowment = gdf.loc[gdf['Simulation_ID'] == city.id_array[i], 'Avg Endowment Normalized'].values
+            avg_endowment = gdf.loc[gdf['Simulation_ID'] == city.id_array[i], 'Avg Endowment'].values
             avg_endowment = avg_endowment[0] if len(avg_endowment) > 0 else 0.0
             avg_endowment = round(avg_endowment, 2)
         else:
