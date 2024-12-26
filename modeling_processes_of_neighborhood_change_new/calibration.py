@@ -23,20 +23,31 @@ def calibrate(rho, alpha, geo_id_to_income):
     # Fetch data
     df_data = city.get_data()
     df_data.set_index('Simulation_ID', inplace=True)
-
-    # Extract and align expected and simulated incomes
-    simulated_income = df_data.loc[geo_id_to_income.keys(), 'Avg Income']
-    expected_income = np.array(list(geo_id_to_income.values()))
+    
+    # Remove GEO_ID's nonexistant in geo_id_to_income, keep relevant columns
+    df_filtered = df_data.loc[geo_id_to_income.keys(), ['Avg Income', 'Expected Income']]
+    
+    # Remove rows where Expected income is NA
+    df_filtered = df_filtered.dropna(subset=['Expected Income'])
+    
+    # Extract arrays of expected and simulated incomes
+    simulated_income = df_filtered['Avg Income']
+    expected_income = df_filtered['Expected Income']
 
     # Handle missing or invalid data (e.g., NaN values)
     simulated_income = simulated_income.dropna()
     expected_income = expected_income[simulated_income.index.isin(geo_id_to_income.keys())]
 
-    print(f"Number of rows in DataFrame: {df_data.shape[0]}")
-    print(simulated_income.head())
-    print(simulated_income.dtypes)
+    if viewData:
+        print(f"Number of rows in DataFrame: {df_filtered.shape[0]} after cleaning")
+        print("First 5 rows of simulated_income:")
+        print(simulated_income.head())
+        print("First 5 rows of expected_income:")
+        print(expected_income.head())
 
     # Calculate total absolute difference
     tot_difference = np.abs(expected_income - simulated_income).sum()
 
     return figkey, tot_difference
+
+#NOTE: Regions with 0 population have simulated_income of 0

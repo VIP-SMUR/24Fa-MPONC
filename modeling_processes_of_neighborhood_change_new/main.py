@@ -225,12 +225,12 @@ def main():
     # =============================================================
     # ACQUIRE CALIBRATION METRIC (EXPECTED MINUS SIMULATED INCOMES)
     # =============================================================
-    # for rho, alpha in list(product(RHO_L, ALPHA_L)):
-    #     figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
-    #     print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
+    for rho, alpha in list(product(RHO_L, ALPHA_L)):
+        figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
+        print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
         
-    # OVERALL_END_T vIME = time.time()
-    # print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
+    OVERALL_END_TIME = time.time()
+    print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
 
 if __name__ == "__main__":
     main()
