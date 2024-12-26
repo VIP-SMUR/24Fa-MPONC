@@ -186,13 +186,6 @@ Our approach is only limited to the 2010 Census data for â€œtraining purposes.â€
 This coming Spring semester, we hope to make the GIFs more clearer (currently, there is a lot of regions and it is hard to read which regions the agents are in). We additionally want to add weights to certain amenities, as realistically, some amenities are more valuable than others in driving agent decisions (for example, schools may play a more important than bike stands in driving what regions agents go to). Additionally, this coming semester, we hope to get the necessary parameters from the 2010 data and try to reproduce the 2020 demographics. 
 
 
-## Team
-
-| Name                  | Seniority | Major                  | Department | GitHub Handle                                                 | 
-| --------------------- | --------- | ---------------------- | ---------- | ------------------------------------------------------------- | 
-| Matthew Lim           | Sophomore | Computer Science       | COC        | [mlim70](https://github.com/mlim70)                           |                      
-| Reyli Olivo           | Junior    | Civil Engineering      | CEE        | [Rolivo05](https://github.com/Rolivo05)                       |                   
-| Devam Mondal          | Junior    | Computer Science       | COC        | [Dodesimo](https://github.com/Dodesimo)                       | 
 
 ## Presentation
 
@@ -201,3 +194,12 @@ This coming Spring semester, we hope to make the GIFs more clearer (currently, t
     <img src="https://img.youtube.com/vi/sXhnPRdE7Hk/maxresdefault.jpg" width="480" alt="Final Presentation --- 24Fa --- Modeling Processes of Neighborhood Change (MPONC)" class="off-glb">
 </a>
 
+
+
+## Team
+
+| Name                  | Seniority | Major                  | Department | GitHub Handle                                                 | 
+| --------------------- | --------- | ---------------------- | ---------- | ------------------------------------------------------------- | 
+| Matthew Lim           | Sophomore | Computer Science       | COC        | [mlim70](https://github.com/mlim70)                           |                      
+| Reyli Olivo           | Junior    | Civil Engineering      | CEE        | [Rolivo05](https://github.com/Rolivo05)                       |                   
+| Devam Mondal          | Junior    | Computer Science       | COC        | [Dodesimo](https://github.com/Dodesimo)                       | 
