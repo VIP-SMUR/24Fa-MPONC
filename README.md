@@ -6,13 +6,6 @@ Modeling Processes of Neighborhood Change
         This research project simulates the impact of the Atlanta Beltline on neighborhood gentrification using game theory and no-regret dynamics. The simulation models agent movement across census tracts, with agents seeking to minimize costs based on factors like amenity density. The methodology incorporates the four-step model for trip generation and leverages US Census data for population and income distributions. Census tract regions are mapped using TIGER/Line shapefiles, while the Beltline area is defined using OpenStreetMap data. The simulation outputs include dynamic visualizations and CSV data tracking population and income changes across census tracts, providing insights into urban development patterns.
 
 
-## Team
-
-| Name                  | Seniority | Major                  | Department | GitHub Handle                                                 | 
-| --------------------- | --------- | ---------------------- | ---------- | ------------------------------------------------------------- | 
-| Matthew Lim           | Sophomore | Computer Science       | COC        | [mlim70](https://github.com/mlim70)                           |                                
-| Reyli Olivo           | Junior    | Civil Engineering      | CEE        | [Rolivo05](https://github.com/Rolivo05)                       |                   
-| Devam Mondal          | Junior    | Computer Science       | COC        | [Dodesimo](https://github.com/Dodesimo)                       | 
 
 
 
@@ -41,12 +34,7 @@ python main.py
 }
 ```
 
-## Presentation
 
-
-<a href="https://www.youtube.com/watch?v=sXhnPRdE7Hk" target="_blank" rel="noopener noreferrer">
-    <img src="https://img.youtube.com/vi/sXhnPRdE7Hk/maxresdefault.jpg" width="480" alt="Final Presentation --- 24Fa --- Modeling Processes of Neighborhood Change (MPONC)" class="off-glb">
-</a>
 
 ## Intro and Description
 This project is based on the reference paper created by Dr. Martinez and Dr. Zhao, which aims to address the following: 
@@ -196,3 +184,22 @@ Our approach is only limited to the 2010 Census data for â€œtraining purposes.â€
 
 ### Next Steps
 This coming Spring semester, we hope to make the GIFs more clearer (currently, there is a lot of regions and it is hard to read which regions the agents are in). We additionally want to add weights to certain amenities, as realistically, some amenities are more valuable than others in driving agent decisions (for example, schools may play a more important than bike stands in driving what regions agents go to). Additionally, this coming semester, we hope to get the necessary parameters from the 2010 data and try to reproduce the 2020 demographics. 
+
+
+
+## Presentation
+
+
+<a href="https://www.youtube.com/watch?v=sXhnPRdE7Hk" target="_blank" rel="noopener noreferrer">
+    <img src="https://img.youtube.com/vi/sXhnPRdE7Hk/maxresdefault.jpg" width="480" alt="Final Presentation --- 24Fa --- Modeling Processes of Neighborhood Change (MPONC)" class="off-glb">
+</a>
+
+
+
+## Team
+
+| Name                  | Seniority | Major                  | Department | GitHub Handle                                                 | 
+| --------------------- | --------- | ---------------------- | ---------- | ------------------------------------------------------------- | 
+| Matthew Lim           | Sophomore | Computer Science       | COC        | [mlim70](https://github.com/mlim70)                           |                      
+| Reyli Olivo           | Junior    | Civil Engineering      | CEE        | [Rolivo05](https://github.com/Rolivo05)                       |                   
+| Devam Mondal          | Junior    | Computer Science       | COC        | [Dodesimo](https://github.com/Dodesimo)                       | 
