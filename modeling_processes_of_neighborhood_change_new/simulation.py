@@ -64,7 +64,7 @@ class SimulationManager:
         for t in range(T_MAX_RANGE):
             self.execute_simulation_step(city, assigned_routes)
 
-            if (t + 1) == T_MAX_RANGE:
+            if (t + 1) == self.benchmarks[benchmark_index]:
                 self.save_simulation_state(city, rho, alpha, t + 1)
                 benchmark_index += 1
         
