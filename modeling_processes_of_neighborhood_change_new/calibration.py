@@ -28,8 +28,8 @@ class Calibration(Problem):
             n_var=2, 
             n_obj=1, 
             n_constr=0,
-            xl=np.array([1, 0.5]),
-            xu=np.array([2, 0.52])
+            xl=np.array([8, 0.1]),
+            xu=np.array([32, 0.9])
             )
         
         self.geo_id_to_income = geo_id_to_income
