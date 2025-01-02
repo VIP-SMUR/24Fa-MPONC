@@ -77,7 +77,7 @@ BENCHMARK_INTERVALS = 1 # Benchmark interval
 NUM_AGENTS = 200 # Number of agents
 
 """ Flags """
-RUN_EXPERIMENTS = True  # RUN SIMULATION?
+RUN_EXPERIMENTS = False  # RUN SIMULATION?
 RUN_CALIBRATION = True # RUN CALIBRATION?
 PLOT_CITIES = False      # PLOT SIMULATION?
 PLOT_FOLIUM = False        # Create Folium graph of t_max?

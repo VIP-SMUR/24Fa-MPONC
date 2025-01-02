@@ -36,7 +36,7 @@ def main():
     # DOWNLOAD AND EXTRACT ZIP
     # ========================
 
-    print("Processing Shapfiles and Census data...")
+    print("Processing Shapefiles and Census data...")
     file_start_time = time.time()    
 
     shapefile_paths = download_and_extract_layers_all()
@@ -317,6 +317,7 @@ if __name__ == "__main__":
 #TO-DO list:
 """ Functionality """
 #TODO: Acquire optimal set of parameters to match 2010 data
+#TODO: For 2010 calibration, query amenities from 2010
 #TODO: Investigate funky amenity counts [!!]
 #TODO: open economic/population links before attempting download
 #TODO: add epsilon as a changeable parameter (check functionality in simulation)
@@ -330,6 +331,7 @@ if __name__ == "__main__":
 #TODO: Beltline attribute -  Beltline attribute: 1 if less than 1km, until 5 km decreases linearly to 0
 
 """ Optimization """
+#TODO: In calibration CSV, order parameters from least to greatest
 #TODO: check if gif already exists before re-creating it
 #TODO: Make amenity queries faster [!!!]
 #TODO: Address approach of: loading GDF and GRAPH from cache for every simulation iteration, instead of passing as parameter
