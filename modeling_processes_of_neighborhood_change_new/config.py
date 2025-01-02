@@ -74,7 +74,7 @@ ALPHA_L = [0.25, 0.75] # Prioritize proximity vs. community    # [0.25, 0.75] la
 EPSILON = 1e-3 # Rate of learning
 T_MAX_RANGE = 20000 # Total timesteps                               [20000] 
 BENCHMARK_INTERVALS = 1000 # Benchmark interval
-NUM_AGENTS = 10000 # Number of agents
+NUM_AGENTS = 20000 # Number of agents
 
 """ Flags """
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
