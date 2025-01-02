@@ -1,6 +1,6 @@
 # simulation.py
 
-from config import RHO_L, ALPHA_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, N_JOBS
+from config import RHO_L, ALPHA_L, NUM_AGENTS, RUN_EXPERIMENTS, CTY_KEY, N_JOBS, T_MAX_RANGE
 from helper import DATA_DIR, FIGURE_PKL_CACHE_DIR, T_MAX_L
 from Agent import Agent
 from City import City
@@ -19,7 +19,6 @@ class SimulationManager:
         self.amts_dens = amts_dens
         self.centroid_distances = centroid_distances
         self.simulation_params = list(product(RHO_L, ALPHA_L))
-        self.t_max = max(T_MAX_L)
         self.benchmarks = sorted(T_MAX_L)
 
     def initialize_agents(self, city, alpha, endowments):
@@ -62,11 +61,10 @@ class SimulationManager:
         benchmark_index = 0
 
         # Main simulation loop
-        for t in range(self.t_max):
+        for t in range(T_MAX_RANGE):
             self.execute_simulation_step(city, assigned_routes)
 
-            # Save results at benchmark timesteps
-            if (t + 1) == self.benchmarks[benchmark_index]:
+            if (t + 1) == T_MAX_RANGE:
                 self.save_simulation_state(city, rho, alpha, t + 1)
                 benchmark_index += 1
         
@@ -118,3 +116,9 @@ def run_simulation(centroids, g, amts_dens, centroid_distances, assigned_routes,
     """Main entry point for running simulations"""
     manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
     manager.run_parallel_simulations(assigned_routes, endowments, geo_id_to_income)
+    
+def run_single_simulation_calibration(rho, alpha, centroids, g, amts_dens, centroid_distances, 
+                                      assigned_routes, endowments, geo_id_to_income
+                                      ):
+    manager = SimulationManager(centroids, g, amts_dens, centroid_distances)
+    manager.run_single_simulation(rho, alpha, assigned_routes, endowments, geo_id_to_income)

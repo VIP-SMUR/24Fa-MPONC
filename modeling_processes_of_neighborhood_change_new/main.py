@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
-from config import PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, RELATION_IDS, viewData
+from config import RUN_CALIBRATION, CTY_KEY, NUM_AGENTS, T_MAX_RANGE, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, RELATION_IDS, viewData
 from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
 from gdf_handler import load_gdf, create_gdf, print_overlaps
@@ -14,16 +14,20 @@ from visualization import plot_city
 from gif import process_pdfs_to_gifs
 from centroids import create_centroids
 from save_IDS import save_current_IDS, load_previous_IDS
-from calibration import calibrate
+from calibration import Calibration, MyRepair
 from in_beltline import fetch_beltline_nodes
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
+from four_step_model import run_four_step_model
+from pymoo.algorithms.soo.nonconvex.ga import GA
+from pymoo.termination import get_termination
+from pymoo.optimize import minimize
 import numpy as np
+import pandas as pd
 import time
 import matplotlib.pyplot as plt
 import matplotlib
-from four_step_model import run_four_step_model
 
 OVERALL_START_TIME = time.time()
 
@@ -50,12 +54,12 @@ def main():
     # =============================
     # CHECK IF REGIONS HAVE CHANGED
     # =============================
-    regen_gdf_and_graph = True
+    regen_gdf_and_graph = False # Toggles True if counties have changed
     
     if Path(SAVED_IDS_FILE).exists():
         saved_IDS = load_previous_IDS(SAVED_IDS_FILE)
-        if set(saved_IDS) == set(ID_LIST):
-            regen_gdf_and_graph = False
+        if not set(saved_IDS) == set(ID_LIST):
+            regen_gdf_and_graph = True
     
     save_current_IDS(ID_LIST, SAVED_IDS_FILE)
     
@@ -225,9 +229,84 @@ def main():
     # =============================================================
     # ACQUIRE CALIBRATION METRIC (EXPECTED MINUS SIMULATED INCOMES)
     # =============================================================
-    for rho, alpha in list(product(RHO_L, ALPHA_L)):
-        figkey, cal_metric = calibrate(rho, alpha, geo_id_to_income)
-        print(f"\nTotal difference in INCOME (simulated vs 2010) for simulation {figkey} is {cal_metric}")
+    if RUN_CALIBRATION:
+        calibration_start_time = time.time()
+        print("Running calibration...")
+        problem = Calibration(
+            geo_id_to_income,
+            centroids,
+            g,
+            amts_dens,
+            centroid_distances,
+            assigned_routes,
+            endowments,
+        )
+        algorithm = GA(
+            pop_size=50,  # Number of parameter combinations to test
+            repair=MyRepair(),
+            eliminate_duplicates=True
+        )
+
+        termination = get_termination("n_gen", 30)  # Terminates after 30 generations
+
+        results = minimize(
+            problem,
+            algorithm,
+            termination,
+            seed=1,
+            save_history=True,
+            verbose=True
+        )
+        
+        X = results.X
+
+        # If one-dimensional, handle shape
+        if X.ndim == 1:
+            X = X.reshape(1, -1)
+            
+        all_solutions = []
+        # Loop over each generation in the history
+        for gen, res in enumerate(results.history):
+            # Population at this generation
+            pop_X = res.pop.get("X")  # shape: (pop_size, n_var)
+            pop_F = res.pop.get("F")  # shape: (pop_size, n_obj)
+
+            for i in range(len(pop_X)):
+                rho_val = pop_X[i, 0]
+                alpha_val = pop_X[i, 1]
+                tot_diff_val = pop_F[i, 0]  # objective is 1D, shape (pop_size,1)
+
+                # Construct a figkey as you did before (adjust as needed)
+                figkey = f"{CTY_KEY}_{int(rho_val)}_{alpha_val:.2f}_{NUM_AGENTS}_{T_MAX_RANGE}"
+
+                # Append each row to a list
+                all_solutions.append({
+                    "figkey": figkey,
+                    "rho": rho_val,
+                    "alpha": alpha_val,
+                    "tot_difference": tot_diff_val
+                })    
+                
+        df_all = pd.DataFrame(all_solutions)
+        df_all.to_csv(Path("data") / "optimization_results_all.csv", index=False)            
+                
+        # Print the Dataframe
+        print("\nCalibration dataframe:") #TODO: remove later, visible just for debugging
+        print(df_all)
+                
+        best_idx = df_all["tot_difference"].idxmin()
+        best_params = df_all.loc[best_idx]
+
+        best_rho = best_params["rho"]
+        best_alpha = best_params["alpha"]
+        best_diff = best_params["tot_difference"]
+        print("\nBest parameters:")
+        print(f"Rho: {best_rho}, Alpha: {best_alpha}")
+        print(f"Income difference: {best_diff}")        
+
+        calibration_end_time = time.time()
+        print(f"Completed parameter calibration after {calibration_end_time - calibration_start_time:.2f} seconds.")
+        
         
     OVERALL_END_TIME = time.time()
     print(f"\n[EVERYTHING DONE AFTER {OVERALL_END_TIME - OVERALL_START_TIME:.2f}s]")
@@ -237,9 +316,10 @@ if __name__ == "__main__":
 
 #TO-DO list:
 """ Functionality """
-#TODO: Fix income difference metric calculation [!!!]
+#TODO: Acquire optimal set of parameters to match 2010 data
 #TODO: Investigate funky amenity counts [!!]
 #TODO: open economic/population links before attempting download
+#TODO: add epsilon as a changeable parameter (check functionality in simulation)
 
 #TODO: Investigate "not strongly connected graph"
     # No difference between graphs when extracting strongly connected component vs. not

@@ -71,16 +71,16 @@ AMENITY_TAGS = {
 """ Simulation Parameters """
 RHO_L = [2] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
 ALPHA_L = [0.25] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
+EPSILON = 1e-3 # Rate of learning
 T_MAX_RANGE = 1 # Total timesteps                               [20000] 
 BENCHMARK_INTERVALS = 1 # Benchmark interval
 NUM_AGENTS = 200 # Number of agents
 
-EPSILON = 1e-3 # Rate of learning
-
 """ Flags """
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
-PLOT_CITIES = True      # PLOT SIMULATION?
-PLOT_FOLIUM = True        # Create Folium graph of t_max?
+RUN_CALIBRATION = True # RUN CALIBRATION?
+PLOT_CITIES = False      # PLOT SIMULATION?
+PLOT_FOLIUM = False        # Create Folium graph of t_max?
 viewData = False        # View GDF info + more?
 viewAmenityData = False # View amenity counts?
 

@@ -13,7 +13,7 @@ class City:
 
     def __init__(self, centroids, g, amts_dens, centroid_distances, rho, geo_id_to_income):
         """ Constructor """
-        self.rho = rho  # house capacity
+        self.rho = int(rho)  # house capacity
         self.centroids = centroids  # centroids list
         self.g = g  # OSM graph
         self.n = len(centroids) # num centroids
@@ -51,6 +51,7 @@ class City:
 
     def update(self):
         """ Update each centroid's: Population, CMT score, UPK score """
+        
         for index in range(self.n):  # For each centroid
             inhabitants = self.inh_array[index]  # Centroid inhabitants
             pop = len(inhabitants)
