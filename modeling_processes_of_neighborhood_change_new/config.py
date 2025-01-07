@@ -73,13 +73,13 @@ RHO_L = [16] # House capacity                                             # [1, 
 ALPHA_L = [0.25, 0.75] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
 EPSILON = 1e-3 # Rate of learning
 T_MAX_RANGE = 20000 # Total timesteps                               [20000] 
-BENCHMARK_INTERVALS = 1000 # Benchmark interval
-NUM_AGENTS = 20000 # Number of agents
+BENCHMARK_INTERVALS = 500 # Benchmark interval
+NUM_AGENTS = 10000 # Number of agents
 
 """ Flags """
 RUN_EXPERIMENTS = True  # RUN SIMULATION?
-RUN_CALIBRATION = True # RUN CALIBRATION?
-PLOT_CITIES = False      # PLOT SIMULATION?
+RUN_CALIBRATION = False # RUN CALIBRATION?
+PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_FOLIUM = False        # Create Folium graph of t_max?
 viewData = False        # View GDF info + more?
 viewAmenityData = False # View amenity counts?

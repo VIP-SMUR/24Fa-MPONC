@@ -1,4 +1,4 @@
-# amtsdens_distances.py
+# amtsdens.py
 
 from config import viewData
 from helper import AMTS_DENS_CACHE_DIR, CENTROID_DIST_CACHE_DIR
@@ -76,67 +76,3 @@ def compute_amts_dens(gdf, tags):
         print("\n".join(output_lines))
 
     return amts_dens
-
-
-def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
-    """ Retrieve DISTANCES from cache or calculate for first time """
-    # Create a unique hash for the current inputs
-    centroids_coords = [(c[0], c[1]) for c in centroids]
-    cache_key = f"centroid_distances_{_hash(*centroids_coords)}.npy"
-    cache_path = os.path.join(cache_dir, cache_key)
-
-    if os.path.exists(cache_path):
-        print("Loading cached centroid distances...")
-        distance_matrix = np.load(cache_path)
-    else:
-        distance_matrix = compute_centroid_distances(centroids, g)
-        np.save(cache_path, distance_matrix)
-        print(f"Centroid distances cached.")
-     
-    return distance_matrix
-
-# Multiprocessing: Num CPU's
-n_jobs = -1 #maximum
-
-def compute_centroid_distances(centroids, g):
-    # Number of centroids
-    n = len(centroids)
-    
-    # Map centroids to nearest node
-    centroid_nodes = [ox.nearest_nodes(g, c[0], c[1]) for c in centroids]
-    
-    # Initialize distance matrix
-    distance_matrix = np.zeros((n, n))
-    
-    def compute_distances_from_source(i):
-        source_node = centroid_nodes[i]
-        lengths = nx.single_source_dijkstra_path_length(g, source_node, weight='length')
-        distances = []
-        for j in range(n):
-            target_node = centroid_nodes[j]
-            distance = lengths.get(target_node, np.inf) # np.inf for disconnected centroids
-            distances.append(distance)
-        return distances
-    
-    # Parallel computation of distances
-    print("Computing centroid distances...")
-    distances_list = Parallel(n_jobs=n_jobs, backend='loky')(
-        delayed(compute_distances_from_source)(i) for i in tqdm(range(n), desc="Centroids")
-    )
-    
-    distance_matrix = np.array(distances_list)
-    
-    # Handle disconnected centroids by setting them to the maximum finite distance
-    if np.isinf(distance_matrix).any():
-        finite_max = np.max(distance_matrix[np.isfinite(distance_matrix)])
-        distance_matrix[np.isinf(distance_matrix)] = finite_max
-    
-    # Normalize the distance matrix
-    if distance_matrix.max() > 0:
-        distance_matrix /= distance_matrix.max()
-    
-    return distance_matrix
-
-# Notes:
-#   - Overpass API does not allow concurrent calls
-#   - Limit to size of region to query amenities from; do region by region
