@@ -9,7 +9,6 @@ import time
 import folium
 import matplotlib as mpl
 mpl.use('Agg') # Set non-interactive mpl backend
-from helper import FIGURES_DIR
 from folium import CircleMarker
 from folium.plugins import MarkerCluster
 from pathlib import Path
@@ -32,7 +31,7 @@ def plot_city(rho, alpha, t_max, centroids, beltline_geom):
     
     # Don't pass large items as parameters - avoid pickling issues during multiprocessing (too big)
     g = load_graph(GRAPH_FILE)
-    gdf, _, _ = load_gdf(gdf_cache_filenames, beltline_geom)
+    gdf, _, _ = load_gdf()
     
     # Graphing logic
     if pickle_path.exists():
@@ -78,9 +77,9 @@ def plot_city(rho, alpha, t_max, centroids, beltline_geom):
 # ================
 """ Define global settings for matplotlib graphs for consistency """
 # Global setup for colors and colormap
-cmap_base = plt.get_cmap('YlOrRd')
+cmap_base = plt.get_cmap('YlOrRd') # color scheme
 fixed_colors = [cmap_base(i / (COLORBAR_NUM_INTERVALS - 1)) for i in range(COLORBAR_NUM_INTERVALS)]
-discrete_cmap = mpl.colors.ListedColormap(fixed_colors)
+discrete_cmap = mpl.colors.ListedColormap(fixed_colors) # make colors discrete
 
 # Fix boundaries and normalization
 boundaries = np.linspace(0, 1, COLORBAR_NUM_INTERVALS + 1)
@@ -90,6 +89,14 @@ norm = mpl.colors.BoundaryNorm(boundaries, discrete_cmap.N, clip=True)
 global_sm = mpl.cm.ScalarMappable(cmap=discrete_cmap, norm=norm)
 global_sm.set_array([])  # Fix color scale
 
+# BELTLINE SCORE coloring
+beltline_cmap = mpl.cm.get_cmap('YlGn')
+# Normalize beltline scores
+beltline_normalized = mpl.colors.Normalize(vmin=0.0, vmax=1.0)
+# Create ScalarMappable for Beltline Scores
+beltline_sm = mpl.cm.ScalarMappable(norm=beltline_normalized, cmap=beltline_cmap)
+beltline_sm.set_array([]) # Fix color scale
+
 
 def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None):
     """ Matplotlib plotting function """
@@ -97,14 +104,43 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
     
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    ox.plot_graph(graph, ax=ax, node_color='black', node_size=10, edge_color='gray', edge_linewidth=1, show=False, close=False)
+    ox.plot_graph(
+        graph, 
+        ax=ax,
+        node_color='black', 
+        node_size=10,
+        edge_color='gray', 
+        edge_linewidth=1,
+        show=False, 
+        close=False
+    )
 
     # Plot GDF layer (region boundaries)
-    gdf.plot(column='Avg Endowment', ax=ax, cmap=discrete_cmap, alpha=0.6, edgecolor='black', legend=False)
-
-    # Plot centroids locations (this comes after the graph to make sure they are visible on top)
-    colors = np.where(city.in_beltline_array, 'palegreen', 'white')
-    ax.scatter(city.lon_array, city.lat_array, color=colors, s=120, alpha=0.8, edgecolor='black', linewidth=0.5)
+    gdf.plot(
+        column='Avg Endowment', 
+        ax=ax, 
+        cmap=discrete_cmap, 
+        alpha=0.6, 
+        edgecolor='black', 
+        legend=False)
+    
+    # HANDLE BELTLINE SCORES COLORING
+    # Map beltline scores to RGBA for coloring
+    scores = city.beltline_score_array
+    beltline_colors = beltline_cmap(beltline_normalized(scores))
+    
+    # Beltline Score==0? color=white
+    zero_score = (scores == 0.0)
+    beltline_colors[zero_score] = [1.0, 1.0, 1.0, 1.0]  # white
+    
+    # Plot centroids
+    ax.scatter(
+        city.lon_array,
+        city.lat_array,
+        color=beltline_colors,
+        s=120, alpha=0.8,
+        edgecolor='black', linewidth=0.5
+    )
 
     # Display inhabitant populations at each node:
     for ID in range(len(centroids)):
@@ -120,14 +156,15 @@ def plot_matplotlib(centroids, city, title, figkey='city', graph=None, gdf=None)
     # Labels and title
     ax.set_title(f"{title}", fontsize=14)
 
+    # Save graph to 'figures/matplotlib' folder
     plt.tight_layout()
-    plt.savefig(f'./figures/matplotlib/{figkey}_matplotlib.pdf', format='pdf', bbox_inches='tight', dpi=DPI)
+    DIR = Path(PLT_DIR) / f"{figkey}_matplotlib.pdf"
+    plt.savefig(DIR, format='pdf', bbox_inches='tight', dpi=DPI)
     plt.close()
     
     end_time = time.time()
     
     # Save graph to 'figures/matplotlib' folder
-    DIR = Path(PLT_DIR) / f"{figkey}_matplotlib.pdf"
     print(f"Plotted and saved {DIR.name} [{end_time - start_time:.2f} s]")
     
     
@@ -180,8 +217,8 @@ def plot_folium(centroids, city, title, figkey='city', graph=None, gdf = None):
         #[ATTRIBUTES]
         
         # beltline status 
-        beltline_status = city.in_beltline_array[i]
-        color = 'red' if beltline_status else 'black'
+        beltline_status = city.beltline_score_array[i]
+        color = 'red' if beltline_status > 0 else 'black'
         # name
         name = city.name_array[i]
         # pop

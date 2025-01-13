@@ -10,14 +10,15 @@ def create_centroids(gdf):
         # Retrieve attributes
         ID = str(row['Simulation_ID'])
         
-        in_beltline = row['Beltline']
+        beltline_score = row['Beltline Score']
         
         name = row['Simulation_Name']
         
         geometry = row['geometry']
+        
         centroid = geometry.centroid
         
-        centroids.append((centroid.x, centroid.y, name, in_beltline, ID))
+        centroids.append((centroid.x, centroid.y, name, beltline_score, ID))
         
         if geometry.is_empty or geometry is None:
             print(f"No geometries found for ID '{ID}'. Skipping centroid creation for this ID.")

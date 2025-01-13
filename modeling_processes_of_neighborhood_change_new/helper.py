@@ -7,13 +7,13 @@ import osmnx as ox
 import pickle
 
 """ Directories """
-BASE_DIR = Path.cwd()
-DATA_DIR = Path("data")
-FIGURES_DIR = Path("figures")
+BASE_DIR = Path("modeling_processes_of_neighborhood_change_new")
+DATA_DIR = BASE_DIR / 'data'
+FIGURES_DIR = BASE_DIR / 'figures'
 FOLIUM_DIR = FIGURES_DIR / 'folium'
 PLT_DIR = FIGURES_DIR / 'matplotlib'
 GIFS_CACHE_DIR = FIGURES_DIR / 'gifs'
-CACHE_DIR = Path("cache")
+CACHE_DIR = BASE_DIR / 'cache'
 AMTS_DENS_CACHE_DIR = CACHE_DIR / 'amts_dens'
 CENTROID_DIST_CACHE_DIR = CACHE_DIR / 'centroid_distances'
 OSMNX_CACHE_DIR = CACHE_DIR / 'osmnx_cache'
@@ -39,6 +39,9 @@ ox.settings.cache_folder = OSMNX_CACHE_DIR    # Set OSMnx cache directory
 
 """ File names """
 SAVED_IDS_FILE = SAVED_IDS_CACHE_DIR / f"saved_IDS.pkl"
+GDF_CACHE_FILENAME = GDF_CACHE_DIR / "gdf.gpkg"
+GDF_NUM_GEOMETRIES_FILE = GDF_CACHE_DIR / "num_geometries"
+GDF_NUM_GEOMETRIES_INDIVIDUAL_FILE = GDF_CACHE_DIR / "num_geometries_individual"
 GRAPH_FILE = CACHE_DIR / f"graph.pkl"
 ECONOMIC_DATA_FILENAME = CENSUS_DATA_CACHE_DIR / f"economic_data.xlsx"
 POPULATION_DATA_FILENAME = CENSUS_DATA_CACHE_DIR / f"population_data.xlsx"

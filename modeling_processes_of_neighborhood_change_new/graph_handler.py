@@ -11,6 +11,7 @@ from helper import GRAPH_FILE
 
 def create_graph(gdf):
     """ Initialize graph from Geodataframe"""
+    print("Creating [GRAPH] from OSM.")
     # Combine all shapes
     combined_gdf = gdf.unary_union
     

@@ -95,7 +95,7 @@ class Agent:
         community_cost = np.exp(-self.alpha * np.abs(self.dow - self.city.cmt_array[u]))# f(similarity of node.avg_endowment to self.endowment)
         accessibility = np.exp(-(1 - self.alpha) * self.city.amts_dens[u])              # f(amenity density)
         upkeep = self.city.upk_array[u]                                                 # Binary; 0 if no inhabitants
-        beltline = self.city.in_beltline_array[u]                                       # Binary; 0 if not in Beltline
+        beltline = self.city.beltline_score_array[u]                                       # Binary; 0 if not in Beltline
 
         # Mode-specific adjustments
         base_location_cost = self.city.centroid_distances[self.prev_u, u]               # Normalized distance

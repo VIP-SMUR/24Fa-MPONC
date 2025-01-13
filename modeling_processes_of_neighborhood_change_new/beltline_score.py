@@ -2,6 +2,7 @@
 
 import requests
 import geopandas as gpd
+from config import HIGH_BLSCORE_METERS, LOW_BLSCORE_METERS
 from shapely.geometry import LineString
 from shapely.ops import unary_union
 from config import RELATION_IDS
@@ -39,12 +40,23 @@ def fetch_beltline_nodes(relation_ids=RELATION_IDS):
 
     relations_gdf = gpd.GeoDataFrame(geometry=lines, crs="EPSG:4326")
 
-    print(f"Created Beltline GeoDataFrame with {len(relations_gdf)} BeltLine 'ways'.\n")
+    print(f"[BELTLINE GDF] created w/ {len(relations_gdf)} 'ways'.")
     
     # Union of geometries in all 'way's in 'relation's
     beltline_geom = unary_union(relations_gdf['geometry'])
     
     return beltline_geom
     
-def check_in_beltline(polygon, geom):
-    return 1 if polygon.intersects(geom) else 0
+def get_beltline_score(polygon, beltline_geom):
+    """ Returns beltline score of a polygon """
+    polygon_centroid = polygon.centroid
+    dist_meters = polygon_centroid.distance(beltline_geom)
+    
+    if dist_meters <= HIGH_BLSCORE_METERS:
+        return 1.0
+    elif dist_meters >= LOW_BLSCORE_METERS:
+        return 0.1
+    else:
+        score =  1.0 - ((dist_meters - HIGH_BLSCORE_METERS) * 0.9 / (LOW_BLSCORE_METERS-HIGH_BLSCORE_METERS))
+        return score
+    

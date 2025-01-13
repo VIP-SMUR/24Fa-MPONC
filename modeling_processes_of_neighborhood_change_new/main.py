@@ -1,7 +1,7 @@
 # main.py
 
 from collections import defaultdict
-from helper import gdf_cache_filenames, GRAPH_FILE, GIFS_CACHE_DIR, FIGURES_DIR, T_MAX_L, SAVED_IDS_FILE
+from helper import gdf_cache_filenames, GRAPH_FILE, GDF_CACHE_FILENAME, GIFS_CACHE_DIR, PLT_DIR, T_MAX_L, SAVED_IDS_FILE
 from config import RUN_CALIBRATION, CTY_KEY, NUM_AGENTS, T_MAX_RANGE, PLOT_CITIES, RHO_L, ALPHA_L, AMENITY_TAGS, N_JOBS, GIF_NUM_PAUSE_FRAMES, GIF_FRAME_DURATION, ID_LIST, RELATION_IDS, viewData
 from file_download_manager import download_and_extract_layers_all
 from economic_distribution import economic_distribution
@@ -15,7 +15,7 @@ from gif import process_pdfs_to_gifs
 from centroids import create_centroids
 from save_IDS import save_current_IDS, load_previous_IDS
 from calibration import Calibration, MyRepair
-from in_beltline import fetch_beltline_nodes
+from beltline_score import fetch_beltline_nodes
 from pathlib import Path
 from itertools import product
 from joblib import Parallel, delayed
@@ -23,6 +23,8 @@ from four_step_model import run_four_step_model
 from pymoo.algorithms.soo.nonconvex.ga import GA
 from pymoo.termination import get_termination
 from pymoo.optimize import minimize
+from shapely import Point
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import time
@@ -32,9 +34,9 @@ import matplotlib
 OVERALL_START_TIME = time.time()
 
 def main():
-    # ========================
-    # DOWNLOAD AND EXTRACT ZIP
-    # ========================
+    # ===================================================
+    # DOWNLOAD/EXTRACT ZIP & CREATE ECONOMIC DISTRIBUTION
+    # ===================================================
 
     print("Processing Shapefiles and Census data...")
     file_start_time = time.time()    
@@ -44,12 +46,10 @@ def main():
     endowments, geo_id_to_income = economic_distribution()
     
     n = ((len(geo_id_to_income)))
-    print(f"\nNumber of tracts used to calculate endowment distribution: {n}\n")
     
     file_end_time = time.time()
-    
     print(f"File download and extraction complete after {file_end_time - file_start_time:.2f} seconds.\n")
-    
+    print(f"*Number of tracts used to calculate endowment distribution: {n}")
     
     # =============================
     # CHECK IF REGIONS HAVE CHANGED
@@ -78,17 +78,17 @@ def main():
         print("Failed to fetch BeltLine geometries.")
         
     # Create or load GDF
-    if all(Path(gdf_cache_filenames[i]).exists() for i in gdf_cache_filenames):
+    if Path(GDF_CACHE_FILENAME).exists():
         if regen_gdf_and_graph:
             gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames, beltline_geom)
         else:
-            gdf, num_geometries, num_geometries_individual = load_gdf(gdf_cache_filenames, beltline_geom)
+            gdf, num_geometries, num_geometries_individual = load_gdf()
     else:
         gdf, num_geometries, num_geometries_individual = create_gdf(shapefile_paths, gdf_cache_filenames, beltline_geom)
         
-    print(f"GDF contains {num_geometries} regions")
+    print(f"[GDF] created w/ {num_geometries} regions.")
     for i in range(len(num_geometries_individual)):
-        print(f"Region {i+1} contains {num_geometries_individual[i]} geometries.")
+        print(f"Region {i+1}: {num_geometries_individual[i]} geometries.")
         
     # Check if geometries are valid 
     if not gdf.is_valid.all():
@@ -102,13 +102,16 @@ def main():
     """ CHECK OVERLAPS """
     print_overlaps(gdf)
     
-    # [VIEW GRAPH]
-    # *freezes code - re-run simulation with this commented out to proceed*
-    
-    # matplotlib.use('TkAgg')
-    # gdf.plot()
-    # plt.show()
-    # matplotlib.use('Agg')
+    # [VIEW GRAPH] ===========================================================
+    if (viewData):
+        matplotlib.use('TkAgg')
+        gdf.plot()
+        beltline_gdf = gpd.GeoDataFrame(geometry=[beltline_geom], crs="EPSG:4326")
+        fig, ax = plt.subplots()
+        beltline_gdf.plot(ax=ax, color="red")
+        plt.show()
+        matplotlib.use('Agg')
+    # ========================================================================
 
     gdf_end_time = time.time()
     print(f"GeoDataFrame generation complete after {gdf_end_time - gdf_start_time:.2f} seconds.\n")
@@ -118,7 +121,7 @@ def main():
     # =========================
 
     graph_start_time = time.time()
-    print("Generating graph from OSMnx...")
+    print("Processing graph...")
 
     if Path(GRAPH_FILE).exists():
         if regen_gdf_and_graph:
@@ -126,7 +129,7 @@ def main():
             save_graph(g, GRAPH_FILE)
         else:
             g = load_graph(GRAPH_FILE)
-            print(f"Loaded existing graph from {GRAPH_FILE}.")
+            print(f"[GRAPH] loaded from cache..")
     else:
         g = create_graph(gdf)
         save_graph(g, GRAPH_FILE)
@@ -144,6 +147,19 @@ def main():
 
     centroid_end_time = time.time()
     print(f"Centroid initialization completed after {centroid_end_time - centroid_start_time:.2f} seconds.\n")
+    
+    # [VIEW GRAPH] =======================================================================================
+    if viewData:
+        matplotlib.use('TkAgg')
+        your_centroids_gdf = gpd.GeoDataFrame(
+        geometry=[Point(lon, lat) for (lon, lat, _, _, _) in centroids],
+        crs="EPSG:4326"
+    )
+        fig, ax = plt.subplots()
+        your_centroids_gdf.plot(ax=ax, color="blue", markersize=10)
+        plt.show()
+        matplotlib.use('Agg')
+    # ====================================================================================================
 
     # =========================
     # COMPUTE AMENITY DENSITIES
@@ -213,7 +229,7 @@ def main():
         )
 
         plot_end_time = time.time()
-        print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.")
+        print(f"Completed plotting after {plot_end_time - plot_start_time:.2f} seconds.\n")
 
         # ======================
         # CREATE SIMULATION GIFS
@@ -221,7 +237,7 @@ def main():
         gif_start_time = time.time()
         print("Creating GIF(s)...")
 
-        process_pdfs_to_gifs(FIGURES_DIR, GIFS_CACHE_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
+        process_pdfs_to_gifs(PLT_DIR, GIFS_CACHE_DIR, duration=GIF_FRAME_DURATION, num_pause_frames=GIF_NUM_PAUSE_FRAMES)
 
         gif_end_time = time.time()
         print(f"Completed creating GIF's after {gif_end_time - gif_start_time:.2f} seconds.")

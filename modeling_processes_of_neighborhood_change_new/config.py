@@ -72,12 +72,15 @@ AMENITY_TAGS = {
 RHO_L = [16] # House capacity                                             # [1, 2, 4, 8] rho (house capacity)
 ALPHA_L = [0.25, 0.75] # Prioritize proximity vs. community    # [0.25, 0.75] lambda (agent preference; proximity vs. community)
 EPSILON = 1e-3 # Rate of learning
-T_MAX_RANGE = 20000 # Total timesteps                               [20000] 
-BENCHMARK_INTERVALS = 500 # Benchmark interval
-NUM_AGENTS = 10000 # Number of agents
+T_MAX_RANGE = 10 # Total timesteps                               [20000] 
+BENCHMARK_INTERVALS = 5 # Benchmark interval
+NUM_AGENTS = 11 # Number of agents
+
+HIGH_BLSCORE_METERS = 1000
+LOW_BLSCORE_METERS = 5000
 
 """ Flags """
-RUN_EXPERIMENTS = True  # RUN SIMULATION?
+RUN_EXPERIMENTS = False  # RUN SIMULATION?
 RUN_CALIBRATION = False # RUN CALIBRATION?
 PLOT_CITIES = True      # PLOT SIMULATION?
 PLOT_FOLIUM = False        # Create Folium graph of t_max?

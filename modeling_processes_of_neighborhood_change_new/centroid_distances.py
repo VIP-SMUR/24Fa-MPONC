@@ -40,6 +40,7 @@ def cached_centroid_distances(centroids, g, cache_dir=CENTROID_DIST_CACHE_DIR):
 
 def compute_centroid_distances(centroids, g):
     """ Perform calculations for centroid distances with multiprocessing"""
+    print("Computing...")
     # Number of centroids
     n = len(centroids)
     

@@ -22,8 +22,7 @@ class City:
         self.lon_array = np.array([lon for lon, _, _, _, _ in centroids])  # Longitude
         self.lat_array = np.array([lat for _, lat, _, _, _ in centroids])  # Latitude
         self.name_array = [name for _, _, name, _, _ in centroids]  # Centroid region name
-        self.in_beltline_array = np.array([in_beltline for _, _, _, in_beltline, _ in centroids], dtype=bool).astype(
-            float)  # In Beltline?
+        self.beltline_score_array = np.array([beltline_score for _, _, _, beltline_score, _ in centroids]) # Beltline Score
         self.id_array = self.id_array = [id for _, _, _, _, id in centroids]  # ID
 
         self.inh_array = [set() for _ in range(self.n)]  # Array of sets - each set contains Agent inhabitants
@@ -90,7 +89,7 @@ class City:
         Gather data for each centroid and return as a DataFrame.
 
         Returns:
-        - DataFrame: Data containing Centroid, Population, Avg Endowment, In Beltline, Amt Density.
+        - DataFrame: Data containing Centroid, Population, Avg Endowment, Beltline Score, Amt Density.
         """
         data = []  # Array storing data for each centroid
         
@@ -125,8 +124,8 @@ class City:
 
             avg_endowment = normalized_avg_endowments[index]
 
-            # In Beltline?
-            in_beltline = self.in_beltline_array[index]
+            # Beltline Score
+            beltline_score = self.beltline_score_array[index]
 
             # Amenity Density
             amenity_density = self.amts_dens[index]
@@ -145,7 +144,7 @@ class City:
                 'Avg Income': avg_income,
                 'Expected Income': expected_income,
                 'Avg Endowment': avg_endowment,
-                'In Beltline': in_beltline,
+                'Beltline Score': beltline_score,
                 'Amt Density': round(amenity_density, 2)
             })
 

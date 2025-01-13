@@ -3,29 +3,31 @@
 import geopandas as gpd
 import pandas as pd
 from config import IDENTIFIER_COLUMNS, NAME_COLUMNS, ID_LIST, viewData
-from in_beltline import check_in_beltline
+from helper import GDF_CACHE_FILENAME, GDF_NUM_GEOMETRIES_FILE, GDF_NUM_GEOMETRIES_INDIVIDUAL_FILE, GDF_CACHE_DIR
+from beltline_score import get_beltline_score
+from pathlib import Path
+import matplotlib.pyplot as plt
+import matplotlib
+import pickle
 
 # =======================
 # GDF FILE INITIALIZATION
 # =======================
 
-def load_gdf(cache_files, beltline_geom):
+def load_gdf():
     """ Load each layer's Geodataframe from cache"""
-    # Load if cached:
-    gdfs = []
-    for i in cache_files:
-        cache_file = cache_files[i]
-        gdf = gpd.read_file(cache_file)
-        gdfs.append(gdf)
-        
-    # Combine all gdfs:
-    combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
+    # Load GDF if cached:
+    gdf = gpd.read_file(GDF_CACHE_FILENAME)
     
-    combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
+    # Load num_geometries and num_geometries_individual if cached
+    if Path(GDF_NUM_GEOMETRIES_FILE).exists():
+        with open(GDF_NUM_GEOMETRIES_FILE, 'rb') as f:
+            num_geometries = pickle.load(f)
+    if Path(GDF_NUM_GEOMETRIES_FILE).exists():
+        with open(GDF_NUM_GEOMETRIES_INDIVIDUAL_FILE, 'rb') as f:
+            num_geometries_individual = pickle.load(f)
     
-    combined_gdf = create_Beltline_column(combined_gdf, beltline_geom)
-    
-    return combined_gdf, num_geometries, num_geometries_individual
+    return gdf, num_geometries, num_geometries_individual
 
 # create new gdf
 def create_gdf(shapefile_paths, cache_files, beltline_geom):
@@ -48,29 +50,23 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
         # Set CRS
         gdf = gdf.to_crs(epsg=4326)
         
-        # Save to cache
-        print(f"Individual GeoDataFrame saved to '{cache_file}'.")
-        gdf.to_file(cache_file, driver='GPKG')
+        # Create 'Beltline Score' column
+        gdf = create_Beltline_column(gdf, beltline_geom)
         
         if viewData:
+            print("Individual GDF information:")
             gdf_geom_counts = gdf.geometry.geom_type.value_counts()
             print(gdf_geom_counts)
             print()
         
+        # add to 'gdfs' array
         gdfs.append(gdf)  
-        
+        # track num_geometries in each gdf
         num_geometries.append(len(gdf))
-        
-        # View individual GDF information
-        if viewData:
-            print(gdf)
             
     # Combine all gdfs
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
-    
     combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
-    
-    combined_gdf = create_Beltline_column(combined_gdf, beltline_geom)
     
     # View combined GDF information
     if viewData:
@@ -78,6 +74,16 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
         print("Combined GeoDataFrame:")
         print(geometry_counts)
         print(combined_gdf)
+        
+    # Cache combined GDF 
+    print(f"GeoDataFrame saved to '{GDF_CACHE_FILENAME}'.")
+    combined_gdf.to_file(GDF_CACHE_FILENAME, driver='GPKG')
+    
+    # Cache num_geometries & num_geometries_individual
+    with open(GDF_NUM_GEOMETRIES_FILE, 'wb') as file:
+        pickle.dump(num_geometries, file)
+    with open(GDF_NUM_GEOMETRIES_INDIVIDUAL_FILE, 'wb') as file:
+        pickle.dump(num_geometries_individual, file)
     
     return combined_gdf, num_geometries, num_geometries_individual
 
@@ -111,9 +117,12 @@ def create_Sqkm_column(gdf):
 
 # TODO
 def create_Beltline_column(gdf, beltline_geom):
-    """ Helper function to create 'Beltline' column """
-    print("Updating 'in_beltline' attribute...")
-    gdf['Beltline'] = gdf['geometry'].apply(lambda poly: check_in_beltline(poly, beltline_geom))
+    """ Helper function to create 'Beltline Score' column """
+    print("Updating 'Beltline Score'...")
+    gdf = gdf.to_crs(epsg=32616) # Meter-based projection
+    reprojected_beltline_geom = reproject_geometry(beltline_geom)
+    gdf['Beltline Score'] = gdf['geometry'].apply(lambda poly: get_beltline_score(poly, reprojected_beltline_geom))
+    gdf = gdf.to_crs(epsg=4326)
     return gdf
 
 def within_gdf(gdf):
@@ -160,6 +169,11 @@ def print_overlaps(gdf):
         print(overlaps[['Simulation_Name_left', 'Simulation_Name_right', 'Simulation_ID_left', 'Simulation_ID_right']])
         print()
     else:
-        print("No overlaps detected")
+        print("No overlaps detected.")
 
 
+def reproject_geometry(geom):
+    """ Reprojects a geometry from CRS 4326(OSM lat/lon based) to 32616 (meter based)"""
+    geom_gdf = gpd.GeoSeries([geom], crs="EPSG:4326")
+    geom_gdf = geom_gdf.to_crs("EPSG:32616")
+    return geom_gdf.iloc[0] # reprojected GDF's geometry

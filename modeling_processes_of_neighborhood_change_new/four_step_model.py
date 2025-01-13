@@ -23,7 +23,7 @@ def generate_trips(centroids, amts_dens, base_trips=100):
     total_amenity_score = sum(amts_dens)
     amenity_probabilities = [score / total_amenity_score for score in amts_dens]
 
-    for idx, (lon, lat, region_name, in_beltline, geoid) in enumerate(centroids):
+    for idx, (_, _, _, _, geoid) in enumerate(centroids):
         # Generate trips based on amenity score probability
         trip_counts[geoid] = np.random.poisson(lam=base_trips * amenity_probabilities[idx])
 
