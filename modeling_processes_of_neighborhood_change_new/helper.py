@@ -7,7 +7,7 @@ import osmnx as ox
 import pickle
 
 """ Directories """
-BASE_DIR = Path("modeling_processes_of_neighborhood_change_new")
+BASE_DIR = Path.cwd()
 DATA_DIR = BASE_DIR / 'data'
 FIGURES_DIR = BASE_DIR / 'figures'
 FOLIUM_DIR = FIGURES_DIR / 'folium'
