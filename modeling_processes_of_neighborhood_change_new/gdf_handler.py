@@ -17,7 +17,8 @@ import pickle
 def load_gdf():
     """ Load each layer's Geodataframe from cache"""
     # Load GDF if cached:
-    gdf = gpd.read_file(GDF_CACHE_FILENAME)
+    if Path(GDF_CACHE_FILENAME).exists():
+        gdf = gpd.read_file(GDF_CACHE_FILENAME)
     
     # Load num_geometries and num_geometries_individual if cached
     if Path(GDF_NUM_GEOMETRIES_FILE).exists():
@@ -26,6 +27,9 @@ def load_gdf():
     if Path(GDF_NUM_GEOMETRIES_FILE).exists():
         with open(GDF_NUM_GEOMETRIES_INDIVIDUAL_FILE, 'rb') as f:
             num_geometries_individual = pickle.load(f)
+    if viewData:
+        print("[COMBINED GDF]:")      
+        print_info(gdf)
     
     return gdf, num_geometries, num_geometries_individual
 
@@ -54,10 +58,9 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
         gdf = create_Beltline_column(gdf, beltline_geom)
         
         if viewData:
-            print("Individual GDF information:")
-            gdf_geom_counts = gdf.geometry.geom_type.value_counts()
-            print(gdf_geom_counts)
-            print()
+            print(f"\n[GDF {i}]:")
+            print_info(gdf)
+            gdf_to_csv(gdf, i)
         
         # add to 'gdfs' array
         gdfs.append(gdf)  
@@ -70,10 +73,9 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
     
     # View combined GDF information
     if viewData:
-        geometry_counts = combined_gdf.geometry.geom_type.value_counts()
-        print("Combined GeoDataFrame:")
-        print(geometry_counts)
-        print(combined_gdf)
+        print("\n[COMBINED GDF]:")
+        print_info(combined_gdf)
+        gdf_to_csv(gdf, 0)
         
     # Cache combined GDF 
     print(f"GeoDataFrame saved to '{GDF_CACHE_FILENAME}'.")
@@ -177,3 +179,16 @@ def reproject_geometry(geom):
     geom_gdf = gpd.GeoSeries([geom], crs="EPSG:4326")
     geom_gdf = geom_gdf.to_crs("EPSG:32616")
     return geom_gdf.iloc[0] # reprojected GDF's geometry
+
+def print_info(gdf):
+    print("GDF information:")
+    print(gdf.geometry.geom_type.value_counts())
+    print(gdf.info())
+    print(gdf)
+    print()
+    
+def gdf_to_csv(gdf, i):
+    # Drop the geometry column
+    df_no_geometry = gdf.drop(columns="geometry")
+    # Export to CSV
+    df_no_geometry.to_csv(GDF_CACHE_DIR / f"GDF_{i}.csv", index=False)

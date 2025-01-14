@@ -103,7 +103,7 @@ def main():
     print_overlaps(gdf)
     
     # [VIEW GRAPH] ===========================================================
-    if (viewData):
+    if viewData:
         matplotlib.use('TkAgg')
         gdf.plot()
         beltline_gdf = gpd.GeoDataFrame(geometry=[beltline_geom], crs="EPSG:4326")
