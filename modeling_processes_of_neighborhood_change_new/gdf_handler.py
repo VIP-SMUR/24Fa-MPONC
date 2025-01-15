@@ -57,10 +57,12 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
         # Create 'Beltline Score' column
         gdf = create_Beltline_column(gdf, beltline_geom)
         
+        # Create CSV
+        gdf_to_csv(gdf, i)
+        
         if viewData:
             print(f"\n[GDF {i}]:")
             print_info(gdf)
-            gdf_to_csv(gdf, i)
         
         # add to 'gdfs' array
         gdfs.append(gdf)  
@@ -71,11 +73,13 @@ def create_gdf(shapefile_paths, cache_files, beltline_geom):
     combined_gdf = gpd.GeoDataFrame(pd.concat(gdfs, ignore_index=True))
     combined_gdf, num_geometries, num_geometries_individual = within_gdf(combined_gdf)
     
+    # Create CSV
+    gdf_to_csv(gdf, 0)
+    
     # View combined GDF information
     if viewData:
         print("\n[COMBINED GDF]:")
         print_info(combined_gdf)
-        gdf_to_csv(gdf, 0)
         
     # Cache combined GDF 
     print(f"GeoDataFrame saved to '{GDF_CACHE_FILENAME}'.")
